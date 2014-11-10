@@ -22,6 +22,7 @@ abstract class AbstractBuilder implements BuilderInterface
         if (!function_exists('json_encode')) {
             throw new InitializationException('JSON extension is required for Stackify logger');
         }
+        // @TODO for all children gather stacktrace even if exception is not available
     }
 
     public function getSyslogMessage($logEvent)
