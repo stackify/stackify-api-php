@@ -4,6 +4,7 @@ namespace Stackify\Log\MessageBuilder;
 
 use Stackify\Log\Entities\ErrorItem;
 use Stackify\Log\Entities\TraceFrame;
+use Stackify\Log\Entities\StackifyError;
 use Stackify\Exceptions\InitializationException;
 
 abstract class AbstractBuilder implements BuilderInterface
@@ -70,6 +71,37 @@ abstract class AbstractBuilder implements BuilderInterface
             $errorItem->InnerError = $this->getErrorItem($previous);
         }
         return $errorItem;
+    }
+
+    /**
+     * @return \Exception
+     */
+    protected function popException(array &$context)
+    {
+        $exception = null;
+        $keyToUnset = null;
+        foreach ($context as $key => $value) {
+            if ($value instanceof \Exception) {
+                $exception = $value;
+                $keyToUnset = $key;
+                break;
+            }
+        }
+        if (null !== $keyToUnset) {
+            unset($context[$keyToUnset]);
+        }
+        return $exception;
+    }
+
+    /**
+     * @return \Stackify\Log\Entities\StackifyError
+     */
+    protected function createErrorFromException(\DateTime $datetime, \Exception $exception)
+    {
+        $error = new StackifyError();
+        $error->OccurredEpochMillis = $datetime->getTimestamp() * 1000;
+        $error->Error = $this->getErrorItem($exception);
+        return $error;
     }
 
     protected function encodeJSON($data)

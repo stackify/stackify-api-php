@@ -26,11 +26,15 @@ class MessageBuilder extends AbstractBuilder
      */
     protected function createLogMsg($logEvent)
     {
-        $logMsg = $this->fillRequiredFields($logEvent);
+        $logMsg = new LogMsg(
+            $logEvent['level_name'],
+            $logEvent['message'],
+            $logEvent['datetime']
+        );
         $context = $logEvent['context'];
         $exception = $this->popException($context);
         if (null !== $exception) {
-            $error = $this->createErrorFromException($logEvent, $exception);
+            $error = $this->createErrorFromException($logEvent['datetime'], $exception);
             $logMsg->Ex = $error;
             $logMsg->SrcLine = $exception->getLine();
             $logMsg->SrcMethod = $error->Error->SourceMethod;
@@ -44,39 +48,6 @@ class MessageBuilder extends AbstractBuilder
             $logMsg->data = $this->encodeJSON($context);
         }
         return $logMsg;
-    }
-
-    /**
-     * @return \Stackify\Log\Entities\LogMsg
-     */
-    private function fillRequiredFields(array $record)
-    {
-        $logMsg = new LogMsg();
-        $logMsg->Msg = $record['message'];
-        $logMsg->Level = $record['level_name'];
-        // seconds to milliseconds
-        $logMsg->EpochMs = $record['datetime']->getTimestamp() * 1000;
-        return $logMsg;
-    }
-
-    /**
-     * @return \Exception
-     */
-    private function popException(array &$context)
-    {
-        $exception = null;
-        $keyToUnset = null;
-        foreach ($context as $key => $value) {
-            if ($value instanceof \Exception) {
-                $exception = $value;
-                $keyToUnset = $key;
-                break;
-            }
-        }
-        if (null !== $keyToUnset) {
-            unset($context[$keyToUnset]);
-        }
-        return $exception;
     }
 
     private function isPHPError(array $context)
@@ -126,17 +97,6 @@ class MessageBuilder extends AbstractBuilder
             null // method is not defined in native error
         );
         $error->Error = $errorItem;
-        return $error;
-    }
-
-    /**
-     * @return \Stackify\Log\Entities\StackifyError
-     */
-    private function createErrorFromException(array $record, \Exception $exception)
-    {
-        $error = new StackifyError();
-        $error->OccurredEpochMillis = $record['datetime']->getTimestamp() * 1000;
-        $error->Error = $this->getErrorItem($exception);
         return $error;
     }
 

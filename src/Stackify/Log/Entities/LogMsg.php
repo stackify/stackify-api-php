@@ -48,4 +48,12 @@ class LogMsg
      * @var integer
      */
     public $SrcLine;
+
+    public function __construct($level, $message, \DateTime $datetime)
+    {
+        $this->Level = $level;
+        $this->Msg = $message;
+        $this->EpochMs = $datetime->getTimestamp() * 1000;
+    }
+
 }
