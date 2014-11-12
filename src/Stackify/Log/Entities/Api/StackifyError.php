@@ -1,6 +1,6 @@
 <?php
 
-namespace Stackify\Log\Entities;
+namespace Stackify\Log\Entities\Api;
 
 class StackifyError
 {
@@ -16,12 +16,12 @@ class StackifyError
     public $OccurredEpochMillis;
 
     /**
-     * @var \Stackify\Log\Entities\ErrorItem
+     * @var \Stackify\Log\Entities\Api\ErrorItem
      */
     public $Error;
 
     /**
-     * @var \Stackify\Log\Entities\WebRequestDetail
+     * @var \Stackify\Log\Entities\Api\WebRequestDetail
      */
     public $WebRequestDetail;
 

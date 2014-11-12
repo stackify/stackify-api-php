@@ -2,9 +2,9 @@
 
 namespace Stackify\Log\MessageBuilder;
 
-use Stackify\Log\Entities\ErrorItem;
-use Stackify\Log\Entities\TraceFrame;
-use Stackify\Log\Entities\StackifyError;
+use Stackify\Log\Entities\Api\ErrorItem;
+use Stackify\Log\Entities\Api\TraceFrame;
+use Stackify\Log\Entities\Api\StackifyError;
 use Stackify\Exceptions\InitializationException;
 
 abstract class AbstractBuilder implements BuilderInterface
@@ -32,7 +32,7 @@ abstract class AbstractBuilder implements BuilderInterface
     }
 
     /**
-     * @return \Stackify\Log\Entities\LogMsg
+     * @return \Stackify\Log\Entities\Api\LogMsg
      */
     protected abstract function createLogMsg($logEvent);
 
@@ -49,7 +49,7 @@ abstract class AbstractBuilder implements BuilderInterface
     protected abstract function getLoggerVersion();
 
     /**
-     * @return \Stackify\Log\Entities\ErrorItem
+     * @return \Stackify\Log\Entities\Api\ErrorItem
      */
     protected function getErrorItem(\Exception $exception)
     {
@@ -96,7 +96,7 @@ abstract class AbstractBuilder implements BuilderInterface
     }
 
     /**
-     * @return \Stackify\Log\Entities\StackifyError
+     * @return \Stackify\Log\Entities\Api\StackifyError
      */
     protected function createErrorFromException(\DateTime $datetime, \Exception $exception)
     {

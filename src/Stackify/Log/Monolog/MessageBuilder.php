@@ -2,10 +2,10 @@
 
 namespace Stackify\Log\Monolog;
 
-use Stackify\Log\Entities\LogMsg;
-use Stackify\Log\Entities\ErrorItem;
-use Stackify\Log\Entities\TraceFrame;
-use Stackify\Log\Entities\StackifyError;
+use Stackify\Log\Entities\Api\LogMsg;
+use Stackify\Log\Entities\Api\ErrorItem;
+use Stackify\Log\Entities\Api\TraceFrame;
+use Stackify\Log\Entities\Api\StackifyError;
 use Stackify\Log\MessageBuilder\AbstractBuilder;
 
 class MessageBuilder extends AbstractBuilder
@@ -22,7 +22,7 @@ class MessageBuilder extends AbstractBuilder
     }
 
     /**
-     * @return \Stackify\Log\Entities\LogMsg
+     * @return \Stackify\Log\Entities\Api\LogMsg
      */
     protected function createLogMsg($logEvent)
     {
@@ -77,7 +77,7 @@ class MessageBuilder extends AbstractBuilder
 
     /**
      * Create StackifyError object from native PHP error (E_NOTICE, E_WARNING, etc.)
-     * @return \Stackify\Log\Entities\StackifyError
+     * @return \Stackify\Log\Entities\Api\StackifyError
      */
     private function createError(array $record)
     {        

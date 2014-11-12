@@ -2,7 +2,7 @@
 
 namespace Stackify\Log\Standalone;
 
-use Stackify\Log\Entities\LogMsg;
+use Stackify\Log\Entities\Api\LogMsg;
 use Stackify\Log\MessageBuilder\AbstractBuilder;
 
 class MessageBuilder extends AbstractBuilder
@@ -19,7 +19,7 @@ class MessageBuilder extends AbstractBuilder
     }
 
     /**
-     * @return \Stackify\Log\Entities\LogMsg
+     * @return \Stackify\Log\Entities\Api\LogMsg
      */
     protected function createLogMsg($logEvent)
     {

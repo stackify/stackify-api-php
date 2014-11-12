@@ -1,6 +1,6 @@
 <?php
 
-namespace Stackify\Log\Entities;
+namespace Stackify\Log\Entities\Api;
 
 class WebRequestDetail
 {

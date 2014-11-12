@@ -1,6 +1,6 @@
 <?php
 
-namespace Stackify\Log\Entities;
+namespace Stackify\Log\Entities\Api;
 
 class ErrorItem
 {
@@ -25,12 +25,12 @@ class ErrorItem
     public $SourceMethod;
 
     /**
-     * @var \Stackify\Log\Entities\TraceFrame[]
+     * @var \Stackify\Log\Entities\Api\TraceFrame[]
      */
     public $StackTrace = array();
 
     /**
-     * @var \Stackify\Log\Entities\ErrorItem
+     * @var \Stackify\Log\Entities\Api\ErrorItem
      */
     public $InnerError;
 }

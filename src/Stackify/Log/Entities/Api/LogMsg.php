@@ -1,8 +1,8 @@
 <?php
 
-namespace Stackify\Log\Entities;
+namespace Stackify\Log\Entities\Api;
 
-use Stackify\Log\Entities\StackifyError;
+use Stackify\Log\Entities\Api\StackifyError;
 
 class LogMsg
 {
@@ -17,7 +17,7 @@ class LogMsg
     public $data;
 
     /**
-     * @var \Stackify\Log\Entities\StackifyError
+     * @var \Stackify\Log\Entities\Api\StackifyError
      */
     public $Ex;
 
