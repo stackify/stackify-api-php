@@ -51,11 +51,11 @@ class LogMsg
      */
     public $SrcLine;
 
-    public function __construct($level, $message, \DateTime $datetime)
+    public function __construct($level, $message, $milliseconds)
     {
         $this->Level = $level;
         $this->Msg = $message;
-        $this->EpochMs = $datetime->getTimestamp() * 1000;
+        $this->EpochMs = $milliseconds;
     }
 
     public function setError(StackifyError $error)

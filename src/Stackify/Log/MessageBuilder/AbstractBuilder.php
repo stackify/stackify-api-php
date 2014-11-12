@@ -2,9 +2,11 @@
 
 namespace Stackify\Log\MessageBuilder;
 
+use Stackify\Log\Entities\Api\LogMsg;
 use Stackify\Log\Entities\Api\ErrorItem;
 use Stackify\Log\Entities\Api\TraceFrame;
 use Stackify\Log\Entities\Api\StackifyError;
+use Stackify\Log\Entities\NativeError;
 use Stackify\Exceptions\InitializationException;
 
 abstract class AbstractBuilder implements BuilderInterface
@@ -27,6 +29,7 @@ abstract class AbstractBuilder implements BuilderInterface
 
     public function getSyslogMessage($logEvent)
     {
+        // @TODO rename and remove syslog-specific logic
         $logMsg = $this->createLogMsg($logEvent);
         return $this->getStructuredData() . ' ' . $this->encodeJSON($logMsg);
     }
@@ -34,7 +37,34 @@ abstract class AbstractBuilder implements BuilderInterface
     /**
      * @return \Stackify\Log\Entities\Api\LogMsg
      */
-    protected abstract function createLogMsg($logEvent);
+    protected function createLogMsg($logEvent)
+    {
+        $logEntry = $this->wrapLogEntry($logEvent);
+        $milliseconds = $logEntry->getMilliseconds();
+        $logMsg = new LogMsg(
+            $logEntry->getLevel(),
+            $logEntry->getMessage(),
+            $milliseconds
+        );
+        $exception = $logEntry->getException();
+        if ($exception = $logEntry->getException()) {
+            $error = $this->createErrorFromException($milliseconds, $exception);
+            $logMsg->setError($error);
+        } elseif ($nativeError = $logEntry->getNativeError()) {
+            $error = $this->createErrorFromNativeError($milliseconds, $nativeError);
+            $logMsg->setError($error);
+        }
+        if (null !== $logEntry->getContext()) {
+            $logMsg->data = $this->encodeJSON($logEntry->getContext());
+        }
+        return $logMsg;
+    }
+
+    /**
+     * Wrap log event that comes from third-party logger to an object with common interface
+     * @return \Stackify\Log\Entities\LogEntryInterface
+     */
+    protected abstract function wrapLogEntry($logEvent);
 
     /**
      * Returns logger name (will be visible in OpsManager)
@@ -76,45 +106,45 @@ abstract class AbstractBuilder implements BuilderInterface
     }
 
     /**
-     * @return \Exception
-     */
-    protected function popException(array &$context)
-    {
-        $exception = null;
-        $keyToUnset = null;
-        foreach ($context as $key => $value) {
-            if ($value instanceof \Exception) {
-                $exception = $value;
-                $keyToUnset = $key;
-                break;
-            }
-        }
-        if (null !== $keyToUnset) {
-            unset($context[$keyToUnset]);
-        }
-        return $exception;
-    }
-
-    /**
      * @return \Stackify\Log\Entities\Api\StackifyError
      */
-    protected function createErrorFromException(\DateTime $datetime, \Exception $exception)
+    protected function createErrorFromException($milliseconds, \Exception $exception)
     {
         $error = new StackifyError();
-        $error->OccurredEpochMillis = $datetime->getTimestamp() * 1000;
+        $error->OccurredEpochMillis = $milliseconds;
         $error->Error = $this->getErrorItem($exception);
         return $error;
     }
 
-    protected function encodeJSON($data)
+    /**
+     * Create StackifyError object from native PHP error (E_NOTICE, E_WARNING, etc.)
+     * @return \Stackify\Log\Entities\Api\StackifyError
+     */
+    private function createErrorFromNativeError($milliseconds, NativeError $nativeError)
     {
-        return json_encode($data, JSON_PRETTY_PRINT);
+        $error = new StackifyError();
+        $error->OccurredEpochMillis = $milliseconds;
+        $errorItem = new ErrorItem();
+        $errorItem->Message = $nativeError->getMessage();
+        $errorItem->ErrorTypeCode = $nativeError->getCode();
+        $errorItem->StackTrace[] = new TraceFrame(
+            $nativeError->getFile(),
+            $nativeError->getLine(),
+            null // method is not defined in native error
+        );
+        $error->Error = $errorItem;
+        return $error;
     }
 
     private function getStructuredData()
     {
         return sprintf(self::TEMPLATE_SD_DATA,
             $this->getLoggerName(), $this->getLoggerVersion());
+    }
+
+    protected function encodeJSON($data)
+    {
+        return json_encode($data, JSON_PRETTY_PRINT);
     }
 
 }

@@ -8,15 +8,9 @@ use Stackify\Log\MessageBuilder\AbstractBuilder;
 class MessageBuilder extends AbstractBuilder
 {
 
-    /**
-     * @var \DateTimeZone
-     */
-    protected $timezone;
-
-    public function __construct()
+    protected function wrapLogEntry($logEvent)
     {
-        parent::__construct();
-        $this->timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
+        return new LogEntry($logEvent);
     }
 
     protected function getLoggerName()
@@ -27,27 +21,6 @@ class MessageBuilder extends AbstractBuilder
     protected function getLoggerVersion()
     {
         return '1.0';
-    }
-
-    /**
-     * @return \Stackify\Log\Entities\Api\LogMsg
-     */
-    protected function createLogMsg($logEvent)
-    {
-        $datetime = new \DateTime();
-        $datetime->setTimestamp($logEvent->getTimeStamp())->setTimezone($this->timezone);
-        $logMsg = new LogMsg(
-            (string) $logEvent->getLevel(),
-            $logEvent->getMessage(),
-            $datetime
-        );
-        $throwable = $logEvent->getThrowableInformation();
-        if (null !== $throwable) {
-            $exception = $throwable->getThrowable();
-            $error = $this->createErrorFromException($datetime, $exception);
-            $logMsg->setError($error);
-        }
-        return $logMsg;
     }
 
 }
