@@ -22,7 +22,7 @@ class Layout extends \LoggerLayout
     }
 
     public function format(\LoggerLoggingEvent $event) {
-        return $this->builder->getSyslogMessage($event);
+        return $this->builder->getFormattedMessage($event);
     }
 
 }

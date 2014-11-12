@@ -7,5 +7,5 @@ interface BuilderInterface
     /**
      * @return string
      */
-    public function getSyslogMessage($logEvent);
+    public function getFormattedMessage($logEvent);
 }

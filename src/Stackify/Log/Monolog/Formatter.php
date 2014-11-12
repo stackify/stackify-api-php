@@ -21,12 +21,12 @@ class Formatter implements FormatterInterface
 
     public function format(array $record)
     {
-        return $this->builder->getSyslogMessage($record);
+        return $this->builder->getFormattedMessage($record);
     }
 
     public function formatBatch(array $records)
     {
-        throw new \BadMethodCallException('Multiple messages processing is not supported by syslog');
+        throw new \BadMethodCallException('Multiple messages processing is not supported');
     }
 
 }

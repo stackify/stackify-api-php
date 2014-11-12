@@ -4,7 +4,7 @@ namespace Stackify\Log\Log4php;
 
 use Stackify\Log\Entities\LogEntryInterface;
 
-class LogEntry implements LogEntryInterface
+final class LogEntry implements LogEntryInterface
 {
 
     /**

@@ -4,7 +4,7 @@ namespace Stackify\Log\Monolog;
 
 use Stackify\Log\MessageBuilder\AbstractBuilder;
 
-class MessageBuilder extends AbstractBuilder
+final class MessageBuilder extends AbstractBuilder
 {
 
     protected function wrapLogEntry($logEvent)

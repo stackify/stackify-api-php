@@ -4,7 +4,7 @@ namespace Stackify\Log\Standalone;
 
 use Stackify\Log\Entities\LogEntryInterface;
 
-class LogEntry implements LogEntryInterface
+final class LogEntry implements LogEntryInterface
 {
 
     private $record;

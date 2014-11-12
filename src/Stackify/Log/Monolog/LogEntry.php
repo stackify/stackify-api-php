@@ -5,7 +5,7 @@ namespace Stackify\Log\Monolog;
 use Stackify\Log\Entities\LogEntryInterface;
 use Stackify\Log\Entities\NativeError;
 
-class LogEntry implements LogEntryInterface
+final class LogEntry implements LogEntryInterface
 {
 
     private $record;

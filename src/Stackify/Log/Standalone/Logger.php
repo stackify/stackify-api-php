@@ -33,7 +33,7 @@ class Logger extends AbstractLogger
             'level' => $level,
             'datetime' => new \DateTime('now', $this->timezone),
         );
-        $logEvent['formatted'] = $this->builder->getSyslogMessage($logEvent);
+        $logEvent['formatted'] = $this->builder->getFormattedMessage($logEvent);
         $this->write($logEvent);
     }
 

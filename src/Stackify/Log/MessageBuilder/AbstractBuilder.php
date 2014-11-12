@@ -12,13 +12,6 @@ use Stackify\Exceptions\InitializationException;
 abstract class AbstractBuilder implements BuilderInterface
 {
 
-    /**
-     * Structured data is a part of RFC5424
-     * Placeholders mean logger name + logger version
-     * @link https://tools.ietf.org/html/rfc5424#page-15
-     */
-    const TEMPLATE_SD_DATA = '[STACKIFY_LOG][SENDER_INFO LOGGER_NAME="%s v.%s"]';
-
     public function __construct()
     {
         if (!function_exists('json_encode')) {
@@ -27,11 +20,11 @@ abstract class AbstractBuilder implements BuilderInterface
         // @TODO for all children gather stacktrace even if exception is not available
     }
 
-    public function getSyslogMessage($logEvent)
+    public function getFormattedMessage($logEvent)
     {
-        // @TODO rename and remove syslog-specific logic
+        // @TODO add sender info
         $logMsg = $this->createLogMsg($logEvent);
-        return $this->getStructuredData() . ' ' . $this->encodeJSON($logMsg);
+        return $this->encodeJSON($logMsg). PHP_EOL;
     }
 
     /**
@@ -134,12 +127,6 @@ abstract class AbstractBuilder implements BuilderInterface
         );
         $error->Error = $errorItem;
         return $error;
-    }
-
-    private function getStructuredData()
-    {
-        return sprintf(self::TEMPLATE_SD_DATA,
-            $this->getLoggerName(), $this->getLoggerVersion());
     }
 
     protected function encodeJSON($data)
