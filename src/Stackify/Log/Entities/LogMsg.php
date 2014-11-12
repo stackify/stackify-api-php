@@ -2,6 +2,8 @@
 
 namespace Stackify\Log\Entities;
 
+use Stackify\Log\Entities\StackifyError;
+
 class LogMsg
 {
     /**
@@ -54,6 +56,17 @@ class LogMsg
         $this->Level = $level;
         $this->Msg = $message;
         $this->EpochMs = $datetime->getTimestamp() * 1000;
+    }
+
+    public function setError(StackifyError $error)
+    {
+        $this->Ex = $error;
+        if (isset($error->Error)) {
+            $this->SrcMethod = $error->Error->SourceMethod;
+            if (isset($error->Error->StackTrace[0])) {
+                $this->SrcLine = $error->Error->StackTrace[0]->LineNum;
+            }
+        }
     }
 
 }

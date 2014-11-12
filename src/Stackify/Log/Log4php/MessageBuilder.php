@@ -45,9 +45,7 @@ class MessageBuilder extends AbstractBuilder
         if (null !== $throwable) {
             $exception = $throwable->getThrowable();
             $error = $this->createErrorFromException($datetime, $exception);
-            $logMsg->Ex = $error;
-            $logMsg->SrcLine = $exception->getLine();
-            $logMsg->SrcMethod = $error->Error->SourceMethod;
+            $logMsg->setError($error);
         }
         return $logMsg;
     }

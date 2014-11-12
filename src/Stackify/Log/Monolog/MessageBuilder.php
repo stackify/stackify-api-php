@@ -35,14 +35,10 @@ class MessageBuilder extends AbstractBuilder
         $exception = $this->popException($context);
         if (null !== $exception) {
             $error = $this->createErrorFromException($logEvent['datetime'], $exception);
-            $logMsg->Ex = $error;
-            $logMsg->SrcLine = $exception->getLine();
-            $logMsg->SrcMethod = $error->Error->SourceMethod;
+            $logMsg->setError($error);
         } elseif ($this->isPHPError($context)) {
             $error = $this->createError($logEvent);
-            $logMsg->Ex = $error;
-            $logMsg->SrcLine = $context['line'];
-            $logMsg->SrcMethod = $error->Error->SourceMethod;
+            $logMsg->setError($error);
         }
         if (!empty($context)) {
             $logMsg->data = $this->encodeJSON($context);
