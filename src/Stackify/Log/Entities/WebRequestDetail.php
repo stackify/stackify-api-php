@@ -82,7 +82,7 @@ class WebRequestDetail
      */
     public $MVCArea;
 
-    public function __construct() {
+    private function __construct() {
         $this->UserIPAddress = $this->getIpAddress();
         $this->HttpMethod = filter_input(INPUT_SERVER, 'REQUEST_METHOD');
         $this->RequestProtocol = $this->getProtocol();
@@ -90,11 +90,25 @@ class WebRequestDetail
         $this->RequestUrlRoot = filter_input(INPUT_SERVER, 'SERVER_NAME');
         $this->ReferralUrl = filter_input(INPUT_SERVER, 'HTTP_REFERER');
         $this->Headers = $this->getHeaders();
-        $this->Cookies = isset($_COOKIE) ? $this->getRequestMap($_COOKIE, true) : array();
-        $this->QueryString = isset($_GET) ? $this->getRequestMap($_GET) : array();
-        $this->PostData = isset($_POST) ? $this->getRequestMap($_POST) : array();
-        $this->SessionData = isset($_SESSION) ? $this->getRequestMap($_SESSION, true) : array();
+        $this->Cookies = isset($_COOKIE) ? self::getRequestMap($_COOKIE, true) : array();
+        $this->QueryString = isset($_GET) ? self::getRequestMap($_GET) : array();
+        $this->PostData = isset($_POST) ? self::getRequestMap($_POST) : array();
+        $this->SessionData = isset($_SESSION) ? self::getRequestMap($_SESSION, true) : array();
         $this->PostDataRaw = file_get_contents('php://input');
+    }
+
+    /**
+     * Singleton attributes
+     */
+    private function __clone() {}
+
+    public static function getInstance()
+    {
+        static $instance;
+        if (null === $instance) {
+            $instance = new self();
+        }
+        return $instance;
     }
 
     /**
@@ -103,14 +117,14 @@ class WebRequestDetail
      * @param boolean $maskValues  Hide request values
      * @return array
      */
-    public function getRequestMap($data, $maskValues = false)
+    public static function getRequestMap($data, $maskValues = false)
     {
         $result = array();
         if (is_array($data)) {
             foreach ($data as $key => $value) {
                 $result[$key] = $maskValues
                     ? self::HIDDEN_VALUE
-                    : $this->stringify($value);
+                    : self::stringify($value);
             }
         }
         return $result;
@@ -182,7 +196,7 @@ class WebRequestDetail
      * @param mixed $value
      * @return string
      */
-    private function stringify($value)
+    private static function stringify($value)
     {
         $string = '';
         if (is_scalar($value)) {

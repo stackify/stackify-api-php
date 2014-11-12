@@ -42,13 +42,13 @@ class StackifyError
 
     public function __construct()
     {
-        $this->WebRequestDetail = new WebRequestDetail();
+        $this->WebRequestDetail = WebRequestDetail::getInstance();
         $this->ServerVariables = $this->getEnvironmentVariables();
     }
 
     private function getEnvironmentVariables()
     {
-        return isset($_ENV) ? $this->WebRequestDetail->getRequestMap($_ENV) : array();
+        return isset($_SERVER) ? WebRequestDetail::getRequestMap($_SERVER) : array();
     }
 
 }
