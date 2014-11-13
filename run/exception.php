@@ -16,5 +16,18 @@ function trycatch($logger) {
     }
 }
 
+function nestedExceptions($logger) {
+    $ex = null;
+    for ($i = 1; $i <= 10; $i++) {
+        try {
+            throw new \Exception("Number: $i", 42, $ex);
+        } catch (\Exception $ex) {
+        }
+    }
+    $logger->error('ex', [$ex]);
+}
+
+//nestedExceptions($logger); exit;
+
 trycatch($logger);
 

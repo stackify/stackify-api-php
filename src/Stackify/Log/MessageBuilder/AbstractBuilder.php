@@ -98,7 +98,6 @@ abstract class AbstractBuilder implements BuilderInterface
         }
         $previous = $errorWrapper->getInnerError();
         if ($previous) {
-            // @TODO limit recurrence?
             $errorItem->InnerError = $this->getErrorItem($previous);
         }
         return $errorItem;
