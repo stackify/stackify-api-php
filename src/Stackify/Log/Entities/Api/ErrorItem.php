@@ -4,10 +4,18 @@ namespace Stackify\Log\Entities\Api;
 
 class ErrorItem
 {
+
+    const TYPE_STRING_EXCEPTION = 'StringException';
+
     /**
      * @var string
      */
     public $Message;
+
+    /**
+     * @var string
+     */
+    public $ErrorType;
 
     /**
      * @var string

@@ -36,4 +36,17 @@ interface LogEntryInterface
      */
     public function getNativeError();
 
+    /**
+     * Check if log entry has level "error" or above 
+     * (e.g. "critical" or "alert")
+     * @return boolean
+     */
+    public function isErrorLevel();
+
+    /**
+     * Returns backtrace excluding internal logger methods
+     * @return array
+     */
+    public function getBacktrace();
+
 }

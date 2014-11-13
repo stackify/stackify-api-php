@@ -7,7 +7,9 @@ use Stackify\Log\Entities\Api\ErrorItem;
 use Stackify\Log\Entities\Api\TraceFrame;
 use Stackify\Log\Entities\Api\StackifyError;
 use Stackify\Log\Entities\NativeError;
+use Stackify\Log\Entities\LogEntryInterface;
 use Stackify\Exceptions\InitializationException;
+
 
 abstract class AbstractBuilder implements BuilderInterface
 {
@@ -41,10 +43,14 @@ abstract class AbstractBuilder implements BuilderInterface
         );
         $exception = $logEntry->getException();
         if ($exception = $logEntry->getException()) {
+            // @TODO pass object instead of values
             $error = $this->createErrorFromException($milliseconds, $exception);
             $logMsg->setError($error);
         } elseif ($nativeError = $logEntry->getNativeError()) {
             $error = $this->createErrorFromNativeError($milliseconds, $nativeError);
+            $logMsg->setError($error);
+        } elseif ($logEntry->isErrorLevel()) {
+            $error = $this->createErrorFromBacktrace($logEntry);
             $logMsg->setError($error);
         }
         if (null !== $logEntry->getContext()) {
@@ -76,8 +82,10 @@ abstract class AbstractBuilder implements BuilderInterface
      */
     protected function getErrorItem(\Exception $exception)
     {
+        // @TODO remove this method, merge with callee
         $errorItem = new ErrorItem();
         $errorItem->Message = $exception->getMessage();
+        // @TODO add error type
         $errorItem->ErrorTypeCode = $exception->getCode();
         foreach ($exception->getTrace() as $index => $trace) {
             $errorItem->StackTrace[] = new TraceFrame(
@@ -118,6 +126,7 @@ abstract class AbstractBuilder implements BuilderInterface
         $error = new StackifyError();
         $error->OccurredEpochMillis = $milliseconds;
         $errorItem = new ErrorItem();
+        // @TODO add error type
         $errorItem->Message = $nativeError->getMessage();
         $errorItem->ErrorTypeCode = $nativeError->getCode();
         $errorItem->StackTrace[] = new TraceFrame(
@@ -125,6 +134,33 @@ abstract class AbstractBuilder implements BuilderInterface
             $nativeError->getLine(),
             null // method is not defined in native error
         );
+        $error->Error = $errorItem;
+        return $error;
+    }
+
+    /**
+     * Create StackifyError object using just current backtrace
+     * @return \Stackify\Log\Entities\Api\StackifyError
+     */
+    private function createErrorFromBacktrace(LogEntryInterface $logEntry)
+    {
+        $error = new StackifyError();
+        $error->OccurredEpochMillis = $logEntry->getMilliseconds();
+        $errorItem = new ErrorItem();
+        // @TODO check other missing fields
+        $errorItem->ErrorType = ErrorItem::TYPE_STRING_EXCEPTION;
+        $errorItem->Message = $logEntry->getMessage();
+        foreach ($logEntry->getBacktrace() as $index => $trace) {
+            $errorItem->StackTrace[] = new TraceFrame(
+                $trace['file'],
+                $trace['line'],
+                $trace['function']
+            );
+            if (0 === $index) {
+                // first record in stack trace has method
+                $errorItem->SourceMethod = $trace['function'];
+            }
+        }
         $error->Error = $errorItem;
         return $error;
     }

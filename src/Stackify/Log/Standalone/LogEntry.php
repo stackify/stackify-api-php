@@ -4,6 +4,8 @@ namespace Stackify\Log\Standalone;
 
 use Stackify\Log\Entities\LogEntryInterface;
 
+use Psr\Log\LogLevel as PsrLogLevel;
+
 final class LogEntry implements LogEntryInterface
 {
 
@@ -11,7 +13,8 @@ final class LogEntry implements LogEntryInterface
     private $exception;
     private $context;
 
-    public function __construct(array $record) {
+    public function __construct(array $record)
+    {
         $this->record = $record;
         $context = $record['context'];
         // find exception and remove from context
@@ -27,29 +30,50 @@ final class LogEntry implements LogEntryInterface
         }
     }
 
-    public function getContext() {
+    public function getContext()
+    {
         return $this->context;
     }
 
-    public function getException() {
+    public function getException()
+    {
         return $this->exception;
     }
 
-    public function getLevel() {
+    public function getLevel()
+    {
         return $this->record['level'];
     }
 
-    public function getMessage() {
+    public function getMessage()
+    {
         return $this->record['message'];
     }
 
-    public function getMilliseconds() {
+    public function getMilliseconds()
+    {
         return $this->record['datetime']->getTimestamp() * 1000;
     }
 
-    public function getNativeError() {
+    public function getNativeError()
+    {
         // standalone logger does not support native errors
         return null;
+    }
+
+    public function isErrorLevel()
+    {
+        return in_array($this->record['level'], array(
+            PsrLogLevel::ERROR,
+            PsrLogLevel::CRITICAL,
+            PsrLogLevel::ALERT,
+            PsrLogLevel::EMERGENCY,
+        ));
+    }
+
+    public function getBacktrace()
+    {
+        return array_slice(debug_backtrace(), 5);
     }
 
 }
