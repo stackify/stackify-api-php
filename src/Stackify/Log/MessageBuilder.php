@@ -21,6 +21,7 @@ class MessageBuilder
         if (!function_exists('json_encode')) {
             throw new InitializationException('JSON extension is required for Stackify logger');
         }
+        // @TODO validate $appName ?
         $this->loggerName = $loggerName;
         $this->appName = $appName;
     }

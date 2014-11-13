@@ -3,6 +3,8 @@
 namespace Stackify\Log\Standalone;
 
 use Stackify\Log\MessageBuilder;
+use Stackify\Log\Transport\TransportInterface;
+use Stackify\Log\Transport\AgentTransport;
 
 use Psr\Log\AbstractLogger;
 
@@ -15,14 +17,18 @@ class Logger extends AbstractLogger
     protected $timezone;
 
     /**
-     * @var \Stackify\Log\MessageBuilder
+     * @var \Stackify\Log\Transport\TransportInterface
      */
-    private $builder;
+    private $transport;
 
-    public function __construct($appName)
+    public function __construct($appName, TransportInterface $transport = null)
     {
-        $this->builder = new MessageBuilder('Stackify PHP Logger v.1.0', $appName);
         $this->timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
+        $messageBuilder = new MessageBuilder('Stackify PHP Logger v.1.0', $appName);
+        if (null === $transport) {
+            $transport = new AgentTransport($messageBuilder);
+        }
+        $this->transport = $transport;
     }
 
     public function log($level, $message, array $context = array())
@@ -33,16 +39,7 @@ class Logger extends AbstractLogger
             'level' => $level,
             'datetime' => new \DateTime('now', $this->timezone),
         );
-        $logEntry = new LogEntry($logEvent);
-        // @TODO refactor here
-        $logEvent['formatted'] = $this->builder->getFormattedMessage($logEntry);
-        $this->write($logEvent);
-    }
-
-    protected function write($logEvent)
-    {
-        // @TODO this is stub implementation
-        echo $logEvent['formatted'];
+        $this->transport->addEntry(new LogEntry($logEvent));
     }
 
 }

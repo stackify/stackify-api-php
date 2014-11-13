@@ -36,6 +36,7 @@ class EnvironmentDetail
         $this->ConfiguredAppName = $appName;
         $this->DeviceName = gethostname();
         $this->AppLocation = getcwd();
+        // @TODO environment?
     }
 
     /**
