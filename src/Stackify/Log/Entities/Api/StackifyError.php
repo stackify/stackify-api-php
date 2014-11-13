@@ -6,7 +6,6 @@ class StackifyError
 {
     /**
      * @var null Environment details are not known by PHP loggers
-     * @TODO is it really unknown?
      */
     public $EnvironmentDetail;
 
@@ -40,8 +39,9 @@ class StackifyError
      */
     public $UserName;
 
-    public function __construct()
+    public function __construct($appName)
     {
+        $this->EnvironmentDetail = EnvironmentDetail::getInstance($appName);
         $this->WebRequestDetail = WebRequestDetail::getInstance();
         $this->ServerVariables = $this->getEnvironmentVariables();
     }

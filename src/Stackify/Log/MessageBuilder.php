@@ -51,7 +51,7 @@ class MessageBuilder
             $errorWrapper = new ErrorWrapper($logEntry);
         }
         if (null !== $errorWrapper) {
-            $error = new StackifyError();
+            $error = new StackifyError($this->appName);
             $error->OccurredEpochMillis = $logEntry->getMilliseconds();
             $error->Error = $this->getErrorItem($errorWrapper);
             $logMsg->setError($error);
