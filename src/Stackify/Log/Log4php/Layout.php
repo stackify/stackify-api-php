@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @TODO log4php does not support namespaces
- * Should we also use old-fashioned way without namespaces?
- */
 namespace Stackify\Log\Log4php;
 
 use Stackify\Log\Log4php\MessageBuilder;
