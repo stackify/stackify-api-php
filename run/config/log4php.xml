@@ -1,8 +1,6 @@
 <configuration xmlns="http://logging.apache.org/log4php/">
-    <appender name="stackifyAppender" class="LoggerAppenderEcho">
-        <layout class="\Stackify\Log\Log4php\Layout">
-            <param name="appName" value="test.com" />
-        </layout>
+    <appender name="stackifyAppender" class="\Stackify\Log\Log4php\Appender">
+        <param name="appName" value="test.com" />
     </appender>
     <root>
         <level value="TRACE" />

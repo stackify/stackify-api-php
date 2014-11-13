@@ -4,7 +4,7 @@ namespace Stackify\Log\Log4php;
 
 use Stackify\Log\MessageBuilder;
 
-class Layout extends \LoggerLayout
+class Appender extends \LoggerAppender
 {
 
     /**
@@ -12,22 +12,24 @@ class Layout extends \LoggerLayout
      */
     private $builder;
 
-    public function __construct($appName = null)
+    public function __construct($name = '', $appName = null)
     {
+        parent::__construct($name);
         $this->setAppName($appName);
     }
 
     public function setAppName($appName)
     {
+        // @TODO what if appName was not passed?
         if ($appName) {
             $this->builder = new MessageBuilder('Stackify log4php v.1.0', $appName);
         }
     }
 
-    public function format(\LoggerLoggingEvent $event)
+    protected function append(\LoggerLoggingEvent $event)
     {
         $logEntry = new LogEntry($event);
-        return $this->builder->getFormattedMessage($logEntry);
+        echo $this->builder->getFormattedMessage($logEntry);
     }
 
 }
