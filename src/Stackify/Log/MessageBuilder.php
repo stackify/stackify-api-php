@@ -14,15 +14,15 @@ class MessageBuilder
 {
 
     protected $loggerName;
-    protected $loggerVersion;
+    protected $appName;
 
-    public function __construct($loggerName, $loggerVersion)
+    public function __construct($loggerName, $appName)
     {
         if (!function_exists('json_encode')) {
             throw new InitializationException('JSON extension is required for Stackify logger');
         }
         $this->loggerName = $loggerName;
-        $this->loggerVersion = $loggerVersion;
+        $this->appName = $appName;
     }
 
     public function getFormattedMessage(LogEntryInterface $logEntry)

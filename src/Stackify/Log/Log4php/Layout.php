@@ -12,9 +12,16 @@ class Layout extends \LoggerLayout
      */
     private $builder;
 
-    public function __construct()
+    public function __construct($appName = null)
     {
-        $this->builder = new MessageBuilder('Stackify log4php', '1.0');
+        $this->setAppName($appName);
+    }
+
+    public function setAppName($appName)
+    {
+        if ($appName) {
+            $this->builder = new MessageBuilder('Stackify log4php v.1.0', $appName);
+        }
     }
 
     public function format(\LoggerLoggingEvent $event)

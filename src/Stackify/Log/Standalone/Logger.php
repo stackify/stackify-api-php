@@ -19,9 +19,9 @@ class Logger extends AbstractLogger
      */
     private $builder;
 
-    public function __construct()
+    public function __construct($appName)
     {
-        $this->builder = new MessageBuilder('Stackify PHP Logger', '1.0');
+        $this->builder = new MessageBuilder('Stackify PHP Logger v.1.0', $appName);
         $this->timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
     }
 

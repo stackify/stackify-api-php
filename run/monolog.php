@@ -2,8 +2,7 @@
 
 require '../vendor/autoload.php';
 
-$handler = new Monolog\Handler\StreamHandler('php://output');
-$handler->setFormatter(new Stackify\Log\Monolog\Formatter());
+$handler = new Stackify\Log\Monolog\Handler('test.com');
 
 $logger = new Monolog\Logger('test_channel');
 $logger->pushHandler($handler);
