@@ -5,8 +5,6 @@ namespace Stackify\Log\Entities\Api;
 class ErrorItem
 {
 
-    const TYPE_STRING_EXCEPTION = 'StringException';
-
     /**
      * @var string
      */
@@ -41,4 +39,5 @@ class ErrorItem
      * @var \Stackify\Log\Entities\Api\ErrorItem
      */
     public $InnerError;
+
 }

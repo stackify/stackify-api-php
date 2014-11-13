@@ -6,8 +6,7 @@ use Stackify\Log\Entities\Api\LogMsg;
 use Stackify\Log\Entities\Api\ErrorItem;
 use Stackify\Log\Entities\Api\TraceFrame;
 use Stackify\Log\Entities\Api\StackifyError;
-use Stackify\Log\Entities\NativeError;
-use Stackify\Log\Entities\LogEntryInterface;
+use Stackify\Log\Entities\ErrorWrapper;
 use Stackify\Exceptions\InitializationException;
 
 
@@ -34,22 +33,23 @@ abstract class AbstractBuilder implements BuilderInterface
     protected function createLogMsg($logEvent)
     {
         $logEntry = $this->wrapLogEntry($logEvent);
-        $milliseconds = $logEntry->getMilliseconds();
         $logMsg = new LogMsg(
             $logEntry->getLevel(),
             $logEntry->getMessage(),
-            $milliseconds
+            $logEntry->getMilliseconds()
         );
-        $exception = $logEntry->getException();
+        $errorWrapper = null;
         if ($exception = $logEntry->getException()) {
-            // @TODO pass object instead of values
-            $error = $this->createErrorFromException($milliseconds, $exception);
-            $logMsg->setError($error);
+            $errorWrapper = new ErrorWrapper($exception);
         } elseif ($nativeError = $logEntry->getNativeError()) {
-            $error = $this->createErrorFromNativeError($milliseconds, $nativeError);
-            $logMsg->setError($error);
+            $errorWrapper = new ErrorWrapper($nativeError);
         } elseif ($logEntry->isErrorLevel()) {
-            $error = $this->createErrorFromBacktrace($logEntry);
+            $errorWrapper = new ErrorWrapper($logEntry);
+        }
+        if (null !== $errorWrapper) {
+            $error = new StackifyError();
+            $error->OccurredEpochMillis = $logEntry->getMilliseconds();
+            $error->Error = $this->getErrorItem($errorWrapper);
             $logMsg->setError($error);
         }
         if (null !== $logEntry->getContext()) {
@@ -79,14 +79,13 @@ abstract class AbstractBuilder implements BuilderInterface
     /**
      * @return \Stackify\Log\Entities\Api\ErrorItem
      */
-    protected function getErrorItem(\Exception $exception)
+    protected function getErrorItem(ErrorWrapper $errorWrapper)
     {
-        // @TODO remove this method, merge with callee
         $errorItem = new ErrorItem();
-        $errorItem->Message = $exception->getMessage();
-        $errorItem->ErrorType = get_class($exception);
-        $errorItem->ErrorTypeCode = $exception->getCode();
-        foreach ($exception->getTrace() as $index => $trace) {
+        $errorItem->Message = $errorWrapper->getMessage();
+        $errorItem->ErrorType = $errorWrapper->getType();
+        $errorItem->ErrorTypeCode = $errorWrapper->getCode();
+        foreach ($errorWrapper->getTrace() as $index => $trace) {
             $errorItem->StackTrace[] = new TraceFrame(
                 $trace['file'],
                 $trace['line'],
@@ -97,70 +96,12 @@ abstract class AbstractBuilder implements BuilderInterface
                 $errorItem->SourceMethod = $trace['function'];
             }
         }
-        $previous = $exception->getPrevious();
+        $previous = $errorWrapper->getInnerError();
         if ($previous) {
             // @TODO limit recurrence?
             $errorItem->InnerError = $this->getErrorItem($previous);
         }
         return $errorItem;
-    }
-
-    /**
-     * @return \Stackify\Log\Entities\Api\StackifyError
-     */
-    protected function createErrorFromException($milliseconds, \Exception $exception)
-    {
-        $error = new StackifyError();
-        $error->OccurredEpochMillis = $milliseconds;
-        $error->Error = $this->getErrorItem($exception);
-        return $error;
-    }
-
-    /**
-     * Create StackifyError object from native PHP error (E_NOTICE, E_WARNING, etc.)
-     * @return \Stackify\Log\Entities\Api\StackifyError
-     */
-    private function createErrorFromNativeError($milliseconds, NativeError $nativeError)
-    {
-        $error = new StackifyError();
-        $error->OccurredEpochMillis = $milliseconds;
-        $errorItem = new ErrorItem();
-        $errorItem->ErrorType = $nativeError->getType();
-        $errorItem->Message = $nativeError->getMessage();
-        $errorItem->ErrorTypeCode = $nativeError->getCode();
-        $errorItem->StackTrace[] = new TraceFrame(
-            $nativeError->getFile(),
-            $nativeError->getLine(),
-            null // method is not defined in native error
-        );
-        $error->Error = $errorItem;
-        return $error;
-    }
-
-    /**
-     * Create StackifyError object using just current backtrace
-     * @return \Stackify\Log\Entities\Api\StackifyError
-     */
-    private function createErrorFromBacktrace(LogEntryInterface $logEntry)
-    {
-        $error = new StackifyError();
-        $error->OccurredEpochMillis = $logEntry->getMilliseconds();
-        $errorItem = new ErrorItem();
-        $errorItem->ErrorType = ErrorItem::TYPE_STRING_EXCEPTION;
-        $errorItem->Message = $logEntry->getMessage();
-        foreach ($logEntry->getBacktrace() as $index => $trace) {
-            $errorItem->StackTrace[] = new TraceFrame(
-                $trace['file'],
-                $trace['line'],
-                $trace['function']
-            );
-            if (0 === $index) {
-                // first record in stack trace has method
-                $errorItem->SourceMethod = $trace['function'];
-            }
-        }
-        $error->Error = $errorItem;
-        return $error;
     }
 
     protected function encodeJSON($data)
