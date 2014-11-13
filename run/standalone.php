@@ -2,7 +2,7 @@
 
 require '../vendor/autoload.php';
 
-$logger = new Stackify\Log\Standalone\Logger('test.com');
+$logger = new Stackify\Log\Standalone\Logger('test.com', 'myPC');
 
 session_start();
 $_SESSION['user_id'] = 42;

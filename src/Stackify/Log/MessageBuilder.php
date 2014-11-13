@@ -15,15 +15,17 @@ class MessageBuilder
 
     protected $loggerName;
     protected $appName;
+    protected $environmentName;
 
-    public function __construct($loggerName, $appName)
+    public function __construct($loggerName, $appName, $environmentName)
     {
         if (!function_exists('json_encode')) {
             throw new InitializationException('JSON extension is required for Stackify logger');
         }
-        // @TODO validate $appName ?
+        // @TODO validate $appName and $environmentName ?
         $this->loggerName = $loggerName;
         $this->appName = $appName;
+        $this->environmentName = $environmentName;
     }
 
     public function getFormattedMessage(LogEntryInterface $logEntry)
@@ -52,7 +54,7 @@ class MessageBuilder
             $errorWrapper = new ErrorWrapper($logEntry);
         }
         if (null !== $errorWrapper) {
-            $error = new StackifyError($this->appName);
+            $error = new StackifyError($this->appName, $this->environmentName);
             $error->OccurredEpochMillis = $logEntry->getMilliseconds();
             $error->Error = $this->getErrorItem($errorWrapper);
             $logMsg->setError($error);

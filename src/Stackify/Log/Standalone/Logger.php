@@ -21,10 +21,10 @@ class Logger extends AbstractLogger
      */
     private $transport;
 
-    public function __construct($appName, TransportInterface $transport = null)
+    public function __construct($appName, $environmentName, TransportInterface $transport = null)
     {
         $this->timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
-        $messageBuilder = new MessageBuilder('Stackify PHP Logger v.1.0', $appName);
+        $messageBuilder = new MessageBuilder('Stackify PHP Logger v.1.0', $appName, $environmentName);
         if (null === $transport) {
             $transport = new AgentTransport($messageBuilder);
         }

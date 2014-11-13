@@ -2,7 +2,7 @@
 
 require '../vendor/autoload.php';
 
-$handler = new Stackify\Log\Monolog\Handler('test.com');
+$handler = new Stackify\Log\Monolog\Handler('test.com', 'myPC');
 
 $logger = new Monolog\Logger('test_channel');
 $logger->pushHandler($handler);

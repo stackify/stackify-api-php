@@ -30,13 +30,13 @@ class EnvironmentDetail
      */
     public $ConfiguredEnvironmentName;
 
-    private function __construct($appName)
+    private function __construct($appName, $environmentName)
     {
         $this->AppName = $appName;
         $this->ConfiguredAppName = $appName;
         $this->DeviceName = gethostname();
         $this->AppLocation = getcwd();
-        // @TODO environment?
+        $this->ConfiguredEnvironmentName = $environmentName;
     }
 
     /**
@@ -44,11 +44,11 @@ class EnvironmentDetail
      */
     private function __clone() {}
 
-    public static function getInstance($appName)
+    public static function getInstance($appName, $environmentName)
     {
         static $instance;
         if (null === $instance) {
-            $instance = new self($appName);
+            $instance = new self($appName, $environmentName);
         }
         return $instance;
     }

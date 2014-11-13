@@ -15,10 +15,10 @@ class Handler extends AbstractHandler
      */
     private $builder;
 
-    public function __construct($appName, $level = Logger::DEBUG, $bubble = true)
+    public function __construct($appName, $environmentName, $level = Logger::DEBUG, $bubble = true)
     {
         parent::__construct($level, $bubble);
-        $this->builder = new MessageBuilder('Stackify Monolog v.1.0', $appName);
+        $this->builder = new MessageBuilder('Stackify Monolog v.1.0', $appName, $environmentName);
     }
 
     public function handle(array $record)
