@@ -2,7 +2,10 @@
 
 namespace Stackify\Log\Entities;
 
-// @TODO add description
+/**
+ * Entity representing native PHP errors (not OOP exceptions)
+ * E.g. E_NOTICE or E_WARNING types with error details
+ */
 class NativeError
 {
 
@@ -22,6 +25,22 @@ class NativeError
     public function getCode()
     {
         return $this->code;
+    }
+
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    public function getTrace()
+    {
+        $traceItem = array(
+            'file' => $this->file,
+            'line' => $this->line,
+            // "method" is not defined in native error
+            'function' => null,
+        );
+        return array($traceItem);
     }
 
     public function getType()
@@ -59,21 +78,6 @@ class NativeError
                 return 'E_USER_DEPRECATED';
         }
         return 'Unknown PHP error';
-    }
-
-    public function getMessage()
-    {
-        return $this->message;
-    }
-
-    public function getFile()
-    {
-        return $this->file;
-    }
-
-    public function getLine()
-    {
-        return $this->line;
     }
 
     public static function getPHPErrorTypes()

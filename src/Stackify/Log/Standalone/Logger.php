@@ -21,7 +21,6 @@ class Logger extends AbstractLogger
 
     public function __construct()
     {
-        // @TODO support minimal level
         $this->builder = new MessageBuilder();
         $this->timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
     }

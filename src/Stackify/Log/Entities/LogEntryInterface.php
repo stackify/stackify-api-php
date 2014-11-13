@@ -31,7 +31,7 @@ interface LogEntryInterface
     public function getException();
 
     /**
-     * @TODO add description
+     * Get native PHP error (e.g. E_NOTICE or E_WARNING)
      * @return \Stackify\Log\Entities\NativeError
      */
     public function getNativeError();

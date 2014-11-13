@@ -33,13 +33,7 @@ class ErrorWrapper
             $this->message = $object->getMessage();
             $this->type = $object->getType();
             $this->code = $object->getCode();
-            $traceItem = array(
-                'file' => $object->getFile(),
-                'line' => $object->getLine(),
-                // "method" is not defined in native error
-                'function' => null,
-            );
-            $this->trace = array($traceItem);
+            $this->trace = $object->getTrace();
             $this->innerError = null;
         } elseif ($object instanceof LogEntryInterface) {
             // this is a backtrace type
