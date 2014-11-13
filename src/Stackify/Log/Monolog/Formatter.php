@@ -2,7 +2,7 @@
 
 namespace Stackify\Log\Monolog;
 
-use Stackify\Log\Monolog\MessageBuilder;
+use Stackify\Log\MessageBuilder;
 
 use Monolog\Formatter\FormatterInterface;
 
@@ -10,18 +10,19 @@ class Formatter implements FormatterInterface
 {
 
     /**
-     * @var \Stackify\Log\MessageBuilder\BuilderInterface
+     * @var \Stackify\Log\MessageBuilder
      */
     private $builder;
 
     public function __construct()
     {
-        $this->builder = new MessageBuilder();
+        $this->builder = new MessageBuilder('Stackify Monolog', '1.0');
     }
 
     public function format(array $record)
     {
-        return $this->builder->getFormattedMessage($record);
+        $logEntry = new LogEntry($record);
+        return $this->builder->getFormattedMessage($logEntry);
     }
 
     public function formatBatch(array $records)

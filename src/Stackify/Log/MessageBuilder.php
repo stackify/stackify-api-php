@@ -1,38 +1,42 @@
 <?php
 
-namespace Stackify\Log\MessageBuilder;
+namespace Stackify\Log;
 
 use Stackify\Log\Entities\Api\LogMsg;
 use Stackify\Log\Entities\Api\ErrorItem;
 use Stackify\Log\Entities\Api\TraceFrame;
 use Stackify\Log\Entities\Api\StackifyError;
 use Stackify\Log\Entities\ErrorWrapper;
+use Stackify\Log\Entities\LogEntryInterface;
 use Stackify\Exceptions\InitializationException;
 
-
-abstract class AbstractBuilder implements BuilderInterface
+class MessageBuilder
 {
 
-    public function __construct()
+    protected $loggerName;
+    protected $loggerVersion;
+
+    public function __construct($loggerName, $loggerVersion)
     {
         if (!function_exists('json_encode')) {
             throw new InitializationException('JSON extension is required for Stackify logger');
         }
+        $this->loggerName = $loggerName;
+        $this->loggerVersion = $loggerVersion;
     }
 
-    public function getFormattedMessage($logEvent)
+    public function getFormattedMessage(LogEntryInterface $logEntry)
     {
         // @TODO add sender info
-        $logMsg = $this->createLogMsg($logEvent);
+        $logMsg = $this->createLogMsg($logEntry);
         return $this->encodeJSON($logMsg). PHP_EOL;
     }
 
     /**
      * @return \Stackify\Log\Entities\Api\LogMsg
      */
-    protected function createLogMsg($logEvent)
+    protected function createLogMsg(LogEntryInterface $logEntry)
     {
-        $logEntry = $this->wrapLogEntry($logEvent);
         $logMsg = new LogMsg(
             $logEntry->getLevel(),
             $logEntry->getMessage(),
@@ -57,24 +61,6 @@ abstract class AbstractBuilder implements BuilderInterface
         }
         return $logMsg;
     }
-
-    /**
-     * Wrap log event that comes from third-party logger to an object with common interface
-     * @return \Stackify\Log\Entities\LogEntryInterface
-     */
-    protected abstract function wrapLogEntry($logEvent);
-
-    /**
-     * Returns logger name (will be visible in OpsManager)
-     * @return string
-     */
-    protected abstract function getLoggerName();
-
-    /**
-     * Returns logger version (string) (will be visible in OpsManager)
-     * @return string
-     */
-    protected abstract function getLoggerVersion();
 
     /**
      * @return \Stackify\Log\Entities\Api\ErrorItem

@@ -2,7 +2,7 @@
 
 namespace Stackify\Log\Standalone;
 
-use Stackify\Log\Standalone\MessageBuilder;
+use Stackify\Log\MessageBuilder;
 
 use Psr\Log\AbstractLogger;
 
@@ -15,13 +15,13 @@ class Logger extends AbstractLogger
     protected $timezone;
 
     /**
-     * @var \Stackify\Log\MessageBuilder\BuilderInterface
+     * @var \Stackify\Log\MessageBuilder
      */
     private $builder;
 
     public function __construct()
     {
-        $this->builder = new MessageBuilder();
+        $this->builder = new MessageBuilder('Stackify PHP Logger', '1.0');
         $this->timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
     }
 
@@ -33,7 +33,9 @@ class Logger extends AbstractLogger
             'level' => $level,
             'datetime' => new \DateTime('now', $this->timezone),
         );
-        $logEvent['formatted'] = $this->builder->getFormattedMessage($logEvent);
+        $logEntry = new LogEntry($logEvent);
+        // @TODO refactor here
+        $logEvent['formatted'] = $this->builder->getFormattedMessage($logEntry);
         $this->write($logEvent);
     }
 
