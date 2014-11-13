@@ -85,6 +85,7 @@ final class LogEntry implements LogEntryInterface
 
     public function getBacktrace()
     {
+        // @TODO check if nesting level was changed
         return array_slice(debug_backtrace(), 7);
     }
 
