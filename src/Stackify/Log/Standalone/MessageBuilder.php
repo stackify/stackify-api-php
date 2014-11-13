@@ -7,7 +7,8 @@ use Stackify\Log\MessageBuilder\AbstractBuilder;
 final class MessageBuilder extends AbstractBuilder
 {
 
-    protected function wrapLogEntry($logEvent) {
+    protected function wrapLogEntry($logEvent)
+    {
         return new LogEntry($logEvent);
     }
 

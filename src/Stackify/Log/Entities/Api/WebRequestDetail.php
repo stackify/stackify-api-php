@@ -82,7 +82,8 @@ class WebRequestDetail
      */
     public $MVCArea;
 
-    private function __construct() {
+    private function __construct()
+    {
         $this->UserIPAddress = $this->getIpAddress();
         $this->HttpMethod = filter_input(INPUT_SERVER, 'REQUEST_METHOD');
         $this->RequestProtocol = $this->getProtocol();
@@ -130,7 +131,8 @@ class WebRequestDetail
         return $result;
     }
 
-    private function getIpAddress() {
+    private function getIpAddress()
+    {
         $keys = array(
             'HTTP_CLIENT_IP',
             'HTTP_X_FORWARDED_FOR',

@@ -26,7 +26,8 @@ class Logger extends AbstractLogger
         $this->timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
     }
 
-    public function log($level, $message, array $context = array()) {
+    public function log($level, $message, array $context = array())
+    {
         $logEvent = array(
             'message' => (string) $message,
             'context' => $context,

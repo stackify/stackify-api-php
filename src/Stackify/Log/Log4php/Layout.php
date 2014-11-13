@@ -21,7 +21,8 @@ class Layout extends \LoggerLayout
         $this->builder = new MessageBuilder();
     }
 
-    public function format(\LoggerLoggingEvent $event) {
+    public function format(\LoggerLoggingEvent $event)
+    {
         return $this->builder->getFormattedMessage($event);
     }
 
