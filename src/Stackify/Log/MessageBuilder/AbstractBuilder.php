@@ -19,7 +19,6 @@ abstract class AbstractBuilder implements BuilderInterface
         if (!function_exists('json_encode')) {
             throw new InitializationException('JSON extension is required for Stackify logger');
         }
-        // @TODO for all children gather stacktrace even if exception is not available
     }
 
     public function getFormattedMessage($logEvent)
@@ -85,7 +84,7 @@ abstract class AbstractBuilder implements BuilderInterface
         // @TODO remove this method, merge with callee
         $errorItem = new ErrorItem();
         $errorItem->Message = $exception->getMessage();
-        // @TODO add error type
+        $errorItem->ErrorType = get_class($exception);
         $errorItem->ErrorTypeCode = $exception->getCode();
         foreach ($exception->getTrace() as $index => $trace) {
             $errorItem->StackTrace[] = new TraceFrame(
@@ -126,7 +125,7 @@ abstract class AbstractBuilder implements BuilderInterface
         $error = new StackifyError();
         $error->OccurredEpochMillis = $milliseconds;
         $errorItem = new ErrorItem();
-        // @TODO add error type
+        $errorItem->ErrorType = $nativeError->getType();
         $errorItem->Message = $nativeError->getMessage();
         $errorItem->ErrorTypeCode = $nativeError->getCode();
         $errorItem->StackTrace[] = new TraceFrame(
@@ -147,7 +146,6 @@ abstract class AbstractBuilder implements BuilderInterface
         $error = new StackifyError();
         $error->OccurredEpochMillis = $logEntry->getMilliseconds();
         $errorItem = new ErrorItem();
-        // @TODO check other missing fields
         $errorItem->ErrorType = ErrorItem::TYPE_STRING_EXCEPTION;
         $errorItem->Message = $logEntry->getMessage();
         foreach ($logEntry->getBacktrace() as $index => $trace) {
