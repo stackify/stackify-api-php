@@ -12,7 +12,7 @@ abstract class AbstractTransport implements TransportInterface
      */
     protected $messageBuilder;
 
-    public function __construct(MessageBuilder $messageBuilder)
+    public function setMessageBuilder(MessageBuilder $messageBuilder)
     {
         $this->messageBuilder = $messageBuilder;
     }

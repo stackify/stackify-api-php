@@ -4,7 +4,7 @@ namespace Stackify\Log\Standalone;
 
 use Stackify\Log\MessageBuilder;
 use Stackify\Log\Transport\TransportInterface;
-use Stackify\Log\Transport\AgentTransport;
+use Stackify\Log\Transport\DefaultTransport;
 
 use Psr\Log\AbstractLogger;
 
@@ -26,8 +26,9 @@ class Logger extends AbstractLogger
         $this->timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
         $messageBuilder = new MessageBuilder('Stackify PHP Logger v.1.0', $appName, $environmentName);
         if (null === $transport) {
-            $transport = new AgentTransport($messageBuilder);
+            $transport = new DefaultTransport();
         }
+        $transport->setMessageBuilder($messageBuilder);
         $this->transport = $transport;
     }
 
