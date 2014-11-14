@@ -11,6 +11,13 @@ abstract class AbstractTransport implements TransportInterface
      * @var \Stackify\Log\MessageBuilder
      */
     protected $messageBuilder;
+    private $errorLogPath;
+
+    public function __construct()
+    {
+        $ds = DIRECTORY_SEPARATOR;
+        $this->errorLogPath = realpath(dirname(__FILE__) . "$ds..$ds..") . $ds . 'debug/error.log';
+    }
 
     public function setMessageBuilder(MessageBuilder $messageBuilder)
     {
@@ -22,8 +29,11 @@ abstract class AbstractTransport implements TransportInterface
         $args = array_slice(func_get_args(), 1);
         $template = "[{$this->getTransportName()}] $message";
         $formatted = preg_replace('/\r\n/', '', vsprintf($template, $args));
-        // @TODO implement
-        echo "$formatted\n";
+        // first option - write to local file if possible
+        // this can be not available because of file permissions
+        @file_put_contents($this->errorLogPath, "$formatted\n", FILE_APPEND);
+        // second option - send to default PHP error log
+        error_log($formatted);
     }
 
     protected abstract function getTransportName();
