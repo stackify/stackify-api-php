@@ -103,7 +103,7 @@ class MessageBuilder
 
     protected function encodeJSON($data)
     {
-        return json_encode($data, JSON_PRETTY_PRINT);
+        return json_encode($data);
     }
 
 }

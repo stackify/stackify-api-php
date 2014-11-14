@@ -13,4 +13,5 @@ try {
     $logger->warning('test', ['exception' => $ex, 'a' => 'b']);
 }
 
+$logger->info('message');
 $logger->alert('foo');
