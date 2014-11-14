@@ -52,7 +52,7 @@ final class LogEntry implements LogEntryInterface
 
     public function getMilliseconds()
     {
-        return $this->record['datetime']->getTimestamp() * 1000;
+        return $this->record['milliseconds'];
     }
 
     public function getNativeError()

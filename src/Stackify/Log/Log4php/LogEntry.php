@@ -12,18 +12,9 @@ final class LogEntry implements LogEntryInterface
      */
     private $logEvent;
 
-    /**
-     * @var \DateTime
-     */
-    private $datetime;
-
     public function __construct(\LoggerLoggingEvent $logEvent)
     {
         $this->logEvent = $logEvent;
-        $timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
-        $this->datetime = new \DateTime();
-        $this->datetime->setTimestamp($logEvent->getTimeStamp())
-            ->setTimezone($timezone);
     }
 
     public function getContext()
@@ -52,7 +43,7 @@ final class LogEntry implements LogEntryInterface
 
     public function getMilliseconds()
     {
-        return $this->datetime->getTimestamp() * 1000;
+        return round($this->logEvent->getTimeStamp() * 1000);
     }
 
     public function getNativeError()
