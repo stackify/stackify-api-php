@@ -3,6 +3,8 @@
 namespace Stackify\Log\Monolog;
 
 use Stackify\Log\MessageBuilder;
+use Stackify\Log\Transport\TransportInterface;
+use Stackify\Log\Transport\DefaultTransport;
 
 use Monolog\Logger;
 use Monolog\Handler\AbstractHandler;
@@ -11,20 +13,31 @@ class Handler extends AbstractHandler
 {
 
     /**
-     * @var \Stackify\Log\MessageBuilder
+     * @var \Stackify\Log\Transport\TransportInterface
      */
-    private $builder;
+    private $transport;
 
-    public function __construct($appName, $environmentName, $level = Logger::DEBUG, $bubble = true)
+    public function __construct($appName, $environmentName, TransportInterface $transport = null, $level = Logger::DEBUG, $bubble = true)
     {
         parent::__construct($level, $bubble);
-        $this->builder = new MessageBuilder('Stackify Monolog v.1.0', $appName, $environmentName);
+        $messageBuilder = new MessageBuilder('Stackify Monolog v.1.0', $appName, $environmentName);
+        if (null === $transport) {
+            $transport = new DefaultTransport();
+        }
+        $transport->setMessageBuilder($messageBuilder);
+        $this->transport = $transport;
     }
 
     public function handle(array $record)
     {
         $logEntry = new LogEntry($record);
-        echo $this->builder->getAgentMessage($logEntry);
+        $this->transport->addEntry($logEntry);
+    }
+
+    public function close()
+    {
+        parent::close();
+        $this->transport->finish();
     }
 
 }

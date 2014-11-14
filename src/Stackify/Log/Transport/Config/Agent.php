@@ -2,6 +2,7 @@
 
 namespace Stackify\Log\Transport\Config;
 
+// @TODO set release values
 class Agent
 {
     const SOCKET_PROTOCOL = 'tcp';
