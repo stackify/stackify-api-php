@@ -32,6 +32,11 @@ class Logger extends AbstractLogger
         $this->transport = $transport;
     }
 
+    public function __destruct()
+    {
+        $this->transport->finish();
+    }
+
     public function log($level, $message, array $context = array())
     {
         $logEvent = array(

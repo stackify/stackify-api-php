@@ -17,4 +17,15 @@ abstract class AbstractTransport implements TransportInterface
         $this->messageBuilder = $messageBuilder;
     }
 
+    protected function logError($message)
+    {
+        $args = array_slice(func_get_args(), 1);
+        $template = "[{$this->getTransportName()}] $message";
+        $formatted = preg_replace('/\r\n/', '', vsprintf($template, $args));
+        // @TODO implement
+        echo "$formatted\n";
+    }
+
+    protected abstract function getTransportName();
+
 }

@@ -9,5 +9,5 @@ interface TransportInterface
 {
     public function setMessageBuilder(MessageBuilder $messageBuilder);
     public function addEntry(LogEntryInterface $logEntry);
-    public function flush();
+    public function finish();
 }
