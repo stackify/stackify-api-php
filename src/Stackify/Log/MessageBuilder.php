@@ -8,6 +8,7 @@ use Stackify\Log\Entities\Api\TraceFrame;
 use Stackify\Log\Entities\Api\StackifyError;
 use Stackify\Log\Entities\ErrorWrapper;
 use Stackify\Log\Entities\LogEntryInterface;
+use Stackify\Log\Entities\Transport\AgentMessage;
 use Stackify\Exceptions\InitializationException;
 
 class MessageBuilder
@@ -28,11 +29,19 @@ class MessageBuilder
         $this->environmentName = $environmentName;
     }
 
-    public function getFormattedMessage(LogEntryInterface $logEntry)
+    public function getAgentMessage(LogEntryInterface $logEntry)
     {
-        // @TODO add sender info
         $logMsg = $this->createLogMsg($logEntry);
-        return $this->encodeJSON($logMsg). PHP_EOL;
+        $message = new AgentMessage($this->loggerName, $this->appName, $logMsg);
+        return $this->encodeJSON($message). PHP_EOL;
+    }
+
+    public function getApiMessage(LogEntryInterface $logEntry)
+    {
+        $logMsg = $this->createLogMsg($logEntry);
+        // @TODO implement
+        $message = new ApiMessage($this->loggerName, $this->appName, $logMsg);
+        return $this->encodeJSON($message);
     }
 
     /**

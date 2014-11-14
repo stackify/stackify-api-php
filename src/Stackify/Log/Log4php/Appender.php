@@ -37,7 +37,7 @@ class Appender extends \LoggerAppender
             $this->builder = new MessageBuilder('Stackify log4php v.1.0', $this->appName, $this->environmentName);
         }
         $logEntry = new LogEntry($event);
-        echo $this->builder->getFormattedMessage($logEntry);
+        echo $this->builder->getAgentMessage($logEntry);
     }
 
 }

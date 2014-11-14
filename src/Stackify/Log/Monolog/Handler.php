@@ -24,7 +24,7 @@ class Handler extends AbstractHandler
     public function handle(array $record)
     {
         $logEntry = new LogEntry($record);
-        echo $this->builder->getFormattedMessage($logEntry);
+        echo $this->builder->getAgentMessage($logEntry);
     }
 
 }
