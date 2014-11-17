@@ -2,7 +2,9 @@
 
 require '../vendor/autoload.php';
 
-$logger = new Stackify\Log\Standalone\Logger('test.com', 'myPC');
+//$transport = null;
+$transport = new Stackify\Log\Transport\CurlTransport('aa');
+$logger = new Stackify\Log\Standalone\Logger('test.com', 'myPC', $transport);
 
 session_start();
 $_SESSION['user_id'] = 42;

@@ -4,7 +4,7 @@ namespace Stackify\Log\Standalone;
 
 use Stackify\Log\MessageBuilder;
 use Stackify\Log\Transport\TransportInterface;
-use Stackify\Log\Transport\DefaultTransport;
+use Stackify\Log\Transport\AgentTransport;
 
 use Psr\Log\AbstractLogger;
 
@@ -20,7 +20,7 @@ class Logger extends AbstractLogger
     {
         $messageBuilder = new MessageBuilder('Stackify PHP Logger v.1.0', $appName, $environmentName);
         if (null === $transport) {
-            $transport = new DefaultTransport();
+            $transport = new AgentTransport();
         }
         $transport->setMessageBuilder($messageBuilder);
         $this->transport = $transport;

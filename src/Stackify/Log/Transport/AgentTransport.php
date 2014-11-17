@@ -11,7 +11,7 @@ use Stackify\Log\Transport\Config\Agent as Config;
  * Transport creates local TCP connection to agent and writes data.
  * Agent aggregates log entries and sends to API.
  */
-final class DefaultTransport extends AbstractTransport
+class AgentTransport extends AbstractTransport
 {
 
     private $connectAttempts = 0;
@@ -40,7 +40,7 @@ final class DefaultTransport extends AbstractTransport
 
     protected function getTransportName()
     {
-        return 'DefaultTransport';
+        return 'AgentTransport';
     }
 
     private function send($data)

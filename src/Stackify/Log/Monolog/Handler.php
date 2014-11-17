@@ -4,7 +4,7 @@ namespace Stackify\Log\Monolog;
 
 use Stackify\Log\MessageBuilder;
 use Stackify\Log\Transport\TransportInterface;
-use Stackify\Log\Transport\DefaultTransport;
+use Stackify\Log\Transport\AgentTransport;
 
 use Monolog\Logger;
 use Monolog\Handler\AbstractHandler;
@@ -22,7 +22,7 @@ class Handler extends AbstractHandler
         parent::__construct($level, $bubble);
         $messageBuilder = new MessageBuilder('Stackify Monolog v.1.0', $appName, $environmentName);
         if (null === $transport) {
-            $transport = new DefaultTransport();
+            $transport = new AgentTransport();
         }
         $transport->setMessageBuilder($messageBuilder);
         $this->transport = $transport;
