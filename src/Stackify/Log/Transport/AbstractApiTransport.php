@@ -2,13 +2,17 @@
 
 namespace Stackify\Log\Transport;
 
+use Stackify\Log\Transport\Config\Api;
 use Stackify\Log\Entities\LogEntryInterface;
+use Stackify\Exceptions\InitializationException;
 
 abstract class AbstractApiTransport extends AbstractTransport
 {
 
     private $queue = array();
-    private $commonOptions = array('proxy');
+    private $commonOptions = array(
+        'proxy' => '/.+/',
+    );
     protected $apiKey;
     protected $proxy;
 
@@ -16,9 +20,7 @@ abstract class AbstractApiTransport extends AbstractTransport
     {
         parent::__construct();
         $this->apiKey = $apiKey;
-        // @TODO validate & merge
-        $this->extractOption($options, 'proxy');
-        // type, host, port, user, pass
+        $this->extractOptions($options);
         // @TODO shutdown case
         // register_shutdown_function(array($this, 'finish'));
     }
@@ -40,18 +42,25 @@ abstract class AbstractApiTransport extends AbstractTransport
 
     protected abstract function getAllowedOptions();
 
-    protected function extractOption($options, $optionName)
+    protected function extractOptions($options)
     {
         $allowed = array_merge($this->commonOptions, $this->getAllowedOptions());
-        if (isset($options[$optionName]) && in_array($optionName, $allowed)) {
-            $this->$optionName = $options[$optionName];
+        foreach ($allowed as $name => $regex) {
+            if (isset($options[$name])) {
+                $value = $options[$name];
+                if (preg_match($regex, $value)) {
+                    $this->$name = $value;
+                } else {
+                    throw new InitializationException("Option '$name' has invalid value");
+                }
+            }
         }
     }
 
     protected function getApiHeaders()
     {
         return array(
-            'X-Stackify-PV' => 'V1',
+            'X-Stackify-PV' => Api::API_VERSION_HEADER,
             'X-Stackify-Key' => $this->apiKey,
         );
     }

@@ -6,10 +6,10 @@ use Stackify\Log\Entities\LogEntryInterface;
 use Stackify\Log\Transport\Config\Agent as Config;
 
 /**
- * Default transport requires Stackify agent installed and running
+ * This transport requires Stackify agent to be installed and running on the same machine
  * https://stackify.screenstepslive.com/s/3095/m/7787/l/119709-installation-for-linux
  * Transport creates local TCP connection to agent and writes data.
- * Agent aggregates log entries and sends to API.
+ * Agent aggregates log entries and sends data to API.
  */
 class AgentTransport extends AbstractTransport
 {
@@ -33,7 +33,7 @@ class AgentTransport extends AbstractTransport
         // agent trasport does not use queues
         if ($this->connected) {
             if (false === @fclose($this->socket)) {
-                $this->logError(self::ERROR_CLOSE);
+                $this->logInternal(self::ERROR_CLOSE);
             }
         }
     }
@@ -48,7 +48,7 @@ class AgentTransport extends AbstractTransport
         $this->connect();
         if ($this->connected) {
             if (false === @fwrite($this->socket, $data)) {
-                $this->logError(self::ERROR_WRITE);
+                $this->logInternal(self::ERROR_WRITE);
             }
         }
     }
@@ -63,7 +63,7 @@ class AgentTransport extends AbstractTransport
             if ($this->connected) {
                 stream_set_timeout($this->socket, Config::SOCKET_TIMEOUT_WRITE);
             } else {
-                $this->logError(self::ERROR_CONNECT, $remote, $errno, $errstr);
+                $this->logInternal(self::ERROR_CONNECT, $remote, $errno, $errstr);
             }
         }
     }

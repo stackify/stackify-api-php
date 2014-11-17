@@ -24,7 +24,7 @@ abstract class AbstractTransport implements TransportInterface
         $this->messageBuilder = $messageBuilder;
     }
 
-    protected function logError($message)
+    protected function logInternal($message)
     {
         $args = array_slice(func_get_args(), 1);
         $template = "[Stackify Log] $message [{$this->getTransportName()}]";
