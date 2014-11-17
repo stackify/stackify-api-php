@@ -42,7 +42,12 @@ class MessageBuilder
      */
     public function getApiMessage(array $logMsgs)
     {
-        $message = new ApiMessage($this->loggerName, $this->appName, $logMsgs);
+        $message = new ApiMessage(
+            $this->loggerName,
+            $this->appName,
+            $this->environmentName,
+            $logMsgs
+        );
         return $this->encodeJSON($message);
     }
 
