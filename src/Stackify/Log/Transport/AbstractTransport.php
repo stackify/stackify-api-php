@@ -27,7 +27,7 @@ abstract class AbstractTransport implements TransportInterface
     protected function logError($message)
     {
         $args = array_slice(func_get_args(), 1);
-        $template = "[{$this->getTransportName()}] $message";
+        $template = "[Stackify Log] $message [{$this->getTransportName()}]";
         $formatted = preg_replace('/\r\n/', '', vsprintf($template, $args));
         // first option - write to local file if possible
         // this can be not available because of file permissions
