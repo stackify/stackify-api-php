@@ -12,9 +12,11 @@ abstract class AbstractApiTransport extends AbstractTransport
     private $queue = array();
     private $commonOptions = array(
         'proxy' => '/.+/',
+        'debug' => '/^(0|1)?$/',  // boolean
     );
     protected $apiKey;
     protected $proxy;
+    protected $debug = false;
 
     public function __construct($apiKey, array $options = array())
     {

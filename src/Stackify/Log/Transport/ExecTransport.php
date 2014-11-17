@@ -13,7 +13,6 @@ class ExecTransport extends AbstractApiTransport
 {
 
     protected $curlPath = 'curl';
-    protected $debug = false;
 
     const ERROR_CURL = 'Command returned an error. [Command: "%s"] [Return code: %d] [Message: "%s"]';
     const SUCCESS_CURL = 'Command sent. [Command: "%s"]';
@@ -30,7 +29,6 @@ class ExecTransport extends AbstractApiTransport
     {
         return array(
             'curlPath' => '/.+/',
-            'debug' => '/^(0|1)?$/',  // boolean
         );
     }
 
@@ -63,7 +61,7 @@ class ExecTransport extends AbstractApiTransport
         $output = array();
         $r = exec($cmd, $output, $result);
         if ($this->debug) {
-            if ($result > 0) {
+            if ($result !== 0) {
                 // curl returned some error
                 $this->logInternal(self::ERROR_CURL, $cmd, $result, implode(' ', $output));
             } else {
