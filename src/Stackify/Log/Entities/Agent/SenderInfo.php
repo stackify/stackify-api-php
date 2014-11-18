@@ -1,6 +1,6 @@
 <?php
 
-namespace Stackify\Log\Entities\Transport;
+namespace Stackify\Log\Entities\Agent;
 
 class SenderInfo
 {

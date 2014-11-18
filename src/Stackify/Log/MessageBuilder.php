@@ -8,8 +8,8 @@ use Stackify\Log\Entities\Api\TraceFrame;
 use Stackify\Log\Entities\Api\StackifyError;
 use Stackify\Log\Entities\ErrorWrapper;
 use Stackify\Log\Entities\LogEntryInterface;
-use Stackify\Log\Entities\Transport\ApiMessage;
-use Stackify\Log\Entities\Transport\AgentMessage;
+use Stackify\Log\Entities\Api\LogMsgGroup;
+use Stackify\Log\Entities\Agent\AgentMessage;
 use Stackify\Exceptions\InitializationException;
 
 class MessageBuilder
@@ -42,7 +42,7 @@ class MessageBuilder
      */
     public function getApiMessage(array $logMsgs)
     {
-        $message = new ApiMessage(
+        $message = new LogMsgGroup(
             $this->loggerName,
             $this->appName,
             $this->environmentName,

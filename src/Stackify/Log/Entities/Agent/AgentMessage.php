@@ -1,6 +1,6 @@
 <?php
 
-namespace Stackify\Log\Entities\Transport;
+namespace Stackify\Log\Entities\Agent;
 
 use Stackify\Log\Entities\Api\LogMsg;
 
@@ -8,7 +8,7 @@ class AgentMessage
 {
 
     /**
-     * @var \Stackify\Log\Entities\Transport\SenderInfo
+     * @var \Stackify\Log\Entities\Agent\SenderInfo
      */
     public $SenderInfo;
 
