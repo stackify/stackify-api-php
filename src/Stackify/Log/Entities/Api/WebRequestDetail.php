@@ -40,27 +40,27 @@ class WebRequestDetail
     /**
      * @var array Key-value pairs
      */
-    public $Headers = array();
+    public $Headers;
 
     /**
      * @var array Key-value pairs
      */
-    public $Cookies = array();
+    public $Cookies;
 
     /**
      * @var array Key-value pairs
      */
-    public $QueryString = array();
+    public $QueryString;
 
     /**
      * @var array Key-value pairs
      */
-    public $PostData = array();
+    public $PostData;
 
     /**
      * @var array Key-value pairs
      */
-    public $SessionData = array();
+    public $SessionData;
 
     /**
      * @var string
@@ -91,10 +91,10 @@ class WebRequestDetail
         $this->RequestUrlRoot = filter_input(INPUT_SERVER, 'SERVER_NAME');
         $this->ReferralUrl = filter_input(INPUT_SERVER, 'HTTP_REFERER');
         $this->Headers = $this->getHeaders();
-        $this->Cookies = isset($_COOKIE) ? self::getRequestMap($_COOKIE, true) : array();
-        $this->QueryString = isset($_GET) ? self::getRequestMap($_GET) : array();
-        $this->PostData = isset($_POST) ? self::getRequestMap($_POST) : array();
-        $this->SessionData = isset($_SESSION) ? self::getRequestMap($_SESSION, true) : array();
+        $this->Cookies = isset($_COOKIE) ? self::getRequestMap($_COOKIE, true) : null;
+        $this->QueryString = isset($_GET) ? self::getRequestMap($_GET) : null;
+        $this->PostData = isset($_POST) ? self::getRequestMap($_POST) : null;
+        $this->SessionData = isset($_SESSION) ? self::getRequestMap($_SESSION, true) : null;
         $this->PostDataRaw = file_get_contents('php://input');
     }
 
@@ -128,7 +128,7 @@ class WebRequestDetail
                     : self::stringify($value);
             }
         }
-        return $result;
+        return empty($result) ? null : $result;
     }
 
     private function getIpAddress()
@@ -190,7 +190,7 @@ class WebRequestDetail
                 $headers[$name] = self::HIDDEN_VALUE;
             }
         }
-        return $headers;
+        return empty($headers) ? null : $headers;
     }
 
     /**

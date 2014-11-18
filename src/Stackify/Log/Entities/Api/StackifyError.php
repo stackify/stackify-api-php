@@ -27,7 +27,7 @@ class StackifyError
     /**
      * @var array Key-value pairs
      */
-    public $ServerVariables = array();
+    public $ServerVariables;
 
     /**
      * @var string
@@ -48,7 +48,7 @@ class StackifyError
 
     private function getEnvironmentVariables()
     {
-        return isset($_SERVER) ? WebRequestDetail::getRequestMap($_SERVER) : array();
+        return isset($_SERVER) ? WebRequestDetail::getRequestMap($_SERVER) : null;
     }
 
 }

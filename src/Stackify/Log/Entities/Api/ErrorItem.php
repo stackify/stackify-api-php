@@ -23,7 +23,7 @@ class ErrorItem
     /**
      * @var array Key-value pairs
      */
-    public $Data = array();
+    public $Data;
 
     /**
      * @var string
