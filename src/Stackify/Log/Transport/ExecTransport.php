@@ -3,7 +3,6 @@
 namespace Stackify\Log\Transport;
 
 use Stackify\Log\Transport\Config\Api;
-use Stackify\Exceptions\InitializationException;
 
 /**
  * This transport collects log data until the end of processing.
@@ -20,9 +19,7 @@ class ExecTransport extends AbstractApiTransport
     public function __construct($apiKey, array $options = array())
     {
         parent::__construct($apiKey, $options);
-        if ('Windows' === substr(php_uname(), 0, 7)) {
-            throw new InitializationException('CurlTransport does not work on Windows');
-        }
+        // @TODO windows support
     }
 
     protected function getAllowedOptions()
@@ -39,9 +36,7 @@ class ExecTransport extends AbstractApiTransport
 
     protected function send($data)
     {
-        echo $data;
-        // @TODO
-        $url = Api::API_BASE_URL;
+        $url = Api::API_BASE_URL . Api::API_CALL_LOGS;
         $cmd = "$this->curlPath -X POST";
         foreach ($this->getApiHeaders() as $name => $value) {
             $cmd .= " --header \"$name: $value\"";
