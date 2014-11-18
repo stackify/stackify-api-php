@@ -23,8 +23,7 @@ abstract class AbstractApiTransport extends AbstractTransport
         parent::__construct();
         $this->apiKey = $apiKey;
         $this->extractOptions($options);
-        // @TODO shutdown case
-        // register_shutdown_function(array($this, 'finish'));
+        register_shutdown_function(array($this, 'finish'));
     }
 
     public function addEntry(LogEntryInterface $logEntry)
@@ -36,6 +35,8 @@ abstract class AbstractApiTransport extends AbstractTransport
     {
         if (!empty($this->queue)) {
             $json = $this->messageBuilder->getApiMessage($this->queue);
+            // empty queue to avoid duplicates
+            $this->queue = array();
             $this->send($json);
         }
     }
