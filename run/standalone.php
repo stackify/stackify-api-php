@@ -3,7 +3,7 @@
 require '../vendor/autoload.php';
 
 //$transport = null;
-$transport = new Stackify\Log\Transport\CurlTransport('aa', ['debug' => 1]);
+$transport = new Stackify\Log\Transport\CurlTransport('0Zw8Fj4Hr3Aa1Sf2Gw4Cb3Gk7Fp6Zn6Sc0Gw2Cr');
 $logger = new Stackify\Log\Standalone\Logger('test.com', 'myPC', $transport);
 
 session_start();
@@ -16,4 +16,4 @@ try {
 }
 
 $logger->info('mess\'age');
-$logger->alert('foo');
+$logger->alert('test');

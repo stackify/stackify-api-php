@@ -62,6 +62,7 @@ abstract class AbstractApiTransport extends AbstractTransport
     protected function getApiHeaders()
     {
         return array(
+            'Content-Type' => 'application/json',
             'X-Stackify-PV' => Api::API_VERSION_HEADER,
             'X-Stackify-Key' => $this->apiKey,
         );

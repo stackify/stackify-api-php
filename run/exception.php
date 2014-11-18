@@ -27,7 +27,7 @@ function nestedExceptions($logger) {
     $logger->error('ex', [$ex]);
 }
 
-//nestedExceptions($logger); exit;
+nestedExceptions($logger);
 
 trycatch($logger);
 

@@ -11,8 +11,8 @@ use Stackify\Exceptions\InitializationException;
 class CurlTransport extends AbstractApiTransport
 {
 
-    const ERROR_CURL = 'Curl returned an error. [Error no: %d] [Message: "%s"] [HTTP code: %d]';
-    const SUCCESS_CURL = 'Curl sent data successfully';
+    const ERROR_CURL = 'Curl returned an error. [Error no: %d] [HTTP code: %d] [Message: "%s"]';
+    const SUCCESS_CURL = 'Curl sent data successfully. [HTTP code: %d] [Message: "%s"]';
 
     public function __construct($apiKey, array $options = array())
     {
@@ -34,13 +34,11 @@ class CurlTransport extends AbstractApiTransport
 
     protected function send($data)
     {
-        echo $data;
-        // @TODO
         $headers = array();
         foreach ($this->getApiHeaders() as $name => $value) {
             $headers[] = "$name: $value";
         }
-        $url = Api::API_BASE_URL;
+        $url = Api::API_BASE_URL . Api::API_CALL_LOGS;
         $handle = curl_init($url);
         curl_setopt($handle, CURLOPT_POST, 1);
         curl_setopt($handle, CURLOPT_TIMEOUT, Api::API_MAX_TIME);
@@ -50,14 +48,14 @@ class CurlTransport extends AbstractApiTransport
         if ($this->proxy) {
             curl_setopt($handle, CURLOPT_PROXY, $this->proxy);
         }
-        curl_exec($handle);
+        $response = curl_exec($handle);
         $errorNo = curl_errno($handle);
         $code = curl_getinfo($handle, CURLINFO_HTTP_CODE);
         $error = curl_error($handle);
         if (0 !== $errorNo) {
-            $this->logInternal(self::ERROR_CURL, $errorNo, $error, $code);
+            $this->logInternal(self::ERROR_CURL, $errorNo, $code, $error);
         } elseif ($this->debug) {
-            $this->logInternal(self::SUCCESS_CURL);
+            $this->logInternal(self::SUCCESS_CURL, $code, $response);
         }
         curl_close($handle);
     }
