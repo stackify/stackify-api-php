@@ -16,7 +16,7 @@ abstract class AbstractTransport implements TransportInterface
     public function __construct()
     {
         $ds = DIRECTORY_SEPARATOR;
-        $this->errorLogPath = realpath(dirname(__FILE__) . "$ds..$ds..") . $ds . 'debug/error.log';
+        $this->errorLogPath = realpath(dirname(__FILE__) . "$ds..$ds..") . $ds . 'debug/log.log';
     }
 
     public function setMessageBuilder(MessageBuilder $messageBuilder)
