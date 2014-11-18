@@ -34,6 +34,12 @@ final class LogEntry implements LogEntryInterface
                 $context['file'],
                 $context['line']
             );
+            unset(
+                $context['code'],
+                $context['message'],
+                $context['file'],
+                $context['line']
+            );
         }
         if (!empty($context)) {
             $this->context = $context;
