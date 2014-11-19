@@ -2,6 +2,9 @@
     <appender name="stackifyAppender" class="\Stackify\Log\Log4php\Appender">
         <param name="appName" value="test.com" />
         <param name="environmentName" value="myPC" />
+        <param name="mode" value="curl" />
+        <param name="apiKey" value="0Zw8Fj4Hr3Aa1Sf2Gw4Cb3Gk7Fp6Zn6Sc0Gw2Cr" />
+        <param name="debug" value="1" />
     </appender>
     <root>
         <level value="TRACE" />

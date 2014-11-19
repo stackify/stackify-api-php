@@ -3,16 +3,27 @@
 namespace Stackify\Log\Log4php;
 
 use Stackify\Log\MessageBuilder;
+use Stackify\Exceptions\InitializationException;
 
 class Appender extends \LoggerAppender
 {
 
+    const MODE_AGENT = 'Agent';
+    const MODE_CURL = 'Curl';
+    const MODE_EXEC = 'Exec';
+
     /**
-     * @var \Stackify\Log\MessageBuilder
+     * @var \Stackify\Log\Transport\TransportInterface
      */
-    private $builder;
+    private $transport;
     private $appName;
     private $environmentName;
+    private $apiKey;
+    private $mode;
+    private $proxy;
+    private $debug;
+
+    protected $requiresLayout = false;
 
     public function __construct($name = '', $appName = null, $environmentName = null)
     {
@@ -31,13 +42,65 @@ class Appender extends \LoggerAppender
         $this->environmentName = $environmentName;
     }
 
+    public function setApiKey($apiKey)
+    {
+        $this->apiKey = $apiKey;
+    }
+
+    public function setMode($mode)
+    {
+        $this->mode = ucfirst(strtolower($mode));
+    }
+
+    public function setProxy($proxy)
+    {
+        $this->proxy = $proxy;
+    }
+
+    public function setDebug($debug)
+    {
+        $this->debug = $debug;
+    }
+
     protected function append(\LoggerLoggingEvent $event)
     {
-        if (null === $this->builder) {
-            $this->builder = new MessageBuilder('Stackify log4php v.1.0', $this->appName, $this->environmentName);
+        if (null === $this->transport) {
+            $messageBuilder = new MessageBuilder('Stackify log4php v.1.0', $this->appName, $this->environmentName);
+            $this->transport = $this->createTransport();
+            $this->transport->setMessageBuilder($messageBuilder);
         }
         $logEntry = new LogEntry($event);
-        echo $this->builder->getAgentMessage($logEntry);
+        $this->transport->addEntry($logEntry);
+    }
+
+    public function close()
+    {
+        parent::close();
+        $this->transport->finish();
+    }
+
+    /**
+     * @return \Stackify\Log\Transport\TransportInterface
+     */
+    private function createTransport()
+    {
+        $options = array(
+            'proxy' => $this->proxy,
+            'debug' => $this->debug,
+        );
+        if (null === $this->mode) {
+            $this->mode = self::MODE_AGENT;
+        }
+        $allowed = array(
+            self::MODE_AGENT,
+            self::MODE_CURL,
+            self::MODE_EXEC,
+        );
+        if (in_array($this->mode, $allowed)) {
+            $className = '\Stackify\Log\Transport\\' . $this->mode . 'Transport';
+            return new $className($this->apiKey, $options);
+        }
+        throw new InitializationException("Mode '$this->mode' is not supported");
     }
 
 }
