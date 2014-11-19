@@ -17,10 +17,10 @@ class AgentMessage
      */
     public $Log;
 
-    public function __construct($loggerName, $appName, LogMsg $logMsg)
+    public function __construct($loggerName, $appName, $environmentName, LogMsg $logMsg)
     {
         $this->Log = $logMsg;
-        $this->SenderInfo = new SenderInfo($loggerName, $appName);
+        $this->SenderInfo = new SenderInfo($loggerName, $appName, $environmentName);
     }
 
 }

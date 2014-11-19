@@ -33,7 +33,7 @@ class MessageBuilder
     public function getAgentMessage(LogEntryInterface $logEntry)
     {
         $logMsg = $this->createLogMsg($logEntry);
-        $message = new AgentMessage($this->loggerName, $this->appName, $logMsg);
+        $message = new AgentMessage($this->loggerName, $this->appName, $this->environmentName, $logMsg);
         return $this->encodeJSON($message). PHP_EOL;
     }
 
