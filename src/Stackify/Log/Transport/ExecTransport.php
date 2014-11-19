@@ -3,6 +3,7 @@
 namespace Stackify\Log\Transport;
 
 use Stackify\Log\Transport\Config\Api;
+use Stackify\Exceptions\InitializationException;
 
 /**
  * This transport collects log data until the end of processing.
@@ -19,6 +20,9 @@ class ExecTransport extends AbstractApiTransport
     public function __construct($apiKey, array $options = array())
     {
         parent::__construct($apiKey, $options);
+        if (!function_exists('exec')) {
+            throw new InitializationException("PHP function 'exec' is not available, is it disabled for security reasons?");
+        }
         // @TODO windows support
     }
 
