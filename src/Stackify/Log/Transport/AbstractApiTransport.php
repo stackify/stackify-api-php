@@ -16,7 +16,6 @@ abstract class AbstractApiTransport extends AbstractTransport
     );
     protected $apiKey;
     protected $proxy;
-    protected $debug = false;
 
     public function __construct($apiKey, array $options = array())
     {

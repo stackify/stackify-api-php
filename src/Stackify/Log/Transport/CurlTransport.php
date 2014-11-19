@@ -11,8 +11,8 @@ use Stackify\Exceptions\InitializationException;
 class CurlTransport extends AbstractApiTransport
 {
 
-    const ERROR_CURL = 'Curl returned an error. [Error no: %d] [HTTP code: %d] [Message: "%s"]';
-    const SUCCESS_CURL = 'Curl sent data successfully. [HTTP code: %d] [Message: "%s"]';
+    const ERROR_CURL = 'Curl returned an error. [Error no: %d] [HTTP code: %d] [Message: "%s"] [Response: "%s"]';
+    const SUCCESS_CURL = 'Curl sent data successfully. [HTTP code: %d] [Response: "%s"]';
 
     public function __construct($apiKey, array $options = array())
     {
@@ -52,10 +52,10 @@ class CurlTransport extends AbstractApiTransport
         $errorNo = curl_errno($handle);
         $code = curl_getinfo($handle, CURLINFO_HTTP_CODE);
         $error = curl_error($handle);
-        if (0 !== $errorNo) {
-            $this->logInternal(self::ERROR_CURL, $errorNo, $code, $error);
-        } elseif ($this->debug) {
-            $this->logInternal(self::SUCCESS_CURL, $code, $response);
+        if (0 !== $errorNo || 200 !== $code) {
+            $this->logError(self::ERROR_CURL, $errorNo, $code, $error, $response);
+        } else {
+            $this->logDebug(self::SUCCESS_CURL, $code, $response);
         }
         curl_close($handle);
     }

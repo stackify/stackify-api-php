@@ -55,12 +55,14 @@ class ExecTransport extends AbstractApiTransport
         }
         $output = array();
         $r = exec($cmd, $output, $result);
+        // if debug mode is off, it makes no sense to check result,
+        // because command is send to background
         if ($this->debug) {
             if ($result !== 0) {
                 // curl returned some error
-                $this->logInternal(self::ERROR_CURL, $cmd, $result, implode(' ', $output));
+                $this->logError(self::ERROR_CURL, $cmd, $result, implode(' ', $output));
             } else {
-                $this->logInternal(self::SUCCESS_CURL, $cmd);
+                $this->logDebug(self::SUCCESS_CURL, $cmd);
             }
         }
     }

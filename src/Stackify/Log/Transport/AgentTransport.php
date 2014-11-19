@@ -33,7 +33,7 @@ class AgentTransport extends AbstractTransport
         // agent trasport does not use queues
         if ($this->connected) {
             if (false === @fclose($this->socket)) {
-                $this->logInternal(self::ERROR_CLOSE);
+                $this->logError(self::ERROR_CLOSE);
             }
         }
     }
@@ -48,7 +48,7 @@ class AgentTransport extends AbstractTransport
         $this->connect();
         if ($this->connected) {
             if (false === @fwrite($this->socket, $data)) {
-                $this->logInternal(self::ERROR_WRITE);
+                $this->logError(self::ERROR_WRITE);
             }
         }
     }
@@ -63,7 +63,7 @@ class AgentTransport extends AbstractTransport
             if ($this->connected) {
                 stream_set_timeout($this->socket, Config::SOCKET_TIMEOUT_WRITE);
             } else {
-                $this->logInternal(self::ERROR_CONNECT, $remote, $errno, $errstr);
+                $this->logError(self::ERROR_CONNECT, $remote, $errno, $errstr);
             }
         }
     }

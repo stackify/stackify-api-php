@@ -11,12 +11,13 @@ abstract class AbstractTransport implements TransportInterface
      * @var \Stackify\Log\MessageBuilder
      */
     protected $messageBuilder;
-    private $errorLogPath;
+    private $debugLogPath;
+    protected $debug = false;
 
     public function __construct()
     {
         $ds = DIRECTORY_SEPARATOR;
-        $this->errorLogPath = realpath(dirname(__FILE__) . "$ds..$ds..") . $ds . 'debug/log.log';
+        $this->debugLogPath = realpath(dirname(__FILE__) . "$ds..$ds..") . $ds . 'debug/log.log';
     }
 
     public function setMessageBuilder(MessageBuilder $messageBuilder)
@@ -24,18 +25,34 @@ abstract class AbstractTransport implements TransportInterface
         $this->messageBuilder = $messageBuilder;
     }
 
-    protected function logInternal($message)
+    protected abstract function getTransportName();
+
+    protected function logError($message)
     {
-        $args = array_slice(func_get_args(), 1);
-        $template = "[Stackify Log] $message [{$this->getTransportName()}]";
-        $formatted = preg_replace('/\r\n/', '', vsprintf($template, $args));
-        // first option - write to local file if possible
-        // this can be not available because of file permissions
-        @file_put_contents($this->errorLogPath, "$formatted\n", FILE_APPEND);
-        // second option - send to default PHP error log
-        error_log($formatted);
+        $this->log($message, func_get_args(), false);
     }
 
-    protected abstract function getTransportName();
+    protected function logDebug($message)
+    {
+        if (!$this->debug) {
+            return;
+        }
+        $this->log($message, func_get_args(), true);
+    }
+
+    private function log($message, $args, $success = true)
+    {
+        $replacements = array_slice($args, 1);
+        $prefix = $success ? 'Stackify Log' : 'Stackify Error';
+        $template = "[$prefix] $message [{$this->getTransportName()}]";
+        $formatted = preg_replace('/\r\n/', '', vsprintf($template, $replacements));
+        // first option - write to local file if possible
+        // this can be not available because of file permissions
+        @file_put_contents($this->debugLogPath, "$formatted\n", FILE_APPEND);
+        if (!$success) {
+            // second option - send to default PHP error log
+            error_log($formatted);
+        }
+    }
 
 }
