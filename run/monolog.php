@@ -2,8 +2,9 @@
 
 require '../vendor/autoload.php';
 
-$handler = new Stackify\Log\Monolog\Handler('test.com', 'myPC');
 
+$transport = null;new Stackify\Log\Transport\CurlTransport('0Zw8Fj4Hr3Aa1Sf2Gw4Cb3Gk7Fp6Zn6Sc0Gw2Cr');
+$handler = new Stackify\Log\Monolog\Handler('test.com', 'monologPc', $transport);
 $logger = new Monolog\Logger('test_channel');
 $logger->pushHandler($handler);
 
