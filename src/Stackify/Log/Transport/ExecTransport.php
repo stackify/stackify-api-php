@@ -23,7 +23,9 @@ class ExecTransport extends AbstractApiTransport
         if (!function_exists('exec')) {
             throw new InitializationException("PHP function 'exec' is not available, is it disabled for security reasons?");
         }
-        // @TODO windows support
+        if ('WIN' === strtoupper(substr(PHP_OS, 0, 3))) {
+            throw new InitializationException('Exec transport is not supposed to work on Windows');
+        }
     }
 
     protected function getAllowedOptions()
@@ -73,7 +75,6 @@ class ExecTransport extends AbstractApiTransport
 
     private function escapeArg($string)
     {
-        // @TODO test special chars
         // http://stackoverflow.com/a/1250279/871861
         return str_replace("'", "'\"'\"'", $string);
     }
