@@ -16,7 +16,7 @@ class Logger extends AbstractLogger
      */
     private $transport;
 
-    public function __construct($appName, $environmentName, TransportInterface $transport = null)
+    public function __construct($appName, $environmentName = null, TransportInterface $transport = null)
     {
         $messageBuilder = new MessageBuilder('Stackify PHP Logger v.1.0', $appName, $environmentName);
         if (null === $transport) {

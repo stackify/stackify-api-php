@@ -17,7 +17,7 @@ class Handler extends AbstractHandler
      */
     private $transport;
 
-    public function __construct($appName, $environmentName, TransportInterface $transport = null, $level = Logger::DEBUG, $bubble = true)
+    public function __construct($appName, $environmentName = null, TransportInterface $transport = null, $level = Logger::DEBUG, $bubble = true)
     {
         parent::__construct($level, $bubble);
         $messageBuilder = new MessageBuilder('Stackify Monolog v.1.0', $appName, $environmentName);

@@ -20,14 +20,13 @@ class MessageBuilder
     protected $appName;
     protected $environmentName;
 
-    public function __construct($loggerName, $appName, $environmentName)
+    public function __construct($loggerName, $appName, $environmentName = null)
     {
         if (!function_exists('json_encode')) {
             throw new InitializationException('JSON extension is required for Stackify logger');
         }
-        // @TODO validate $appName and $environmentName ?
         $this->loggerName = $loggerName;
-        $this->appName = $appName;
+        $this->appName = $this->validateNotEmpty('AppName', $appName);
         $this->environmentName = $environmentName;
         // set state for environment details
         EnvironmentDetail::getInstance()->init($appName, $environmentName);
@@ -114,6 +113,15 @@ class MessageBuilder
     protected function encodeJSON($data)
     {
         return json_encode($data);
+    }
+
+    protected function validateNotEmpty($name, $value)
+    {
+        $result = trim($value);
+        if (empty($result)) {
+            throw new InitializationException("$name cannot be empty");
+        }
+        return $result;
     }
 
 }
