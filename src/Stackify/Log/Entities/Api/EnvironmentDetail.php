@@ -30,7 +30,13 @@ class EnvironmentDetail
      */
     public $ConfiguredEnvironmentName;
 
-    private function __construct($appName, $environmentName)
+    /**
+     * Singleton attributes
+     */
+    private function __construct() {}
+    private function __clone() {}
+
+    public function init($appName, $environmentName)
     {
         $this->AppName = $appName;
         $this->ConfiguredAppName = $appName;
@@ -39,16 +45,11 @@ class EnvironmentDetail
         $this->ConfiguredEnvironmentName = $environmentName;
     }
 
-    /**
-     * Singleton attributes
-     */
-    private function __clone() {}
-
-    public static function getInstance($appName, $environmentName)
+    public static function getInstance()
     {
         static $instance;
         if (null === $instance) {
-            $instance = new self($appName, $environmentName);
+            $instance = new self();
         }
         return $instance;
     }

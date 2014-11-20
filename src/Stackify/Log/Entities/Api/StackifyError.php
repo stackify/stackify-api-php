@@ -41,7 +41,8 @@ class StackifyError
 
     public function __construct($appName, $environmentName)
     {
-        $this->EnvironmentDetail = EnvironmentDetail::getInstance($appName, $environmentName);
+        $this->EnvironmentDetail = EnvironmentDetail::getInstance()
+            ->init($appName, $environmentName);
         $this->WebRequestDetail = WebRequestDetail::getInstance();
         $this->ServerVariables = $this->getEnvironmentVariables();
     }

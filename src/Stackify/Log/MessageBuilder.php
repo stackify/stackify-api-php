@@ -6,6 +6,7 @@ use Stackify\Log\Entities\Api\LogMsg;
 use Stackify\Log\Entities\Api\ErrorItem;
 use Stackify\Log\Entities\Api\TraceFrame;
 use Stackify\Log\Entities\Api\StackifyError;
+use Stackify\Log\Entities\Api\EnvironmentDetail;
 use Stackify\Log\Entities\ErrorWrapper;
 use Stackify\Log\Entities\LogEntryInterface;
 use Stackify\Log\Entities\Api\LogMsgGroup;
@@ -28,6 +29,8 @@ class MessageBuilder
         $this->loggerName = $loggerName;
         $this->appName = $appName;
         $this->environmentName = $environmentName;
+        // set state for environment details
+        EnvironmentDetail::getInstance()->init($appName, $environmentName);
     }
 
     public function getAgentMessage(LogEntryInterface $logEntry)

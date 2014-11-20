@@ -77,8 +77,9 @@ class LogMsgGroup
         $this->AppName = $appName;
         $this->Env = $environmentName;
         $this->Msgs = $logMsgs;
-        $this->ServerName = gethostname();
-        $this->AppLoc = getcwd();
+        $environment = EnvironmentDetail::getInstance();
+        $this->ServerName = $environment->DeviceName;
+        $this->AppLoc = $environment->AppLocation;
     }
 
 }
