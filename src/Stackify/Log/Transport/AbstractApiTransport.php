@@ -20,7 +20,7 @@ abstract class AbstractApiTransport extends AbstractTransport
     public function __construct($apiKey, array $options = array())
     {
         parent::__construct();
-        $this->apiKey = $apiKey;
+        $this->apiKey = $this->validateApiKey($apiKey);
         $this->extractOptions($options);
         register_shutdown_function(array($this, 'finish'));
     }
@@ -66,6 +66,15 @@ abstract class AbstractApiTransport extends AbstractTransport
             'X-Stackify-PV' => Api::API_VERSION_HEADER,
             'X-Stackify-Key' => $this->apiKey,
         );
+    }
+
+    private function validateApiKey($value)
+    {
+        $apiKey = trim($value);
+        if (empty($apiKey)) {
+            throw new InitializationException('API key cannot be empty');
+        }
+        return $apiKey;
     }
 
 }
