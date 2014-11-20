@@ -74,7 +74,9 @@ class Appender extends \LoggerAppender
     public function close()
     {
         parent::close();
-        $this->transport->finish();
+        if (null !== $this->transport) {
+            $this->transport->finish();
+        }
     }
 
     private function validateNotEmpty($name, $value)
