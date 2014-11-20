@@ -25,16 +25,14 @@ class Appender extends \LoggerAppender
 
     protected $requiresLayout = false;
 
-    public function __construct($name = '', $appName = null, $environmentName = null)
+    public function __construct($name = '')
     {
         parent::__construct($name);
-        $this->setAppName($appName);
-        $this->setEnvironmentName($environmentName);
     }
 
     public function setAppName($appName)
     {
-        $this->appName = $appName;
+        $this->appName = $this->validateNotEmpty('AppName', $appName);
     }
 
     public function setEnvironmentName($environmentName)
@@ -44,7 +42,7 @@ class Appender extends \LoggerAppender
 
     public function setApiKey($apiKey)
     {
-        $this->apiKey = $apiKey;
+        $this->apiKey = $this->validateNotEmpty('ApiKey', $apiKey);
     }
 
     public function setMode($mode)
@@ -77,6 +75,15 @@ class Appender extends \LoggerAppender
     {
         parent::close();
         $this->transport->finish();
+    }
+
+    private function validateNotEmpty($name, $value)
+    {
+        $result = trim($value);
+        if (empty($result)) {
+            throw new InitializationException("$name cannot be empty");
+        }
+        return $result;
     }
 
     /**
