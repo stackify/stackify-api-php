@@ -11,7 +11,6 @@ class ErrorWrapper
     private $trace;
 
     const TYPE_STRING_EXCEPTION = 'StringException';
-    const MAX_NESTING_LEVEL = 3;
 
     /**
      * @var \Stackify\Log\Entities\ErrorWrapper
@@ -26,7 +25,8 @@ class ErrorWrapper
             $this->code = $object->getCode();
             $this->trace = $object->getTrace();
             $previous = $object->getPrevious();
-            if (null !== $previous && $nestingLevel <= self::MAX_NESTING_LEVEL) {
+            if (null !== $previous) {
+                // limit nesting level if needed here
                 $this->innerError = new self($previous, ++$nestingLevel);
             }
         } elseif ($object instanceof NativeError) {
