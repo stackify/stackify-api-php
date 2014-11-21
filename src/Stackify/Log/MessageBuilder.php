@@ -92,16 +92,13 @@ class MessageBuilder
         $errorItem->Message = $errorWrapper->getMessage();
         $errorItem->ErrorType = $errorWrapper->getType();
         $errorItem->ErrorTypeCode = $errorWrapper->getCode();
+        $errorItem->SourceMethod = $errorWrapper->getSourceMethod();
         foreach ($errorWrapper->getTrace() as $index => $trace) {
             $errorItem->StackTrace[] = new TraceFrame(
                 $trace['file'],
                 $trace['line'],
                 $trace['function']
             );
-            if (0 === $index) {
-                // first record in stack trace has method
-                $errorItem->SourceMethod = $trace['function'];
-            }
         }
         $previous = $errorWrapper->getInnerError();
         if ($previous) {

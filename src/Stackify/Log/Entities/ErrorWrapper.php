@@ -9,6 +9,7 @@ class ErrorWrapper
     private $type;
     private $code;
     private $trace;
+    private $sourceMethod;
 
     const TYPE_STRING_EXCEPTION = 'StringException';
 
@@ -23,7 +24,7 @@ class ErrorWrapper
             $this->message = $object->getMessage();
             $this->type = get_class($object);
             $this->code = $object->getCode();
-            $this->trace = $object->getTrace();
+            $this->setTrace($object->getTrace());
             $previous = $object->getPrevious();
             if (null !== $previous) {
                 // limit nesting level if needed here
@@ -33,14 +34,14 @@ class ErrorWrapper
             $this->message = $object->getMessage();
             $this->type = $object->getType();
             $this->code = $object->getCode();
-            $this->trace = $object->getTrace();
+            $this->setTrace($object->getTrace());
             $this->innerError = null;
         } elseif ($object instanceof LogEntryInterface) {
             // this is a backtrace type
             $this->message = $object->getMessage();
             $this->type = self::TYPE_STRING_EXCEPTION;
             $this->code = null;
-            $this->trace = $object->getBacktrace();
+            $this->setTrace(debug_backtrace());
             $this->innerError = null;
         }
     }
@@ -65,9 +66,69 @@ class ErrorWrapper
         return $this->trace;
     }
 
+    public function getSourceMethod()
+    {
+        return $this->sourceMethod;
+    }
+
     public function getInnerError()
     {
         return $this->innerError;
+    }
+
+    private function setTrace(array $trace)
+    {
+        $result = array();
+        foreach ($this->filterTrace($trace) as $index => $item) {
+            $function = $item['function'] . '()';
+            if (isset($item['class'])) {
+                // type is -> or :: which means dynamic or static method call
+                $type = isset($item['type']) ? $item['type'] : '->';
+                $function = $item['class'] . $type . $function;
+                $sourceMethod = $function;
+            } else {
+                $sourceMethod = $item['file'] . ':' . $function;
+            }
+            $result[] = array(
+                'file' => $item['file'],
+                'line' => $item['line'],
+                'function' => $function,
+            );
+            if (0 === $index) {
+                $this->sourceMethod = $sourceMethod;
+            }
+        }
+        $this->trace = $result;
+    }
+
+    private function filterTrace(array $trace)
+    {
+        $filtered = array();
+        $excludePath = $this->getFullPathThatContains('vendor');
+        if (null === $excludePath) {
+            // vendor path not found - library was installed without composer
+            // maybe testing mode? exclude our package only
+            $packageSrc = 'src' . DIRECTORY_SEPARATOR . 'Stackify';
+            $excludePath  = $this->getFullPathThatContains($packageSrc);
+        }
+        foreach ($trace as $item) {
+            // check if path starts with $excludePath
+            if (false === strpos($item['file'], $excludePath)) {
+                $filtered[] = $item;
+            }
+        }
+        return $filtered;
+    }
+
+    private function getFullPathThatContains($searchPath)
+    {
+        $result = null;
+        $currentPath = __FILE__;
+        $foundPos = strrpos($currentPath, $searchPath);
+        if (false !== $foundPos) {
+            $result = substr($currentPath, 0, $foundPos + strlen($searchPath));
+        }
+        return $result;
     }
 
 }

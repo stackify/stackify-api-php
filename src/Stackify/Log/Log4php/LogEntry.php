@@ -58,10 +58,4 @@ final class LogEntry implements LogEntryInterface
         return $this->logEvent->getLevel()->isGreaterOrEqual($errorLevel);
     }
 
-    public function getBacktrace()
-    {
-        // @TODO check if nesting level was changed
-        return array_slice(debug_backtrace(), 10);
-    }
-
 }

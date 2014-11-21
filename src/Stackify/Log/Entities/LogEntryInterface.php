@@ -43,10 +43,4 @@ interface LogEntryInterface
      */
     public function isErrorLevel();
 
-    /**
-     * Returns backtrace excluding internal logger methods
-     * @return array
-     */
-    public function getBacktrace();
-
 }
