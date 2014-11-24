@@ -62,6 +62,7 @@ Handler supports three ways to deliver data to Stackify:
     $handler = new StackifyHandler('application_name', 'environment_name', $transport);
     ```
     ```yml
+    # or configuration file example
     services:
         stackify_transport:
             class: "Stackify\\Log\\Transport\ExecTransport"
@@ -79,6 +80,7 @@ Handler supports three ways to deliver data to Stackify:
     $handler = new StackifyHandler('application_name', 'environment_name', $transport);
     ```
     ```yml
+    # or configuration file example
     services:
         stackify_transport:
             class: "Stackify\\Log\\Transport\CurlTransport"
