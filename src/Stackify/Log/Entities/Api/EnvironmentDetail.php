@@ -43,6 +43,7 @@ class EnvironmentDetail
         $this->DeviceName = gethostname();
         $this->AppLocation = getcwd();
         $this->ConfiguredEnvironmentName = $environmentName;
+        return $this;
     }
 
     public static function getInstance()
