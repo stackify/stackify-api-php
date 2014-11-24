@@ -18,7 +18,7 @@ Or add dependency to `composer.json` file:
     "stackify/monolog": "~1.0",
 ```
 
-By default handler requires [Stackify agent](https://stackify.screenstepslive.com/s/3095/m/7787/l/119709-installation-for-linux) to be running. There are other ways to send data to Stackify, read about pros and cons in [transport configuration](#transport) section.
+By default handler requires [Stackify agent](https://stackify.screenstepslive.com/s/3095/m/7787/l/119709-installation-for-linux) to be running. There are other ways to send data to Stackify, read about pros and cons in [transports](#transport) section.
 
 ## Basic usage
 ```php
@@ -48,8 +48,7 @@ monolog:
             id:     stackify_handler
 ```
 
-## Configuration
-### <a name="transport"></a>Transport options
+## <a name="transport"></a>Transport options
 Handler supports three ways to deliver data to Stackify:
 
 - <b>AgentTransport</b> is used by default and it does not require additional configuration on PHP side. All data is be passed to [Stackify agent](https://stackify.screenstepslive.com/s/3095/m/7787/l/119709-installation-for-linux), which must be installed on the same machine. Local TCP socket is used, so performance of your application is affected minimally.
@@ -88,8 +87,18 @@ Handler supports three ways to deliver data to Stackify:
             arguments: ["application_name", "environment_name", "@stackify_transport"]
     ```
 
+## Configuration
 ### Proxy
-// proxy examples
+ExecTransport and CurlTransport support data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
+```php
+$transport = new ExecTransport($apiKey, ['proxy' => 'https://55.88.22.11:3128']);
+```
+
+### Curl path
+It can be useful to specify ```curl``` destination path for ExecTransport. This option is set to 'curl' by default.
+```php
+$transport = new ExecTransport($apiKey, ['curlPath' => '/usr/bin/curl']);
+```
 
 ## Troubleshooting
 // debug directive examples
