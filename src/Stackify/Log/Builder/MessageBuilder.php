@@ -1,6 +1,6 @@
 <?php
 
-namespace Stackify\Log;
+namespace Stackify\Log\Builder;
 
 use Stackify\Log\Entities\Api\LogMsg;
 use Stackify\Log\Entities\Api\ErrorItem;
@@ -13,7 +13,7 @@ use Stackify\Log\Entities\Api\LogMsgGroup;
 use Stackify\Log\Entities\Agent\AgentMessage;
 use Stackify\Exceptions\InitializationException;
 
-class MessageBuilder
+class MessageBuilder implements BuilderInterface
 {
 
     protected $loggerName;

@@ -2,7 +2,7 @@
 
 namespace Stackify\Log\Monolog;
 
-use Stackify\Log\MessageBuilder;
+use Stackify\Log\Builder\MessageBuilder;
 use Stackify\Log\Transport\TransportInterface;
 use Stackify\Log\Transport\AgentTransport;
 

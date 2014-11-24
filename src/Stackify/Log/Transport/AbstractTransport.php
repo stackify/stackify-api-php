@@ -2,13 +2,14 @@
 
 namespace Stackify\Log\Transport;
 
-use Stackify\Log\MessageBuilder;
+use Stackify\Log\Builder\BuilderInterface;
+use Stackify\Log\Builder\NullBuilder;
 
 abstract class AbstractTransport implements TransportInterface
 {
 
     /**
-     * @var \Stackify\Log\MessageBuilder
+     * @var \Stackify\Log\Builder\BuilderInterface
      */
     protected $messageBuilder;
     private $debugLogPath;
@@ -18,9 +19,11 @@ abstract class AbstractTransport implements TransportInterface
     {
         $ds = DIRECTORY_SEPARATOR;
         $this->debugLogPath = realpath(dirname(__FILE__) . "$ds..$ds..") . $ds . 'debug/log.log';
+        // add empty implementation to avoid method calls on non-object
+        $this->setMessageBuilder(new NullBuilder());
     }
 
-    public function setMessageBuilder(MessageBuilder $messageBuilder)
+    public function setMessageBuilder(BuilderInterface $messageBuilder)
     {
         $this->messageBuilder = $messageBuilder;
     }

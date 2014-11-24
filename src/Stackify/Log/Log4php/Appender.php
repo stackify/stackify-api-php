@@ -2,7 +2,7 @@
 
 namespace Stackify\Log\Log4php;
 
-use Stackify\Log\MessageBuilder;
+use Stackify\Log\Builder\MessageBuilder;
 use Stackify\Exceptions\InitializationException;
 
 class Appender extends \LoggerAppender
