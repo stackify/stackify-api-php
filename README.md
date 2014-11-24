@@ -33,6 +33,7 @@ $logger->warning('something happened');
 
 If you use [MonologBundle](https://github.com/symfony/MonologBundle) it makes sence to configure Stackify handler using Symfony DependencyInjection configuration files:
 ```yml
+# YML example
 services:
     stackify_handler:
         class: "Stackify\\Log\\Monolog\\Handler"
