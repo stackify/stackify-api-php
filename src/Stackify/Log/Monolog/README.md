@@ -1,8 +1,8 @@
 stackify-log-monolog
 ================
 
-Apache log4php appender for sending log messages and exceptions to Stackify.
-Apache log4php >= 2.2.0 is supported.
+Monolog handler for sending log messages and exceptions to Stackify.
+Monolog >= 1.1.0 is supported.
 
 Errors and Logs Overview:
 http://docs.stackify.com/m/7787/l/189767
@@ -11,52 +11,42 @@ Sign Up for a Trial:
 http://www.stackify.com/sign-up/
 
 ## Installation
-Install the latest version with `composer require stackify/log4php`
+Install the latest version with `composer require stackify/monolog`
 
 Or add dependency to `composer.json` file:
 ```json
-    "stackify/log4php": "~1.0",
+    "stackify/monolog": "~1.0",
 ```
 
 By default handler requires [Stackify agent](https://stackify.screenstepslive.com/s/3095/m/7787/l/119709-installation-for-linux) to be running. There are other ways to send data to Stackify, read about pros and cons in [transports](#transport) section.
 
 ## Basic usage
-Using XML-configuration:
-```xml
-<configuration xmlns="http://logging.apache.org/log4php/">
-    <appender name="stackifyAppender" class="\Stackify\Log\Log4php\Appender">
-        <param name="appName" value="application_name" />
-    </appender>
-    <root>
-        <level value="TRACE" />
-        <appender_ref ref="stackifyAppender" />
-    </root>
-</configuration>
-```
 ```php
-Logger::configure('config.xml');
-$logger = Logger::getLogger('logger_name');
-$logger->debug('log4php debug');
+use Monolog\Logger;
+use Stackify\Log\Monolog\Handler as StackifyHandler;
+
+$handler = new StackifyHandler('application_name');
+$logger = new Logger('log_channel');
+$logger->pushHandler($handler);
+$logger->warning('something happened');
 ```
 
-Using PHP-configuration:
-```php
-$config = array(
-    'rootLogger' => array(
-        'appenders' => array('stackify'),
-    ),
-    'appenders' => array(
-        'stackify' => array(
-            'class' => '\Stackify\Log\Log4php\Appender',
-            'params' => array(
-            	'appName' => 'application_name',
-            ),
-        ),
-    ),
-);
-Logger::configure($config);
-$logger = Logger::getLogger('logger_name');
-$logger->warn('warning message');
+If you use [MonologBundle](https://github.com/symfony/MonologBundle) it makes sence to configure Stackify handler using Symfony DependencyInjection configuration files:
+```yml
+# YML example
+services:
+    stackify_handler:
+        class: "Stackify\\Log\\Monolog\\Handler"
+        arguments: ["application_name"]
+
+monolog:
+    handlers:
+        main:
+            type:   stream
+            path:   "%kernel.logs_dir%/%kernel.environment%.log"
+        stackify:
+            type:   service
+            id:     stackify_handler
 ```
 
 To get more error details pass Exception objects to logger if available:
@@ -64,7 +54,8 @@ To get more error details pass Exception objects to logger if available:
 try {
     $db->connect();
 catch (DbException $ex) {
-    $logger->error('DB is not available', $ex);
+    // you may use any key name
+    $logger->error('DB is not available', ['ex' => $ex]);
 }
 ```
 
@@ -73,50 +64,67 @@ Handler supports three ways to deliver data to Stackify:
 
 - <b>AgentTransport</b> is used by default and it does not require additional configuration on PHP side. All data is be passed to [Stackify agent](https://stackify.screenstepslive.com/s/3095/m/7787/l/119709-installation-for-linux), which must be installed on the same machine. Local TCP socket is used, so performance of your application is affected minimally.
 - <b>ExecTransport</b> does not require Stackify agent to be installed, because it sends data directly to Stackify services. It collects log entries in a single batch, calls curl using ```exec``` function and sends it to background immediately [```exec('curl ... &')```]. This way influences performance of your application minimally, but it requires permissions to call ```exec``` inside PHP script and it may cause silent data loss in case of network issues. This transport does not work on Windows. To configure ExecTransport you need to pass environment name and API key (license key):
-
-    ```xml
-    <appender name="stackifyAppender" class="\Stackify\Log\Log4php\Appender">
-        <param name="appName" value="application_name" />
-        <param name="environmentName" value="environment_name" />
-        <param name="mode" value="exec" />
-        <param name="apiKey" value="api_key" />
-    </appender>
+    ```php
+    use Stackify\Log\Transport\ExecTransport;
+    use Stackify\Log\Monolog\Handler as StackifyHandler;
+    
+    $transport = new ExecTransport('api_key');
+    $handler = new StackifyHandler('application_name', 'environment_name', $transport);
+    ```
+    ```yml
+    # or configuration file example
+    services:
+        stackify_transport:
+            class: "Stackify\\Log\\Transport\ExecTransport"
+            arguments: ["api_key"]
+        stackify_handler:
+            class: "Stackify\\Log\\Monolog\\Handler"
+            arguments: ["application_name", "environment_name", "@stackify_transport"]
     ```
 - <b>CurlTransport</b> does not require Stackify agent to be installed, it also sends data directly to Stackify services. It collects log entries in a single batch and sends data using native [PHP cURL](http://php.net/manual/en/book.curl.php) functions. This way is a blocking one, so it should not be used on production environments. To configure CurlTransport you need to pass environment name and API key (license key):
-
-    ```xml
-    <appender name="stackifyAppender" class="\Stackify\Log\Log4php\Appender">
-        <param name="appName" value="application_name" />
-        <param name="environmentName" value="environment_name" />
-        <param name="mode" value="curl" />
-        <param name="apiKey" value="api_key" />
-    </appender>
+    ```php
+    use Stackify\Log\Transport\CurlTransport;
+    use Stackify\Log\Monolog\Handler as StackifyHandler;
+    
+    $transport = new CurlTransport('api_key');
+    $handler = new StackifyHandler('application_name', 'environment_name', $transport);
+    ```
+    ```yml
+    # or configuration file example
+    services:
+        stackify_transport:
+            class: "Stackify\\Log\\Transport\CurlTransport"
+            arguments: ["api_key"]
+        stackify_handler:
+            class: "Stackify\\Log\\Monolog\\Handler"
+            arguments: ["application_name", "environment_name", "@stackify_transport"]
     ```
 
 ## Configuration
 #### Proxy
 ExecTransport and CurlTransport support data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
-```xml
-<param name="proxy" value="https://55.88.22.11:3128" />
+```php
+$transport = new ExecTransport($apiKey, ['proxy' => 'https://55.88.22.11:3128']);
 ```
 
 #### Curl path
 It can be useful to specify ```curl``` destination path for ExecTransport. This option is set to 'curl' by default.
-```xml
-<param name="curlPath" value="/usr/bin/curl" />
+```php
+$transport = new ExecTransport($apiKey, ['curlPath' => '/usr/bin/curl']);
 ```
 
 #### Agent port
 By default AgentTransport uses port number ```10515```. To change it pass new port number:
-```xml
-<param name="port" value="10516" />
+```php
+$transport = new AgentTransport(['port' => 10516]);
+$handler = new StackifyHandler('application_name', 'environment_name', $transport);
 ```
 
 ## Troubleshooting
 If transport does not work, try looking into ```vendor\stackify\logger\src\Stackify\debug\log.log``` file. Errors are also written to global PHP [error_log](http://php.net/manual/en/errorfunc.configuration.php#ini.error-log).
 Note that ExecTransport does not produce any errors at all, but you can switch it to debug mode:
-```xml
-<param name="debug" value="1" />
+```php
+$transport = new ExecTransport($apiKey, ['debug' => true]);
 ```
 
 ## License
