@@ -1,0 +1,17 @@
+{
+    "name": "stackify/log4php",
+    "description": "Stackify logs and errors for Apache log4php",
+    "keywords": ["log", "logging", "psr-3", "stackify", "monolog", "log4php"],
+    "homepage": "https://github.com/stackify/stackify-log-log4php",
+    "type": "library",
+    "license": "Apache-2.0",
+    "require": {
+        "stackify/logger": "~1.0",
+        "apache/log4php": "~2.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Stackify\\Log\\Log4php": "src/Stackify/Log/Log4php"
+        }
+    }
+}

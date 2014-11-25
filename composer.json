@@ -4,7 +4,7 @@
     "keywords": ["log", "logging", "psr-3", "stackify", "monolog", "log4php"],
     "homepage": "https://github.com/stackify/stackify-log-php",
     "type": "library",
-    "license": "MIT",
+    "license": "Apache-2.0",
     "require": {
         "php": ">=5.3.0",
         "psr/log": "~1.0"
