@@ -22,6 +22,7 @@ class Appender extends \LoggerAppender
     private $mode;
     private $port;
     private $proxy;
+    private $curlPath;
     private $debug;
 
     protected $requiresLayout = false;
@@ -59,6 +60,11 @@ class Appender extends \LoggerAppender
     public function setProxy($proxy)
     {
         $this->proxy = $proxy;
+    }
+
+    public function setCurlPath($curlPath)
+    {
+        $this->curlPath = $curlPath;
     }
 
     public function setDebug($debug)
@@ -103,6 +109,7 @@ class Appender extends \LoggerAppender
             'proxy' => $this->proxy,
             'debug' => $this->debug,
             'port'  => $this->port,
+            'curlPath' => $this->curlPath,
         );
         if (null === $this->mode) {
             $this->mode = self::MODE_AGENT;
