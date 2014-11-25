@@ -2,6 +2,8 @@
 
 namespace Stackify\Log\Entities\Agent;
 
+use Stackify\Log\Entities\Api\EnvironmentDetail;
+
 class SenderInfo
 {
 
@@ -40,8 +42,9 @@ class SenderInfo
         $this->Logger = $loggerName;
         $this->AppName = $appName;
         $this->Env = $environmentName;
-        $this->ServerName = gethostname();
-        $this->AppLoc = getcwd();
+        $environment = EnvironmentDetail::getInstance();
+        $this->ServerName = $environment->DeviceName;
+        $this->AppLoc = $environment->AppLocation;
     }
 
 }
