@@ -88,21 +88,21 @@ Handler supports three ways to deliver data to Stackify:
 #### Proxy
 ExecTransport and CurlTransport support data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
 
-    ```xml
+    ```
     <param name="proxy" value="https://55.88.22.11:3128" />
     ```
 
 #### Curl path
 It can be useful to specify ```curl``` destination path for ExecTransport. This option is set to 'curl' by default.
 
-    ```xml
+    ```
     <param name="curlPath" value="/usr/bin/curl" />
     ```
 
 #### Agent port
 By default AgentTransport uses port number ```10515```. To change it pass new port number:
 
-    ```xml
+    ```
     <param name="port" value="10516" />
     ```
 
@@ -110,7 +110,7 @@ By default AgentTransport uses port number ```10515```. To change it pass new po
 If transport does not work, try looking into ```vendor\stackify\logger\src\Stackify\debug\log.log``` file. Errors are also written to global PHP [error_log](http://php.net/manual/en/errorfunc.configuration.php#ini.error-log).
 Note that ExecTransport does not produce any errors at all, but you can switch it to debug mode:
 
-    ```xml
+    ```
     <param name="debug" value="1" />
     ```
 
