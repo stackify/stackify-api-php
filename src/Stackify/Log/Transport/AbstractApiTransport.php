@@ -9,13 +9,9 @@ use Stackify\Exceptions\InitializationException;
 abstract class AbstractApiTransport extends AbstractTransport
 {
 
-    private $queue = array();
-    private $commonOptions = array(
-        'proxy' => '/.+/',
-        'debug' => '/^(0|1)?$/',  // boolean
-    );
     protected $apiKey;
     protected $proxy;
+    private $queue = array();
 
     public function __construct($apiKey, array $options = array())
     {
@@ -42,21 +38,12 @@ abstract class AbstractApiTransport extends AbstractTransport
 
     protected abstract function send($data);
 
-    protected abstract function getAllowedOptions();
-
-    protected function extractOptions($options)
+    protected function getAllowedOptions()
     {
-        $allowed = array_merge($this->commonOptions, $this->getAllowedOptions());
-        foreach ($allowed as $name => $regex) {
-            if (isset($options[$name])) {
-                $value = $options[$name];
-                if (preg_match($regex, $value)) {
-                    $this->$name = $value;
-                } else {
-                    throw new InitializationException("Option '$name' has invalid value");
-                }
-            }
-        }
+        return array(
+            'proxy' => '/.+/',
+            'debug' => '/^(0|1)?$/',  // boolean
+        );
     }
 
     protected function getApiHeaders()

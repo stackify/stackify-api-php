@@ -30,9 +30,9 @@ class ExecTransport extends AbstractApiTransport
 
     protected function getAllowedOptions()
     {
-        return array(
+        return array_merge(parent::getAllowedOptions(), array(
             'curlPath' => '/.+/',
-        );
+        ));
     }
 
     protected function getTransportName()

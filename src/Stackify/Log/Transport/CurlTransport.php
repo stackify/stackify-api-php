@@ -22,11 +22,6 @@ class CurlTransport extends AbstractApiTransport
         }
     }
 
-    protected function getAllowedOptions()
-    {
-        return array();
-    }
-
     protected function getTransportName()
     {
         return 'CurlTransport';

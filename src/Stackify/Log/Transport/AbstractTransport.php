@@ -4,6 +4,7 @@ namespace Stackify\Log\Transport;
 
 use Stackify\Log\Builder\BuilderInterface;
 use Stackify\Log\Builder\NullBuilder;
+use Stackify\Exceptions\InitializationException;
 
 abstract class AbstractTransport implements TransportInterface
 {
@@ -12,8 +13,8 @@ abstract class AbstractTransport implements TransportInterface
      * @var \Stackify\Log\Builder\BuilderInterface
      */
     protected $messageBuilder;
-    private $debugLogPath;
     protected $debug = false;
+    private $debugLogPath;
 
     public function __construct()
     {
@@ -29,6 +30,22 @@ abstract class AbstractTransport implements TransportInterface
     }
 
     protected abstract function getTransportName();
+
+    protected abstract function getAllowedOptions();
+
+    protected function extractOptions($options)
+    {
+        foreach ($this->getAllowedOptions() as $name => $regex) {
+            if (isset($options[$name])) {
+                $value = $options[$name];
+                if (preg_match($regex, $value)) {
+                    $this->$name = $value;
+                } else {
+                    throw new InitializationException("Option '$name' has invalid value");
+                }
+            }
+        }
+    }
 
     protected function logError($message)
     {

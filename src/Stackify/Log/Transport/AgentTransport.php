@@ -14,6 +14,7 @@ use Stackify\Log\Transport\Config\Agent as Config;
 class AgentTransport extends AbstractTransport
 {
 
+    protected $port;
     private $connectAttempts = 0;
     private $connected = false;
     private $socket;
@@ -21,6 +22,13 @@ class AgentTransport extends AbstractTransport
     const ERROR_CONNECT = 'Cannot connect socket on %s. Is Stackify agent installed and running? [Error code: %d] [Error message: %s]';
     const ERROR_WRITE = 'Cannot write to socket. Is Stackify agent installed and running?';
     const ERROR_CLOSE = 'Cannot close opened socket';
+
+    public function __construct(array $options = array())
+    {
+        parent::__construct();
+        $this->port = Config::SOCKET_PORT;
+        $this->extractOptions($options);
+    }
 
     public function addEntry(LogEntryInterface $logEntry)
     {
@@ -43,6 +51,13 @@ class AgentTransport extends AbstractTransport
         return 'AgentTransport';
     }
 
+    protected function getAllowedOptions()
+    {
+        return array(
+            'port' => '/^\d+$/',
+        );
+    }
+
     private function send($data)
     {
         $this->connect();
@@ -57,7 +72,7 @@ class AgentTransport extends AbstractTransport
     {
         while (!$this->connected && $this->connectAttempts < Config::SOCKET_MAX_CONNECT_ATTEMPTS) {
             $this->connectAttempts++;
-            $remote = sprintf('%s://%s:%d', Config::SOCKET_PROTOCOL, Config::SOCKET_HOST, Config::SOCKET_PORT);
+            $remote = sprintf('%s://%s:%d', Config::SOCKET_PROTOCOL, Config::SOCKET_HOST, $this->port);
             $this->socket = @stream_socket_client($remote, $errno, $errstr, Config::SOCKET_TIMEOUT_CONNECT);
             $this->connected = false !== $this->socket;
             if ($this->connected) {
