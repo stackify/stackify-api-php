@@ -74,30 +74,34 @@ Handler supports three ways to deliver data to Stackify:
     </appender>
     ```
 - <b>CurlTransport</b> does not require Stackify agent to be installed, it also sends data directly to Stackify services. It collects log entries in a single batch and sends data using native [PHP cURL](http://php.net/manual/en/book.curl.php) functions. This way is a blocking one, so it should not be used on production environments. To configure CurlTransport you need to pass environment name and API key (license key):
-```xml
-<appender name="stackifyAppender" class="\Stackify\Log\Log4php\Appender">
-    <param name="appName" value="application_name" />
-    <param name="environmentName" value="environment_name" />
-    <param name="mode" value="curl" />
-    <param name="apiKey" value="api_key" />
-</appender>
-```
+
+    ```xml
+    <appender name="stackifyAppender" class="\Stackify\Log\Log4php\Appender">
+        <param name="appName" value="application_name" />
+        <param name="environmentName" value="environment_name" />
+        <param name="mode" value="curl" />
+        <param name="apiKey" value="api_key" />
+    </appender>
+    ```
 
 ## Configuration
 #### Proxy
 ExecTransport and CurlTransport support data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
+
     ```xml
     <param name="proxy" value="https://55.88.22.11:3128" />
     ```
 
 #### Curl path
 It can be useful to specify ```curl``` destination path for ExecTransport. This option is set to 'curl' by default.
+
     ```xml
     <param name="curlPath" value="/usr/bin/curl" />
     ```
 
 #### Agent port
 By default AgentTransport uses port number ```10515```. To change it pass new port number:
+
     ```xml
     <param name="port" value="10516" />
     ```
@@ -105,6 +109,7 @@ By default AgentTransport uses port number ```10515```. To change it pass new po
 ## Troubleshooting
 If transport does not work, try looking into ```vendor\stackify\logger\src\Stackify\debug\log.log``` file. Errors are also written to global PHP [error_log](http://php.net/manual/en/errorfunc.configuration.php#ini.error-log).
 Note that ExecTransport does not produce any errors at all, but you can switch it to debug mode:
+
     ```xml
     <param name="debug" value="1" />
     ```
