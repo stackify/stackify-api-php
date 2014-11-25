@@ -20,6 +20,7 @@ class Appender extends \LoggerAppender
     private $environmentName;
     private $apiKey;
     private $mode;
+    private $port;
     private $proxy;
     private $debug;
 
@@ -48,6 +49,11 @@ class Appender extends \LoggerAppender
     public function setMode($mode)
     {
         $this->mode = ucfirst(strtolower($mode));
+    }
+
+    public function setPort($port)
+    {
+        $this->port = $port;
     }
 
     public function setProxy($proxy)
@@ -96,6 +102,7 @@ class Appender extends \LoggerAppender
         $options = array(
             'proxy' => $this->proxy,
             'debug' => $this->debug,
+            'port'  => $this->port,
         );
         if (null === $this->mode) {
             $this->mode = self::MODE_AGENT;
@@ -107,6 +114,9 @@ class Appender extends \LoggerAppender
         );
         if (in_array($this->mode, $allowed)) {
             $className = '\Stackify\Log\Transport\\' . $this->mode . 'Transport';
+            if (self::MODE_AGENT === $this->mode) {
+                return new $className($options);
+            }
             return new $className($this->apiKey, $options);
         }
         throw new InitializationException("Mode '$this->mode' is not supported");
