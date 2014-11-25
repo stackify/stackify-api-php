@@ -64,6 +64,7 @@ Handler supports three ways to deliver data to Stackify:
 
 - <b>AgentTransport</b> is used by default and it does not require additional configuration on PHP side. All data is be passed to [Stackify agent](https://stackify.screenstepslive.com/s/3095/m/7787/l/119709-installation-for-linux), which must be installed on the same machine. Local TCP socket is used, so performance of your application is affected minimally.
 - <b>ExecTransport</b> does not require Stackify agent to be installed, because it sends data directly to Stackify services. It collects log entries in a single batch, calls curl using ```exec``` function and sends it to background immediately [```exec('curl ... &')```]. This way influences performance of your application minimally, but it requires permissions to call ```exec``` inside PHP script and it may cause silent data loss in case of network issues. This transport does not work on Windows. To configure ExecTransport you need to pass environment name and API key (license key):
+
     ```xml
     <appender name="stackifyAppender" class="\Stackify\Log\Log4php\Appender">
         <param name="appName" value="application_name" />
@@ -73,14 +74,14 @@ Handler supports three ways to deliver data to Stackify:
     </appender>
     ```
 - <b>CurlTransport</b> does not require Stackify agent to be installed, it also sends data directly to Stackify services. It collects log entries in a single batch and sends data using native [PHP cURL](http://php.net/manual/en/book.curl.php) functions. This way is a blocking one, so it should not be used on production environments. To configure CurlTransport you need to pass environment name and API key (license key):
-    ```xml
-    <appender name="stackifyAppender" class="\Stackify\Log\Log4php\Appender">
-        <param name="appName" value="application_name" />
-        <param name="environmentName" value="environment_name" />
-        <param name="mode" value="curl" />
-        <param name="apiKey" value="api_key" />
-    </appender>
-    ```
+```xml
+<appender name="stackifyAppender" class="\Stackify\Log\Log4php\Appender">
+    <param name="appName" value="application_name" />
+    <param name="environmentName" value="environment_name" />
+    <param name="mode" value="curl" />
+    <param name="apiKey" value="api_key" />
+</appender>
+```
 
 ## Configuration
 #### Proxy
