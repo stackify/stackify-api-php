@@ -27,7 +27,7 @@ catch (DbException $ex) {
 
 By default handler requires [Stackify agent](https://stackify.screenstepslive.com/s/3095/m/7787/l/119709-installation-for-linux) to be running.
 There are other ways to send data, read more in [Monolog package documentation](https://github.com/stackify/stackify-log-monolog),
-all transports ara available for standalone logger as well.
+all transports are available for standalone logger as well.
 
 
 ## License
