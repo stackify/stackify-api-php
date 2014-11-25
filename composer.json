@@ -2,7 +2,7 @@
     "name": "stackify/logger",
     "description": "Stackify logs and errors for PHP",
     "keywords": ["log", "logging", "psr-3", "stackify", "monolog", "log4php"],
-    "homepage": "https://github.com/stackify/stackify-log-php",
+    "homepage": "https://github.com/stackify/stackify-api-php",
     "type": "library",
     "license": "Apache-2.0",
     "require": {
