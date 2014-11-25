@@ -2,7 +2,6 @@
 
 namespace Stackify\Log\Builder;
 
-use Stackify\Log\Entities\Api\LogMsg;
 use Stackify\Log\Entities\LogEntryInterface;
 
 /**
