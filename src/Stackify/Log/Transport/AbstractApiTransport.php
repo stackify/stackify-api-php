@@ -23,7 +23,10 @@ abstract class AbstractApiTransport extends AbstractTransport
 
     public function addEntry(LogEntryInterface $logEntry)
     {
-        $this->queue[] = $this->messageBuilder->createLogMsg($logEntry);
+        $logMsg = $this->messageBuilder->createLogMsg($logEntry);
+        if ($this->errorGovernor->shouldBeSent($logMsg)) {
+            $this->queue[] = $logMsg;
+        }
     }
 
     public function finish()

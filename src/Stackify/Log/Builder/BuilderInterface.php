@@ -2,6 +2,7 @@
 
 namespace Stackify\Log\Builder;
 
+use Stackify\Log\Entities\Api\LogMsg;
 use Stackify\Log\Entities\LogEntryInterface;
 
 interface BuilderInterface
@@ -10,7 +11,7 @@ interface BuilderInterface
     /**
      * @return string  Formatted JSON
      */
-    public function getAgentMessage(LogEntryInterface $logEntry);
+    public function getAgentMessage(LogMsg $logMsg);
 
     /**
      * @param \Stackify\Log\Entities\Api\LogMsg[] $logMsgs

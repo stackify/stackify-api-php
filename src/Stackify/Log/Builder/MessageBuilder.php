@@ -32,9 +32,8 @@ class MessageBuilder implements BuilderInterface
         EnvironmentDetail::getInstance()->init($appName, $environmentName);
     }
 
-    public function getAgentMessage(LogEntryInterface $logEntry)
+    public function getAgentMessage(LogMsg $logMsg)
     {
-        $logMsg = $this->createLogMsg($logEntry);
         $message = new AgentMessage($this->loggerName, $this->appName, $this->environmentName, $logMsg);
         return $this->encodeJSON($message). PHP_EOL;
     }

@@ -4,6 +4,7 @@ namespace Stackify\Log\Transport;
 
 use Stackify\Log\Builder\BuilderInterface;
 use Stackify\Log\Builder\NullBuilder;
+use Stackify\Log\Filters\ErrorGovernor;
 use Stackify\Exceptions\InitializationException;
 
 abstract class AbstractTransport implements TransportInterface
@@ -13,6 +14,12 @@ abstract class AbstractTransport implements TransportInterface
      * @var \Stackify\Log\Builder\BuilderInterface
      */
     protected $messageBuilder;
+
+    /**
+     * @var \Stackify\Log\Filters\ErrorGovernor
+     */
+    protected $errorGovernor;
+
     protected $debug = false;
     private $debugLogPath;
 
@@ -20,6 +27,7 @@ abstract class AbstractTransport implements TransportInterface
     {
         $ds = DIRECTORY_SEPARATOR;
         $this->debugLogPath = realpath(dirname(__FILE__) . "$ds..$ds..") . $ds . 'debug/log.log';
+        $this->errorGovernor = new ErrorGovernor();
         // add empty implementation to avoid method calls on non-object
         $this->setMessageBuilder(new NullBuilder());
     }
