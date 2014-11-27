@@ -14,6 +14,8 @@ class ExecTransport extends AbstractApiTransport
 
     protected $curlPath = 'curl';
 
+    const MAX_POST_LENGTH = 65536;  // 1024 * 64
+    const ERROR_LENGTH = 'Batch is too long: %s';
     const ERROR_CURL = 'Command returned an error. [Command: "%s"] [Return code: %d] [Message: "%s"]';
     const SUCCESS_CURL = 'Command sent. [Command: "%s"]';
 
@@ -58,6 +60,11 @@ class ExecTransport extends AbstractApiTransport
         } else {
             // return immediately while curl will run in the background
             $cmd .= ' > /dev/null 2>&1 &';
+        }
+        $cmdLength = strlen($cmd);
+        if ($cmdLength > self::MAX_POST_LENGTH) {
+            $this->logError(self::ERROR_LENGTH, $cmdLength);
+            return;
         }
         $output = array();
         $r = exec($cmd, $output, $result);
