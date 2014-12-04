@@ -33,10 +33,11 @@ class AgentTransport extends AbstractTransport
     public function addEntry(LogEntryInterface $logEntry)
     {
         $logMsg = $this->messageBuilder->createLogMsg($logEntry);
-        if ($this->errorGovernor->shouldBeSent($logMsg)) {
-            $data = $this->messageBuilder->getAgentMessage($logMsg);
-            $this->send($data);
+        if (!$this->errorGovernor->shouldBeSent($logMsg)) {
+            $logMsg->Ex = null;
         }
+        $data = $this->messageBuilder->getAgentMessage($logMsg);
+        $this->send($data);
     }
 
     public function finish()
