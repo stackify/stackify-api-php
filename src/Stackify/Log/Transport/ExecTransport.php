@@ -30,6 +30,19 @@ class ExecTransport extends AbstractApiTransport
         }
     }
 
+    /**
+     * Overrides parent's method
+     */
+    public function finish()
+    {
+        if (!empty($this->queue)) {
+            // empty queue to avoid duplicates
+            $queue = $this->queue;
+            $this->queue = array();
+            $this->sendChunk($queue);
+        }
+    }
+
     protected function getAllowedOptions()
     {
         return array_merge(parent::getAllowedOptions(), array(
@@ -40,6 +53,27 @@ class ExecTransport extends AbstractApiTransport
     protected function getTransportName()
     {
         return 'ExecTransport';
+    }
+
+    protected function sendChunk(array $items)
+    {
+        $json = $this->messageBuilder->getApiMessage($items);
+        $jsonLength = strlen($json);
+        $count = count($items);
+        if ($jsonLength > self::MAX_POST_LENGTH) {
+            if (1 === $count) {
+                // it makes no sense to divide into chunks, just fail
+                $this->logError(self::ERROR_LENGTH, $jsonLength);
+                return;
+            }
+            $maxCount = floor($count / ceil($jsonLength / self::MAX_POST_LENGTH));
+            $chunks = array_chunk($items, $maxCount);
+            foreach ($chunks as $chunk) {
+                $this->sendChunk($chunk);
+            }
+        } else {
+            $this->send($json);
+        }
     }
 
     protected function send($data)
@@ -60,11 +94,6 @@ class ExecTransport extends AbstractApiTransport
         } else {
             // return immediately while curl will run in the background
             $cmd .= ' > /dev/null 2>&1 &';
-        }
-        $cmdLength = strlen($cmd);
-        if ($cmdLength > self::MAX_POST_LENGTH) {
-            $this->logError(self::ERROR_LENGTH, $cmdLength);
-            return;
         }
         $output = array();
         $r = exec($cmd, $output, $result);
