@@ -11,7 +11,7 @@ abstract class AbstractApiTransport extends AbstractTransport
 
     protected $apiKey;
     protected $proxy;
-    private $queue = array();
+    protected $queue = array();
 
     public function __construct($apiKey, array $options = array())
     {
