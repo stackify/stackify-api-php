@@ -12,6 +12,7 @@ class ErrorWrapper
     private $sourceMethod;
 
     const TYPE_STRING_EXCEPTION = 'StringException';
+    const UNKNOWN_METHOD = '{unknown}';
 
     /**
      * @var \Stackify\Log\Entities\ErrorWrapper
@@ -24,7 +25,12 @@ class ErrorWrapper
             $this->message = $object->getMessage();
             $this->type = get_class($object);
             $this->code = $object->getCode();
-            $this->setTrace($object->getTrace());
+            $trace = $object->getTrace();
+            array_unshift($trace, array(
+                'file' => $object->getFile(),
+                'line' => $object->getLine(),
+            ));
+            $this->setTrace($trace);
             $previous = $object->getPrevious();
             if (null !== $previous) {
                 // limit nesting level if needed here
@@ -80,7 +86,11 @@ class ErrorWrapper
     {
         $result = array();
         foreach ($this->filterTrace($trace) as $index => $item) {
-            $function = $item['function'] . '()';
+            if (isset($item['function'])) {
+                $function = $item['function'] . '()';
+            } else {
+                $function = self::UNKNOWN_METHOD;
+            }
             if (isset($item['class'])) {
                 // type is -> or :: which means dynamic or static method call
                 $type = isset($item['type']) ? $item['type'] : '->';
