@@ -26,10 +26,10 @@ class ErrorWrapper
             $this->type = get_class($object);
             $this->code = $object->getCode();
             $trace = $object->getTrace();
-            array_unshift($trace, array(
+            $trace[] = array(
                 'file' => $object->getFile(),
                 'line' => $object->getLine(),
-            ));
+            );
             $this->setTrace($trace);
             $previous = $object->getPrevious();
             if (null !== $previous) {
