@@ -37,8 +37,6 @@ class NativeError
         $traceItem = array(
             'file' => $this->file,
             'line' => $this->line,
-            // "method" is not defined in native error
-            'function' => '{unknown}',
         );
         return array($traceItem);
     }
