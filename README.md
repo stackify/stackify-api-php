@@ -20,23 +20,12 @@ ExecTransport does not require a Stackify agent to be installed because it sends
    
 ```php
 use Stackify\Log\Transport\ExecTransport;
-use Stackify\Log\Monolog\Handler as StackifyHandler;
+use Stackify\Log\Standalone\Logger;
     
 $transport = new ExecTransport('api_key');
 $handler = new StackifyHandler('application_name', 'environment_name', $transport);
 ```   
-   
-```yml
-# or configuration file example
-services:
-    stackify_transport:
-        class: "Stackify\\Log\\Transport\ExecTransport"
-        arguments: ["api_key"]
-    stackify_handler:
-        class: "Stackify\\Log\\Monolog\\Handler"
-        arguments: ["application_name", "environment_name", "@stackify_transport"]
-```
-    
+
 ####Configuration:
 <b>Proxy</b>
 - ExecTransport and CurlTransport support data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
@@ -53,21 +42,12 @@ $transport = new ExecTransport($apiKey, ['curlPath' => '/usr/bin/curl']);
 CurlTransport does not require a Stackify agent to be installed and it also sends data directly to Stackify services. It collects log entries in a single batch and sends data using native [PHP cURL](http://php.net/manual/en/book.curl.php) functions. This way is a blocking one, so it should not be used on production environments. To configure CurlTransport you need to pass environment name and API key (license key):
 ```php
 use Stackify\Log\Transport\CurlTransport;
-use Stackify\Log\Monolog\Handler as StackifyHandler;
+use Stackify\Log\Standalone\Logger;
     
 $transport = new CurlTransport('api_key');
 $handler = new StackifyHandler('application_name', 'environment_name', $transport);
 ```
-```yml
-# or configuration file example
-services:
-    stackify_transport:
-        class: "Stackify\\Log\\Transport\CurlTransport"
-        arguments: ["api_key"]
-    stackify_handler:
-        class: "Stackify\\Log\\Monolog\\Handler"
-        arguments: ["application_name", "environment_name", "@stackify_transport"]
-```
+
 ####Configuration:
 <b>Proxy</b>
 - ExecTransport and CurlTransport support data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
@@ -78,6 +58,14 @@ $transport = new CurlTransport($apiKey, ['proxy' => 'https://55.88.22.11:3128'])
 AgentTransport does not require additional configuration in your PHP code because all data is passed to the [Stackify agent](https://stackify.screenstepslive.com/s/3095/m/7787/l/119709-installation-for-linux). The agent must be installed on the same machine. Local TCP socket is used, so performance of your application is affected minimally.
 ```php
 use Stackify\Log\Standalone\Logger;
+
+$logger = new Logger('appname.com');
+$logger->warning('something happened');
+try {
+    $db->connect();
+catch (DbException $ex) {
+    $logger->error('DB is not available', ['ex' => $ex]);
+}
 ```
 ####Configuration:
 - You will need to enable the TCP listener by checking a checkbox in "Server Settings" in Stackify for your server on the Servers Page.  You can also change the default behavior for all your servers by going to the [Log Collectors Page](http://docs.stackify.com/m/7787/l/302705-log-collectors).
