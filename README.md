@@ -36,13 +36,13 @@ There are three different transport options that can be configured to send data 
             class: "Stackify\\Log\\Monolog\\Handler"
             arguments: ["application_name", "environment_name", "@stackify_transport"]
     ```
-### Configuration
-##### Proxy
+###Configuration:
+####Proxy
 ExecTransport and CurlTransport support data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
-```php
-$transport = new ExecTransport($apiKey, ['proxy' => 'https://55.88.22.11:3128']);
-```
-##### Curl path
+    ```php
+    $transport = new ExecTransport($apiKey, ['proxy' => 'https://55.88.22.11:3128']);
+    ```
+####Curl path
 It can be useful to specify ```curl``` destination path for ExecTransport. This option is set to 'curl' by default.
 ```php
 $transport = new ExecTransport($apiKey, ['curlPath' => '/usr/bin/curl']);
@@ -65,8 +65,8 @@ $transport = new ExecTransport($apiKey, ['curlPath' => '/usr/bin/curl']);
             class: "Stackify\\Log\\Monolog\\Handler"
             arguments: ["application_name", "environment_name", "@stackify_transport"]
     ```
-###Configuration
-#### Proxy
+###Configuration:
+####Proxy
 ExecTransport and CurlTransport support data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
 ```php
 $transport = new CurlTransport($apiKey, ['proxy' => 'https://55.88.22.11:3128']);
