@@ -19,23 +19,26 @@ There are three different transport options that can be configured to send data 
 
 ###ExecTransport:
 ExecTransport does not require a Stackify agent to be installed because it sends data directly to Stackify services. It collects log entries in a single batch, calls curl using the ```exec``` function, and sends it to the background immediately [```exec('curl ... &')```]. This will affect the performance of your application minimally, but it requires permissions to call ```exec``` inside the PHP script and it may cause silent data loss in the event of any network issues. This transport method does not work on Windows. To configure ExecTransport you need to pass the environment name and API key (license key):
-    ```php
-    use Stackify\Log\Transport\ExecTransport;
-    use Stackify\Log\Monolog\Handler as StackifyHandler;
+   
+```php
+use Stackify\Log\Transport\ExecTransport;
+use Stackify\Log\Monolog\Handler as StackifyHandler;
     
-    $transport = new ExecTransport('api_key');
-    $handler = new StackifyHandler('application_name', 'environment_name', $transport);
-    ```
-    ```yml
-    # or configuration file example
-    services:
-        stackify_transport:
-            class: "Stackify\\Log\\Transport\ExecTransport"
-            arguments: ["api_key"]
-        stackify_handler:
-            class: "Stackify\\Log\\Monolog\\Handler"
-            arguments: ["application_name", "environment_name", "@stackify_transport"]
-    ```
+$transport = new ExecTransport('api_key');
+$handler = new StackifyHandler('application_name', 'environment_name', $transport);
+```   
+   
+```yml
+# or configuration file example
+services:
+    stackify_transport:
+        class: "Stackify\\Log\\Transport\ExecTransport"
+        arguments: ["api_key"]
+    stackify_handler:
+        class: "Stackify\\Log\\Monolog\\Handler"
+        arguments: ["application_name", "environment_name", "@stackify_transport"]
+```
+    
 ####Configuration:
 <b>Proxy</b>
 - ExecTransport and CurlTransport support data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
@@ -50,23 +53,23 @@ $transport = new ExecTransport($apiKey, ['curlPath' => '/usr/bin/curl']);
 ```
 ###CurlTransport
 CurlTransport does not require a Stackify agent to be installed and it also sends data directly to Stackify services. It collects log entries in a single batch and sends data using native [PHP cURL](http://php.net/manual/en/book.curl.php) functions. This way is a blocking one, so it should not be used on production environments. To configure CurlTransport you need to pass environment name and API key (license key):
-    ```php
-    use Stackify\Log\Transport\CurlTransport;
-    use Stackify\Log\Monolog\Handler as StackifyHandler;
+```php
+use Stackify\Log\Transport\CurlTransport;
+use Stackify\Log\Monolog\Handler as StackifyHandler;
     
-    $transport = new CurlTransport('api_key');
-    $handler = new StackifyHandler('application_name', 'environment_name', $transport);
-    ```
-    ```yml
-    # or configuration file example
-    services:
-        stackify_transport:
-            class: "Stackify\\Log\\Transport\CurlTransport"
-            arguments: ["api_key"]
-        stackify_handler:
-            class: "Stackify\\Log\\Monolog\\Handler"
-            arguments: ["application_name", "environment_name", "@stackify_transport"]
-    ```
+$transport = new CurlTransport('api_key');
+$handler = new StackifyHandler('application_name', 'environment_name', $transport);
+```
+```yml
+# or configuration file example
+services:
+    stackify_transport:
+        class: "Stackify\\Log\\Transport\CurlTransport"
+        arguments: ["api_key"]
+    stackify_handler:
+        class: "Stackify\\Log\\Monolog\\Handler"
+        arguments: ["application_name", "environment_name", "@stackify_transport"]
+```
 ####Configuration:
 <b>Proxy</b>
 - ExecTransport and CurlTransport support data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
