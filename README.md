@@ -15,7 +15,7 @@ Install the latest version with `composer require stackify/logger`
 
 There are three different transport options that can be configured to send data to Stackify.  Below will show how to implement the different transport options:
 
-###ExecTransport:
+###ExecTransport
 ExecTransport does not require a Stackify agent to be installed because it sends data directly to Stackify services. It collects log entries in a single batch, calls curl using the ```exec``` function, and sends it to the background immediately [```exec('curl ... &')```]. This will affect the performance of your application minimally, but it requires permissions to call ```exec``` inside the PHP script and it may cause silent data loss in the event of any network issues. This transport method does not work on Windows. To configure ExecTransport you need to pass the environment name and API key (license key):
    
 ```php
@@ -26,7 +26,7 @@ $transport = new ExecTransport('api_key');
 $logger = new Logger('application_name', 'environment_name', $transport);
 ```   
 
-####Configuration:
+####Configuration
 <b>Proxy</b>
 - ExecTransport supports data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
     ```php
@@ -48,7 +48,7 @@ $transport = new CurlTransport('api_key');
 $logger = new Logger('application_name', 'environment_name', $transport);
 ```
 
-####Configuration:
+####Configuration
 <b>Proxy</b>
 - CurlTransport supports data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
 ```php
@@ -61,11 +61,8 @@ use Stackify\Log\Standalone\Logger;
 
 $logger = new Logger('appname.com');
 ```
-####Configuration:
+####Configuration
 - You will need to enable the TCP listener by checking a checkbox in "Server Settings" in Stackify for your server on the Servers Page.  You can also change the default behavior for all your servers by going to the [Log Collectors Page](http://docs.stackify.com/m/7787/l/302705-log-collectors).
-
-
-
 
 ## Troubleshooting
 If transport does not work, try looking into ```vendor\stackify\logger\src\Stackify\debug\log.log``` file (if it is available for writing). Errors are also written to global PHP [error_log](http://php.net/manual/en/errorfunc.configuration.php#ini.error-log).
@@ -77,7 +74,6 @@ $transport = new ExecTransport($apiKey, ['debug' => true]);
 By default handler requires [Stackify agent](https://stackify.screenstepslive.com/s/3095/m/7787/l/119709-installation-for-linux) to be running.
 There are other ways to send data, read more in [Monolog package documentation](https://github.com/stackify/stackify-log-monolog),
 all transports are available for standalone logger as well.
-
 
 ## License
 
