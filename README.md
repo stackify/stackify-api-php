@@ -12,7 +12,8 @@ Sign Up for a Trial:
 
 http://www.stackify.com/sign-up/
 
-## Standalone Logger
+## Installation
+
 Install the latest version with `composer require stackify/logger`
 
 There are three different transport options that can be configured to send data to Stackify.  Below will show how to implement the different transport options:
