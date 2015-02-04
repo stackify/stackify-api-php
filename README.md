@@ -68,7 +68,7 @@ use Stackify\Log\Standalone\Logger;
 $logger = new Logger('appname.com');
 ```
 
-You will need to enable the TCP listener by checking a checkbox in "Server Settings" in Stackify for your server on the Servers Page.  You can also change the default behavior for all your servers by going to the [Log Collectors Page](http://docs.stackify.com/m/7787/l/302705-log-collectors).
+You will need to enable the TCP listener by checking the "PHP App Logs (Agent Log Collector)" in the server settings page in Stackify. See [Log Collectors Page](http://docs.stackify.com/m/7787/l/302705-log-collectors) for more details.
 
 ## Troubleshooting
 
