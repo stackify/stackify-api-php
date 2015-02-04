@@ -2,12 +2,14 @@ stackify-api-php
 ================
 
 Common libraries for [Stackify Monolog handler](https://github.com/stackify/stackify-log-monolog) and [Stackify log4php appender](https://github.com/stackify/stackify-log-log4php).
-This package also includes a standalone [PSR-3](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md) -compatible logger that can be used without third-party libraries.
+This package also includes a standalone [PSR-3](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md) compatible logger that can be used without third-party libraries.
 
 Errors and Logs Overview:
+
 http://docs.stackify.com/m/7787/l/189767
 
 Sign Up for a Trial:
+
 http://www.stackify.com/sign-up/
 
 ## Standalone Logger
