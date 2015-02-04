@@ -23,7 +23,7 @@ use Stackify\Log\Transport\ExecTransport;
 use Stackify\Log\Standalone\Logger;
     
 $transport = new ExecTransport('api_key');
-$handler = new StackifyHandler('application_name', 'environment_name', $transport);
+$logger = new Logger('application_name', 'environment_name', $transport);
 ```   
 
 ####Configuration:
@@ -45,7 +45,7 @@ use Stackify\Log\Transport\CurlTransport;
 use Stackify\Log\Standalone\Logger;
     
 $transport = new CurlTransport('api_key');
-$handler = new StackifyHandler('application_name', 'environment_name', $transport);
+$logger = new Logger('application_name', 'environment_name', $transport);
 ```
 
 ####Configuration:
