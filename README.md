@@ -78,10 +78,6 @@ Note that ExecTransport does not produce any errors at all, but you can switch i
 $transport = new ExecTransport($apiKey, ['debug' => true]);
 ```
 
-By default handler requires [Stackify agent](https://stackify.screenstepslive.com/s/3095/m/7787/l/119709-installation-for-linux) to be running.
-There are other ways to send data, read more in [Monolog package documentation](https://github.com/stackify/stackify-log-monolog),
-all transports are available for standalone logger as well.
-
 ## License
 
 Copyright 2015 Stackify, LLC.
