@@ -16,7 +16,7 @@ http://www.stackify.com/sign-up/
 
 Install the latest version with `composer require stackify/logger`
 
-There are three different transport options that can be configured to send data to Stackify.  Below will show how to implement the different transport options:
+There are three different transport options that can be configured to send data to Stackify. Below will show how to implement the different transport options.
 
 ### ExecTransport
 ExecTransport does not require a Stackify agent to be installed because it sends data directly to Stackify services. It collects log entries in a single batch, calls curl using the ```exec``` function, and sends it to the background immediately [```exec('curl ... &')```]. This will affect the performance of your application minimally, but it requires permissions to call ```exec``` inside the PHP script and it may cause silent data loss in the event of any network issues. This transport method does not work on Windows. To configure ExecTransport you need to pass the environment name and API key (license key):
