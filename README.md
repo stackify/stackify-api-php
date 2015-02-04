@@ -29,7 +29,7 @@ $transport = new ExecTransport('api_key');
 $logger = new Logger('application_name', 'environment_name', $transport);
 ```   
 
-#### Optional Configuration
+#### Optional Settings
 
 <b>Proxy</b>
 - ExecTransport supports data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
@@ -53,7 +53,7 @@ $transport = new CurlTransport('api_key');
 $logger = new Logger('application_name', 'environment_name', $transport);
 ```
 
-#### Optional Configuration
+#### Optional Settings
 
 <b>Proxy</b>
 - CurlTransport supports data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
