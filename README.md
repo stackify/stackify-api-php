@@ -28,7 +28,7 @@ $handler = new StackifyHandler('application_name', 'environment_name', $transpor
 
 ####Configuration:
 <b>Proxy</b>
-- ExecTransport and CurlTransport support data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
+- ExecTransport supports data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
     ```php
     $transport = new ExecTransport($apiKey, ['proxy' => 'https://55.88.22.11:3128']);
     ```
@@ -50,7 +50,7 @@ $handler = new StackifyHandler('application_name', 'environment_name', $transpor
 
 ####Configuration:
 <b>Proxy</b>
-- ExecTransport and CurlTransport support data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
+- CurlTransport supports data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
 ```php
 $transport = new CurlTransport($apiKey, ['proxy' => 'https://55.88.22.11:3128']);
 ```
