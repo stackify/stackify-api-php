@@ -8,6 +8,10 @@ Errors and Logs Overview:
 
 http://docs.stackify.com/m/7787/l/189767
 
+Smarter Errors & Logs for PHP:
+
+http://stackify.com/smarter-errors-logs-php/
+
 Sign Up for a Trial:
 
 http://www.stackify.com/sign-up/
