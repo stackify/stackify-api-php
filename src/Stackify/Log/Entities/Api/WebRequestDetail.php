@@ -2,6 +2,8 @@
 
 namespace Stackify\Log\Entities\Api;
 
+use Stackify\Utils\TypeConverter;
+
 class WebRequestDetail
 {
 
@@ -125,7 +127,7 @@ class WebRequestDetail
             foreach ($data as $key => $value) {
                 $result[$key] = $maskValues
                     ? self::HIDDEN_VALUE
-                    : self::stringify($value);
+                    : TypeConverter::stringify($value);
             }
         }
         return empty($result) ? null : $result;
@@ -191,27 +193,6 @@ class WebRequestDetail
             }
         }
         return empty($headers) ? null : $headers;
-    }
-
-    /**
-     * Converts any PHP type to string
-     * @param mixed $value
-     * @return string
-     */
-    private static function stringify($value)
-    {
-        $string = '';
-        if (is_scalar($value)) {
-            // integer, float, string, boolean
-            $string = (string)$value;
-        } elseif (is_resource($value)) {
-            // resource
-            $string = '[resource]';
-        } else {
-            // array, object, null, callable
-            $string = json_encode($value);
-        }
-        return $string;
     }
 
 }
