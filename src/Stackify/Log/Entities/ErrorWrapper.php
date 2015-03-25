@@ -12,7 +12,7 @@ class ErrorWrapper
     private $sourceMethod;
 
     const TYPE_STRING_EXCEPTION = 'StringException';
-    const UNKNOWN_METHOD = '{unknown}';
+    const TRACE_UNKNOWN_ITEM = '{unknown}';
 
     /**
      * @var \Stackify\Log\Entities\ErrorWrapper
@@ -89,19 +89,23 @@ class ErrorWrapper
             if (isset($item['function'])) {
                 $function = $item['function'] . '()';
             } else {
-                $function = self::UNKNOWN_METHOD;
+                $function = self::TRACE_UNKNOWN_ITEM;
             }
             if (isset($item['class'])) {
                 // type is -> or :: which means dynamic or static method call
-                $type = isset($item['type']) ? $item['type'] : '->';
+                $type = $this->getTraceItem($item, 'type', '->');
                 $function = $item['class'] . $type . $function;
                 $sourceMethod = $function;
             } else {
-                $sourceMethod = $item['file'] . ':' . $function;
+                if (isset($item['file'])) {
+                    $sourceMethod = $item['file'] . ':' . $function;
+                } else {
+                    $sourceMethod = $function;
+                }
             }
             $result[] = array(
-                'file' => $item['file'],
-                'line' => $item['line'],
+                'file' => $this->getTraceItem($item, 'file', self::TRACE_UNKNOWN_ITEM),
+                'line' => $this->getTraceItem($item, 'line', 0),
                 'function' => $function,
             );
             if (0 === $index) {
@@ -109,6 +113,11 @@ class ErrorWrapper
             }
         }
         $this->trace = $result;
+    }
+
+    private function getTraceItem($item, $keyName, $defaulValue = null)
+    {
+        return isset($item[$keyName]) ? $item[$keyName] : $defaulValue;
     }
 
     private function filterTrace(array $trace)
@@ -123,7 +132,7 @@ class ErrorWrapper
         }
         foreach ($trace as $item) {
             // check if path starts with $excludePath
-            if (isset($item['file']) && false === strpos($item['file'], $excludePath)) {
+            if (!isset($item['file']) || false === strpos($item['file'], $excludePath)) {
                 $filtered[] = $item;
             }
         }
