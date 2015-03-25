@@ -132,7 +132,7 @@ class ErrorWrapper
         }
         foreach ($trace as $item) {
             // check if path starts with $excludePath
-            if (isset($item['file']) && false === strpos($item['file'], $excludePath)) {
+            if (!isset($item['file']) || false === strpos($item['file'], $excludePath)) {
                 $filtered[] = $item;
             }
         }
