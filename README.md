@@ -66,7 +66,7 @@ $transport = new CurlTransport($apiKey, ['proxy' => 'https://55.88.22.11:3128'])
 ```
 ### AgentTransport
 
-AgentTransport does not require additional configuration in your PHP code because all data is passed to the [Stackify agent](https://stackify.screenstepslive.com/s/3095/m/7787/l/119709-installation-for-linux). The agent must be installed on the same machine. Local TCP socket on port 10515 is used, so performance of your application is affected minimally.
+AgentTransport does not require additional configuration in your PHP code because all data is passed to the [Stackify agent](http://support.stackify.com/hc/en-us/articles/205419575). The agent must be installed on the same machine. Local TCP socket on port 10515 is used, so performance of your application is affected minimally.
 ```php
 use Stackify\Log\Standalone\Logger;
 
