@@ -8,6 +8,7 @@ class WebRequestDetail
 {
 
     const HIDDEN_VALUE = 'X-MASKED-X';
+    private static $HIDDEN_HEADERS = array('cookie', 'authorization');
 
     /**
      * @var string
@@ -188,7 +189,7 @@ class WebRequestDetail
             }
         }
         foreach ($headers as $name => $value) {
-            if ('cookie' === strtolower($name)) {
+            if (in_array(strtolower($name), self::$HIDDEN_HEADERS)) {
                 $headers[$name] = self::HIDDEN_VALUE;
             }
         }
