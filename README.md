@@ -1,6 +1,8 @@
 stackify-api-php
 ================
 
+[![PHP version](https://badge.fury.io/ph/stackify%2Flogger.svg)](http://badge.fury.io/ph/stackify%2Flogger)
+
 Common libraries for [Stackify Monolog handler](https://github.com/stackify/stackify-log-monolog) and [Stackify log4php appender](https://github.com/stackify/stackify-log-log4php).
 This package also includes a standalone [PSR-3](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md) compatible logger that can be used without third-party libraries.
 
