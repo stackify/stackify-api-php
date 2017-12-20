@@ -8,7 +8,7 @@ This package also includes a standalone [PSR-3](https://github.com/php-fig/fig-s
 
 Errors and Logs Overview:
 
-http://support.stackify.com/hc/en-us/articles/205419435-Errors-and-Logs-Overview
+http://support.stackify.com/errors-and-logs-overview/
 
 Smarter Errors & Logs for PHP:
 
