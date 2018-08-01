@@ -9,6 +9,11 @@ class LogMsg
     /**
      * @var string
      */
+    public $id;
+
+    /**
+     * @var string
+     */
     public $Msg;
 
     /**
@@ -68,5 +73,5 @@ class LogMsg
             }
         }
     }
-
+    
 }
