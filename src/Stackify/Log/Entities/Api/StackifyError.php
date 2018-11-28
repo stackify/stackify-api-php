@@ -39,12 +39,15 @@ class StackifyError
      */
     public $UserName;
 
-    public function __construct($appName, $environmentName)
+    public function __construct($appName, $environmentName, $logServerVariables = false)
     {
         $this->EnvironmentDetail = EnvironmentDetail::getInstance()
             ->init($appName, $environmentName);
         $this->WebRequestDetail = WebRequestDetail::getInstance();
-        $this->ServerVariables = $this->getEnvironmentVariables();
+
+        if ($logServerVariables) {
+            $this->ServerVariables = $this->getEnvironmentVariables();
+        }
     }
 
     private function getEnvironmentVariables()

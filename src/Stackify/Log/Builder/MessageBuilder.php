@@ -19,8 +19,9 @@ class MessageBuilder implements BuilderInterface
     protected $loggerName;
     protected $appName;
     protected $environmentName;
+    protected $logServerVariables;
 
-    public function __construct($loggerName, $appName, $environmentName = null)
+    public function __construct($loggerName, $appName, $environmentName = null, $logServerVariables = false)
     {
         if (!function_exists('json_encode')) {
             throw new InitializationException('JSON extension is required for Stackify logger');
@@ -28,6 +29,7 @@ class MessageBuilder implements BuilderInterface
         $this->loggerName = $loggerName;
         $this->appName = $this->validateNotEmpty('AppName', $appName);
         $this->environmentName = $environmentName;
+        $this->logServerVariables = $logServerVariables;
         // set state for environment details
         EnvironmentDetail::getInstance()->init($appName, $environmentName);
     }
@@ -71,7 +73,7 @@ class MessageBuilder implements BuilderInterface
             $errorWrapper = new ErrorWrapper($logEntry);
         }
         if (null !== $errorWrapper) {
-            $error = new StackifyError($this->appName, $this->environmentName);
+            $error = new StackifyError($this->appName, $this->environmentName, $this->logServerVariables);
             $error->OccurredEpochMillis = $logEntry->getMilliseconds();
             $error->Error = $this->getErrorItem($errorWrapper);
             $logMsg->setError($error);
