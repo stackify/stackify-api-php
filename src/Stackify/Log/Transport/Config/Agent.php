@@ -10,4 +10,5 @@ class Agent
     const SOCKET_TIMEOUT_CONNECT = 1;
     const SOCKET_TIMEOUT_WRITE = 1;
     const SOCKET_MAX_CONNECT_ATTEMPTS = 2;
+    const DOMAIN_SOCKET_PATH = '/usr/local/stackify/stackify.sock';
 }
