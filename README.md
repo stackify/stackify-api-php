@@ -1,31 +1,36 @@
-stackify-api-php
-================
-
 [![PHP version](https://badge.fury.io/ph/stackify%2Flogger.svg)](http://badge.fury.io/ph/stackify%2Flogger)
 
-Common libraries for [Stackify Monolog handler](https://github.com/stackify/stackify-log-monolog) and [Stackify log4php appender](https://github.com/stackify/stackify-log-log4php).
-This package also includes a standalone [PSR-3](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md) compatible logger that can be used without third-party libraries.
+# Stackify PHP Logger 
 
-Errors and Logs Overview:
+Standalone Stackify PHP [PSR-3](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md) Logger. 
 
-http://support.stackify.com/errors-and-logs-overview/
+* **Errors and Logs Overview:** http://support.stackify.com/errors-and-logs-overview/
+* **Sign Up for a Trial:** http://www.stackify.com/sign-up/
 
-Smarter Errors & Logs for PHP:
+## PHP Logging Framework Integrations
 
-http://stackify.com/smarter-errors-logs-php/
+* **Monolog** Handler: https://github.com/stackify/stackify-log-monolog
+* **log4php** Appender: https://github.com/stackify/stackify-log-log4php
 
-Sign Up for a Trial:
-
-http://www.stackify.com/sign-up/
 
 ## Installation
 
 Install the latest version with `composer require stackify/logger`
 
-There are three different transport options that can be configured to send data to Stackify. Below will show how to implement the different transport options.
+### Installation with Linux Agent 
 
-### ExecTransport
-ExecTransport does not require a Stackify agent to be installed because it sends data directly to Stackify services. It collects log entries in batches, calls curl using the ```exec``` function, and sends data to the background immediately [```exec('curl ... &')```]. This will affect the performance of your application minimally, but it requires permissions to call ```exec``` inside the PHP script and it may cause silent data loss in the event of any network issues. This transport method does not work on Windows. To configure ExecTransport you need to pass the environment name and API key (license key):
+This is the suggested installation option, offering the best 
+logging performance. 
+
+```php
+use Stackify\Log\Standalone\Logger;
+
+$logger = new Logger('application_name', 'environment_name');
+```
+
+### Installation without Linux Agent
+
+This option does not require the Stackify Agent to be installed because it sends data directly to Stackify services. It collects log entries in batches, calls curl using the ```exec``` function, and sends data to the background immediately [```exec('curl ... &')```]. This will affect the performance of your application minimally, but it requires permissions to call ```exec``` inside the PHP script and it may cause silent data loss in the event of any network issues. This transport method does not work on Windows. To configure ExecTransport you need to pass the environment name and API key (license key):
    
 ```php
 use Stackify\Log\Transport\ExecTransport;
@@ -37,9 +42,8 @@ $logger = new Logger('application_name', 'environment_name', $transport);
 
 #### Optional Settings
 
-
 **Proxy**
-- ExecTransport supports data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
+- ExecTransport supports data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): `<[protocol://][user:password@]proxyhost[:port]>`
 ```php
 $transport = new ExecTransport($apiKey, ['proxy' => 'https://55.88.22.11:3128']);
 ```
@@ -58,55 +62,8 @@ system environment variables; do not enable if sensitive information such as pas
 $logger = new Logger('application_name', 'environment_name', $transport, true);
 ```
 
-
-### CurlTransport
-CurlTransport does not require a Stackify agent to be installed and it also sends data directly to Stackify services. It collects log entries in a single batch and sends data using native [PHP cURL](http://php.net/manual/en/book.curl.php) functions. This way is a blocking one, so it should not be used on production environments. To configure CurlTransport you need to pass environment name and API key (license key):
-```php
-use Stackify\Log\Transport\CurlTransport;
-use Stackify\Log\Standalone\Logger;
-    
-$transport = new CurlTransport('api_key');
-$logger = new Logger('application_name', 'environment_name', $transport);
-```
-
-#### Optional Settings
-
-**Proxy**
-- CurlTransport supports data delivery through proxy. Specify proxy using [libcurl format](http://curl.haxx.se/libcurl/c/CURLOPT_PROXY.html): <[protocol://][user:password@]proxyhost[:port]>
-```php
-$transport = new CurlTransport($apiKey, ['proxy' => 'https://55.88.22.11:3128']);
-```
-
-**Log Server Environment Variables**
-- Server environment variables can be added to error log message metadata. **Note:** This will log all 
-system environment variables; do not enable if sensitive information such as passwords or keys are stored this way.
-
- ```php
-$logger = new Logger('application_name', 'environment_name', $transport, true);
-```
-
-### AgentTransport
-
-AgentTransport does not require additional configuration in your PHP code because all data is passed to the [Stackify agent](http://support.stackify.com/hc/en-us/articles/205419575). The agent must be installed on the same machine. Local TCP socket on port 10515 is used, so performance of your application is affected minimally.
-```php
-use Stackify\Log\Standalone\Logger;
-
-$logger = new Logger('application_name', 'environment_name');
-```
-
-You will need to enable the TCP listener by checking the "PHP App Logs (Agent Log Collector)" in the server settings page in Stackify. See [Log Collectors Page](http://support.stackify.com/hc/en-us/articles/204719709) for more details.
-
-#### Optional Settings 
-
-**Log Server Environment Variables**
-- Server environment variables can be added to error log message metadata. **Note:** This will log all 
-system environment variables; do not enable if sensitive information such as passwords or keys are stored this way.
-
- ```php
-$logger = new Logger('application_name', 'environment_name', null, true);
-```
-
-## Troubleshooting
+ 
+#### Troubleshooting
 
 If transport does not work, try looking into ```vendor\stackify\logger\src\Stackify\debug\log.log``` file (if it is available for writing). Errors are also written to global PHP [error_log](http://php.net/manual/en/errorfunc.configuration.php#ini.error-log).
 Note that ExecTransport does not produce any errors at all, but you can switch it to debug mode:
@@ -116,7 +73,7 @@ $transport = new ExecTransport($apiKey, ['debug' => true]);
 
 ## License
 
-Copyright 2018 Stackify, LLC.
+Copyright 2019 Stackify, LLC.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
