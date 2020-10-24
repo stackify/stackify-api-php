@@ -2,6 +2,8 @@
 
 namespace Stackify\Log\Entities\Api;
 
+use Stackify\Log\Transport\Config\Agent;
+
 class StackifyError
 {
     /**
@@ -50,8 +52,19 @@ class StackifyError
         }
     }
 
+    /**
+     * Get server environment variables
+     *
+     * @return array
+     */
     private function getEnvironmentVariables()
     {
+        $agentConfig = Agent::getInstance();
+        if ($agentConfig) {
+            return isset($_SERVER) && $agentConfig->getCaptureServerVariables() 
+                ? WebRequestDetail::getRequestMap($_SERVER, $agentConfig->getCaptureServerVariablesBlacklist(), $agentConfig->getCaptureServerVariablesBlacklist())
+                : null;
+        }
         return isset($_SERVER) ? WebRequestDetail::getRequestMap($_SERVER) : null;
     }
 

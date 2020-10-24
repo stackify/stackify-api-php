@@ -3,88 +3,125 @@
 namespace Stackify\Log\Entities\Api;
 
 use Stackify\Utils\TypeConverter;
+use Stackify\Log\Transport\Config\Agent;
 
 class WebRequestDetail
 {
 
     const HIDDEN_VALUE = 'X-MASKED-X';
-    private static $HIDDEN_HEADERS = array('cookie', 'authorization');
+    private static $_HIDDEN_HEADERS = array(
+        'cookie' => 1,
+        'authorization' => 1
+    );
 
     /**
+     * User IP address
+     *
      * @var string
      */
     public $UserIPAddress;
 
     /**
+     * HTTP Method
+     *
      * @var string
      */
     public $HttpMethod;
 
     /**
+     * Request Protocol
+     *
      * @var string
      */
     public $RequestProtocol;
 
     /**
+     * Request URL
+     *
      * @var string
      */
     public $RequestUrl;
 
     /**
+     * Request URL Root
+     *
      * @var string
      */
     public $RequestUrlRoot;
 
     /**
+     * Referral URL
+     *
      * @var string
      */
     public $ReferralUrl;
 
     /**
+     * Request Headers
+     *
      * @var array Key-value pairs
      */
     public $Headers;
 
     /**
+     * Request Cookies
+     *
      * @var array Key-value pairs
      */
     public $Cookies;
 
     /**
+     * $_GET values
+     *
      * @var array Key-value pairs
      */
     public $QueryString;
 
     /**
+     * $_POST values
+     *
      * @var array Key-value pairs
      */
     public $PostData;
 
     /**
+     * $_SESSION values
+     *
      * @var array Key-value pairs
      */
     public $SessionData;
 
     /**
+     * Raw post data
+     *
      * @var string
      */
     public $PostDataRaw;
 
     /**
+     * MVC Action
+     *
      * @var string
      */
     public $MVCAction;
 
     /**
+     * MVC Controller
+     *
      * @var string
      */
     public $MVCController;
 
     /**
+     * MVC Area
+     *
      * @var string
      */
     public $MVCArea;
 
+    /**
+     * Constructor
+     */
     private function __construct()
     {
         $this->UserIPAddress = $this->getIpAddress();
@@ -93,19 +130,71 @@ class WebRequestDetail
         $this->RequestUrl = $this->getRequestUrl();
         $this->RequestUrlRoot = filter_input(INPUT_SERVER, 'SERVER_NAME');
         $this->ReferralUrl = filter_input(INPUT_SERVER, 'HTTP_REFERER');
-        $this->Headers = $this->getHeaders();
-        $this->Cookies = isset($_COOKIE) ? self::getRequestMap($_COOKIE, true) : null;
-        $this->QueryString = isset($_GET) ? self::getRequestMap($_GET) : null;
-        $this->PostData = isset($_POST) ? self::getRequestMap($_POST) : null;
-        $this->SessionData = isset($_SESSION) ? self::getRequestMap($_SESSION, true) : null;
-        $this->PostDataRaw = file_get_contents('php://input');
+
+        /**
+         * @var \Stackify\Log\Transport\Config\Agent
+         */
+        $agentConfig = Agent::getInstance();
+
+        if ($agentConfig) {
+            $this->Headers = $agentConfig->getCaptureErrorHeaders()
+                ? $this->getHeaders(
+                    $agentConfig->getCaptureErrorHeadersBlacklist(),
+                    $agentConfig->getCaptureErrorHeadersWhitelist()
+                    )
+                : null;
+            $this->Cookies = isset($_COOKIE) && $agentConfig->getCaptureErrorCookies()
+                ? self::getRequestMap(
+                    $_COOKIE,
+                    $agentConfig->getCaptureErrorCookiesBlacklist(),
+                    $agentConfig->getCaptureErrorCookiesWhitelist()
+                )
+                : null;
+
+            $this->QueryString = isset($_GET) && $agentConfig->getCaptureGetVariables()
+                ? self::getRequestMap(
+                    $_COOKIE,
+                    $agentConfig->getCaptureGetVariablesBlacklist(),
+                    $agentConfig->getCaptureGetVariablesWhitelist()
+                )
+                : null;
+            $this->PostData = isset($_POST) && $agentConfig->getCapturePostVariables()
+                ? self::getRequestMap(
+                    $_COOKIE,
+                    $agentConfig->getCapturePostVariablesBlacklist(),
+                    $agentConfig->getCapturePostVariablesWhitelist()
+                )
+                : null;
+            $this->SessionData = isset($_SESSION) && $agentConfig->getCaptureSessionVariables()
+                ? self::getRequestMap(
+                    $_COOKIE,
+                    $agentConfig->getCaptureSessionVariablesBlacklist(),
+                    $agentConfig->getCaptureSessionVariablesWhitelist()
+                )
+                : null;
+            $this->PostDataRaw = $agentConfig->getCaptureRawPostData() ? file_get_contents('php://input'): null;
+        } else {
+            $this->Headers = $this->getHeaders();
+            $this->Cookies = isset($_COOKIE) ? self::getRequestMap($_COOKIE, ['*']) : null;
+            $this->QueryString = isset($_GET) ? self::getRequestMap($_GET) : null;
+            $this->PostData = isset($_POST) ? self::getRequestMap($_POST) : null;
+            $this->SessionData = isset($_SESSION) ? self::getRequestMap($_SESSION, ['*']) : null;
+            $this->PostDataRaw = file_get_contents('php://input');
+        }
     }
 
     /**
      * Singleton attributes
      */
-    private function __clone() {}
+    protected function __clone()
+    {
+    }
 
+    /**
+     * Get singleton instance
+     *
+     * @return self
+     */
     public static function getInstance()
     {
         static $instance;
@@ -117,24 +206,53 @@ class WebRequestDetail
 
     /**
      * Converts $data to key-value pairs, where values are strings
-     * @param mixed $data
-     * @param boolean $maskValues  Hide request values
+     *
+     * @param mixed   $data      Collection
+     * @param boolean $blacklist Blacklist
+     * @param boolean $whitelist Whitelist
+     *
      * @return array
      */
-    public static function getRequestMap($data, $maskValues = false)
+    public static function getRequestMap($data, $blacklist = null, $whitelist = null)
     {
+        if ($blacklist && is_array($blacklist) == false) {
+            $blacklist = null;
+            // TODO: log?
+        }
+
+        if ($whitelist && is_array($whitelist) == false) {
+            $whitelist = null;
+            // TODO: log?
+        }
+
         $result = array();
         if (is_array($data)) {
             foreach ($data as $key => $value) {
-                $result[$key] = $maskValues
+                $maskValue = false;
+
+                if ($blacklist && isset($blacklist[$key])) {
+                    $maskValue = true;
+                }
+
+                if ($whitelist && isset($whitelist[$key]) === false) {
+                    continue;
+                }
+
+                $result[$key] = $maskValue
                     ? self::HIDDEN_VALUE
                     : TypeConverter::stringify($value);
             }
         }
+
         return empty($result) ? null : $result;
     }
 
-    private function getIpAddress()
+    /**
+     * Get User IP Address
+     *
+     * @return string
+     */
+    protected function getIpAddress()
     {
         $keys = array(
             'HTTP_CLIENT_IP',
@@ -154,7 +272,12 @@ class WebRequestDetail
         return null;
     }
 
-    private function getProtocol()
+    /**
+     * Get Protocol
+     *
+     * @return string
+     */
+    protected function getProtocol()
     {
         $protocol = null;
         if ('cli' === php_sapi_name()) {
@@ -165,7 +288,12 @@ class WebRequestDetail
         return $protocol;
     }
 
-    private function getRequestUrl()
+    /**
+     * Get Request URL
+     *
+     * @return string
+     */
+    protected function getRequestUrl()
     {
         $https = filter_input(INPUT_SERVER, 'HTTPS');
         $ssl = null !== $https && 'off' !== $https;
@@ -178,8 +306,26 @@ class WebRequestDetail
         return null;
     }
 
-    private function getHeaders()
+    /**
+     * Get headers
+     *
+     * @param array $blacklist Blacklist
+     * @param array $whitelist Whitelist
+     *
+     * @return void
+     */
+    protected function getHeaders($blacklist = null, $whitelist = null)
     {
+        if ($blacklist && is_array($blacklist) == false) {
+            $blacklist = null;
+            // TODO: log?
+        }
+
+        if ($whitelist && is_array($whitelist) == false) {
+            $whitelist = null;
+            // TODO: log?
+        }
+
         $headers = array();
         if (function_exists('getallheaders')) {
             $headers = getallheaders();
@@ -188,12 +334,31 @@ class WebRequestDetail
                 $headers = array();
             }
         }
-        foreach ($headers as $name => $value) {
-            if (in_array(strtolower($name), self::$HIDDEN_HEADERS)) {
-                $headers[$name] = self::HIDDEN_VALUE;
+
+        $result = array();
+
+        foreach ($headers as $key => $value) {
+            $maskValue = false;
+            $lowercaseKey = strtolower($key);
+
+            if ($blacklist && isset($blacklist[$key])) {
+                $maskValue = true;
             }
+
+            if ($whitelist && isset($whitelist[$key]) === false) {
+                continue;
+            }
+
+            if (isset(self::$_HIDDEN_HEADERS[$lowercaseKey])) {
+                $maskValue = true;
+            }
+
+            $result[$key] = $maskValue
+                    ? self::HIDDEN_VALUE
+                    : TypeConverter::stringify($value);
         }
-        return empty($headers) ? null : $headers;
+
+        return empty($result) ? null : $result;
     }
 
 }

@@ -23,11 +23,30 @@ abstract class AbstractTransport implements TransportInterface
     protected $debug = false;
     private $debugLogPath;
 
+    /**
+     * Agent config
+     *
+     * @var \Stackify\Log\Transport\Config\Agent
+     */
+    protected $agentConfig;
+    /**
+     * Agent config attribute
+     *
+     * @var string
+     */
+    protected $agentConfigAttribute = 'config';
+
     public function __construct()
     {
         $ds = DIRECTORY_SEPARATOR;
         $this->debugLogPath = realpath(dirname(__FILE__) . "$ds..$ds..") . $ds . 'debug/log.log';
         $this->errorGovernor = new ErrorGovernor();
+
+        $this->agentConfig = Agent::getInstance();
+        if ($this->agentConfig) {
+            $this->debugLogPath = $this->agentConfig->getDebugLogPath();
+        }
+
         // add empty implementation to avoid method calls on non-object
         $this->setMessageBuilder(new NullBuilder());
     }
@@ -52,6 +71,10 @@ abstract class AbstractTransport implements TransportInterface
                     throw new InitializationException("Option '$name' has invalid value");
                 }
             }
+        }
+
+        if (isset($options[$this->agentConfigAttribute]) && $this->agentConfig) {
+            $this->agentConfig->extract($options[$this->agentConfigAttribute]);
         }
     }
 

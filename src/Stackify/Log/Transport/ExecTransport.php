@@ -79,12 +79,20 @@ class ExecTransport extends AbstractApiTransport
     protected function send($data)
     {
         $url = Api::API_BASE_URL . Api::API_CALL_LOGS;
+        $maxTime = Api::API_MAX_TIME;
+
+        if ($this->agentConfig) {
+            $url = $this->agentConfig->getApiBaseUrl() . $this->agentConfig->getApiCallLogsEndpoint();
+            $maxTime = $this->agentConfig->getApiMaxTimeout();
+        }
+
+
         $cmd = "$this->curlPath -X POST";
         foreach ($this->getApiHeaders() as $name => $value) {
             $cmd .= " --header \"$name: $value\"";
         }
         $escapedData = $this->escapeArg($data);
-        $maxTime = Api::API_MAX_TIME;
+        
         $cmd .= " --data '$escapedData' '$url' --max-time $maxTime";
         if ($this->proxy) {
             $cmd .= " --proxy '$this->proxy'";

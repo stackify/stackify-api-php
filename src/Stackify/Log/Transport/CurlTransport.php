@@ -33,10 +33,18 @@ class CurlTransport extends AbstractApiTransport
         foreach ($this->getApiHeaders() as $name => $value) {
             $headers[] = "$name: $value";
         }
+
         $url = Api::API_BASE_URL . Api::API_CALL_LOGS;
+        $maxTimeout = Api::API_MAX_TIME;
+
+        if ($this->agentConfig) {
+            $url = $this->agentConfig->getApiBaseUrl() . $this->agentConfig->getApiCallLogsEndpoint();
+            $maxTimeout = $this->agentConfig->getApiMaxTimeout();
+        }
+        
         $handle = curl_init($url);
         curl_setopt($handle, CURLOPT_POST, 1);
-        curl_setopt($handle, CURLOPT_TIMEOUT, Api::API_MAX_TIME);
+        curl_setopt($handle, CURLOPT_TIMEOUT, $maxTimeout);
         curl_setopt($handle, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($handle, CURLOPT_POSTFIELDS, $data);
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
