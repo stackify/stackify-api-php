@@ -146,7 +146,7 @@ class Agent extends AbstractConfig
      */
     public function setPort($port = null)
     {
-        if (is_int($port) == false) {
+        if (is_numeric($port) == false) {
             $this->logError('[Port] is not an integer.');
             return;
         }
@@ -168,7 +168,7 @@ class Agent extends AbstractConfig
      */
     public function setSocketTimeoutConnect($timeout = null)
     {
-        if (is_int($timeout) == false) {
+        if (is_numeric($timeout) == false) {
             $this->logError('[SocketTimeoutConnect] is not an integer.');
             return;
         }
@@ -185,7 +185,7 @@ class Agent extends AbstractConfig
      */
     public function setSocketTimeoutWrite($timeout )
     {
-        if (is_int($timeout) == false) {
+        if (is_numeric($timeout) == false) {
             $this->logError('[SocketTimeoutWrite] is not an integer.');
             return;
         }
@@ -202,7 +202,7 @@ class Agent extends AbstractConfig
      */
     public function setSocketMaxConnectAttempts($attempts)
     {
-        if (is_int($attempts) == false) {
+        if (is_numeric($attempts) == false) {
             $this->logError('[SocketMaxConnectAttempts] is not an integer.');
             return;
         }
@@ -268,7 +268,7 @@ class Agent extends AbstractConfig
      */
     public function setApiMaxTimeout($timeout = null)
     {
-        if (is_int($timeout) == false) {
+        if (is_numeric($timeout) == false) {
             $this->logError('[ApiMaxTimeout] is not an integer.');
             return;
         }
