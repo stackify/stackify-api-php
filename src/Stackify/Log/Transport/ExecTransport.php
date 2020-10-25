@@ -91,13 +91,14 @@ class ExecTransport extends AbstractApiTransport
         foreach ($this->getApiHeaders() as $name => $value) {
             $cmd .= " --header \"$name: $value\"";
         }
+
         $escapedData = $this->escapeArg($data);
         
         $cmd .= " --data '$escapedData' '$url' --max-time $maxTime";
         if ($this->proxy) {
             $cmd .= " --proxy '$this->proxy'";
         }
-        if ($this->debug) {
+        if ($this->getDebug()) {
             $cmd .= ' --verbose';
         } else {
             // return immediately while curl will run in the background
@@ -107,7 +108,7 @@ class ExecTransport extends AbstractApiTransport
         $r = exec($cmd, $output, $result);
         // if debug mode is off, it makes no sense to check result,
         // because command is send to background
-        if ($this->debug) {
+        if ($this->getDebug()) {
             if ($result !== 0) {
                 // curl returned some error
                 $this->logError(self::ERROR_CURL, $cmd, $result, implode(' ', $output));

@@ -44,10 +44,6 @@ abstract class AbstractTransport implements TransportInterface
         $this->errorGovernor = new ErrorGovernor();
 
         $this->agentConfig = Agent::getInstance();
-        if ($this->agentConfig) {
-            $this->debugLogPath = $this->agentConfig->getDebugLogPath();
-            $this->debug = $this->agentConfig->getDebug();
-        }
 
         // add empty implementation to avoid method calls on non-object
         $this->setMessageBuilder(new NullBuilder());
@@ -87,7 +83,7 @@ abstract class AbstractTransport implements TransportInterface
 
     protected function logDebug($message)
     {
-        if (!$this->debug) {
+        if (!$this->getDebug()) {
             return;
         }
         $this->log($message, func_get_args(), true);
@@ -101,11 +97,38 @@ abstract class AbstractTransport implements TransportInterface
         $formatted = preg_replace('/\r\n/', '', vsprintf($template, $replacements));
         // first option - write to local file if possible
         // this can be not available because of file permissions
-        @file_put_contents($this->debugLogPath, "$formatted\n", FILE_APPEND);
+        @file_put_contents($this->getDebugLogPath(), "$formatted\n", FILE_APPEND);
         if (!$success) {
             // second option - send to default PHP error log
             error_log($formatted);
         }
     }
 
+    /**
+     * Get debug setting
+     *
+     * @return boolean
+     */
+    public function getDebug()
+    {
+        if ($this->debug == false && $this->agentConfig) {
+            return $this->agentConfig->getDebug();
+        }
+
+        return $this->debug;
+    }
+
+    /**
+     * Get debug log path
+     *
+     * @return string
+     */
+    public function getDebugLogPath()
+    {
+        if ($this->agentConfig) {
+            return $this->agentConfig->getDebugLogPath();
+        }
+
+        return $this->debugLogPath;
+    }
 }

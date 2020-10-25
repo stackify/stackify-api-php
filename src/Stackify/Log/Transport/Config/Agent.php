@@ -67,7 +67,7 @@ class Agent extends AbstractConfig
      *
      * @var string
      */
-    protected $ApiCallLogs;
+    protected $ApiCallLogsEndpoint;
     /**
      * Api Max Time out
      *
@@ -88,13 +88,13 @@ class Agent extends AbstractConfig
      */
     public function __construct()
     {
-        $this->Protocol = SOCKET_PROTOCOL;
-        $this->Host = SOCKET_HOST;
-        $this->Port = SOCKET_PORT;
-        $this->SocketTimeoutConnect = SOCKET_TIMEOUT_CONNECT;
-        $this->SocketTimeoutWrite = SOCKET_TIMEOUT_WRITE;
-        $this->SocketMaxConnectAttempts = SOCKET_MAX_CONNECT_ATTEMPTS;
-        $this->DomainSocketPath = DOMAIN_SOCKET_PATH;
+        $this->Protocol = static::SOCKET_PROTOCOL;
+        $this->Host = static::SOCKET_HOST;
+        $this->Port = static::SOCKET_PORT;
+        $this->SocketTimeoutConnect = static::SOCKET_TIMEOUT_CONNECT;
+        $this->SocketTimeoutWrite = static::SOCKET_TIMEOUT_WRITE;
+        $this->SocketMaxConnectAttempts = static::SOCKET_MAX_CONNECT_ATTEMPTS;
+        $this->DomainSocketPath = static::DOMAIN_SOCKET_PATH;
         $this->ApiBaseUrl = Api::API_BASE_URL;
         $this->ApiCallLogsEndpoint = Api::API_CALL_LOGS;
         $this->ApiMaxTimeout = Api::API_MAX_TIME;
@@ -112,8 +112,8 @@ class Agent extends AbstractConfig
      */
     public function setProtocol($protocol = null)
     {
-        if (in_array($protocol, $ValidProtocols) == false) {
-            $this->log('[Protocol] is not valid.');
+        if (in_array($protocol, $this->ValidProtocols) == false) {
+            $this->logError('[Protocol] is not valid.');
             return;
         }
 
@@ -130,7 +130,7 @@ class Agent extends AbstractConfig
     public function setHost($host = null)
     {
         if ($host == null) {
-            $this->log('[Host] is not valid.');
+            $this->logError('[Host] is not valid.');
         }
 
         // TODO: Hostname checking
@@ -147,16 +147,16 @@ class Agent extends AbstractConfig
     public function setPort($port = null)
     {
         if (is_int($port) == false) {
-            $this->log('[Port] is not an integer.');
+            $this->logError('[Port] is not an integer.');
             return;
         }
 
         if ($port < 0 && $port > 65535) {
-            $this->log('[Port] is not valid.');
+            $this->logError('[Port] is not valid.');
             return;
         }
 
-        return $this->Port;
+        $this->Port = $port;
     }
 
     /**
@@ -169,7 +169,7 @@ class Agent extends AbstractConfig
     public function setSocketTimeoutConnect($timeout = null)
     {
         if (is_int($timeout) == false) {
-            $this->log('[SocketTimeoutConnect] is not an integer.');
+            $this->logError('[SocketTimeoutConnect] is not an integer.');
             return;
         }
 
@@ -186,7 +186,7 @@ class Agent extends AbstractConfig
     public function setSocketTimeoutWrite($timeout )
     {
         if (is_int($timeout) == false) {
-            $this->log('[SocketTimeoutWrite] is not an integer.');
+            $this->logError('[SocketTimeoutWrite] is not an integer.');
             return;
         }
 
@@ -203,7 +203,7 @@ class Agent extends AbstractConfig
     public function setSocketMaxConnectAttempts($attempts)
     {
         if (is_int($attempts) == false) {
-            $this->log('[SocketMaxConnectAttempts] is not an integer.');
+            $this->logError('[SocketMaxConnectAttempts] is not an integer.');
             return;
         }
 
@@ -220,7 +220,7 @@ class Agent extends AbstractConfig
     public function setDomainSocketPath($path)
     {
         if ($path == null) {
-            $this->log('[DomainSocketPath] is not valid.');
+            $this->logError('[DomainSocketPath] is not valid.');
             return;
         }
 
@@ -237,7 +237,7 @@ class Agent extends AbstractConfig
     public function setApiBaseUrl($url)
     {
         if ($url == null) {
-            $this->log('[ApiBaseUrl] is not valid.');
+            $this->logError('[ApiBaseUrl] is not valid.');
             return;
         }
 
@@ -253,7 +253,7 @@ class Agent extends AbstractConfig
     public function setApiCallLogsEndpoint($path)
     {
         if ($path == null) {
-            $this->log('[ApiCallLogsEndpoint] is not valid.');
+            $this->logError('[ApiCallLogsEndpoint] is not valid.');
             return;
         }
 
@@ -269,7 +269,7 @@ class Agent extends AbstractConfig
     public function setApiMaxTimeout($timeout = null)
     {
         if (is_int($timeout) == false) {
-            $this->log('[ApiMaxTimeout] is not an integer.');
+            $this->logError('[ApiMaxTimeout] is not an integer.');
             return;
         }
 
@@ -285,7 +285,7 @@ class Agent extends AbstractConfig
     public function setApiVersionHeader($path)
     {
         if ($path == null) {
-            $this->log('[ApiVersionHeader] is not valid.');
+            $this->logError('[ApiVersionHeader] is not valid.');
             return;
         }
 
@@ -410,7 +410,30 @@ class Agent extends AbstractConfig
      */
     protected function log($message, $args, $success = true)
     {
-        return $this->log('['. __CLASS__ .']'.$message, $args, $success);
+        return parent::log('['.get_class().']'.$message, $args, $success);
     }
 
+    
+    /**
+     * Singleton attributes
+     * 
+     * @return void
+     */
+    private function __clone()
+    {
+    }
+
+    /**
+     * Get singleton instance
+     *
+     * @return self
+     */
+    public static function getInstance()
+    {
+        static $instance;
+        if (null === $instance) {
+            $instance = new self();
+        }
+        return $instance;
+    }
 }

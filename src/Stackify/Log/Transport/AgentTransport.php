@@ -74,17 +74,100 @@ class AgentTransport extends AbstractTransport
 
     private function connect()
     {
-        while (!$this->connected && $this->connectAttempts < Config::SOCKET_MAX_CONNECT_ATTEMPTS) {
+        while (!$this->connected && $this->connectAttempts < $this->getSocketMaxConnectAttempts()) {
             $this->connectAttempts++;
-            $remote = sprintf('%s://%s:%d', Config::SOCKET_PROTOCOL, Config::SOCKET_HOST, $this->port);
-            $this->socket = @stream_socket_client($remote, $errno, $errstr, Config::SOCKET_TIMEOUT_CONNECT);
+            $remote = sprintf('%s://%s:%d', $this->getSocketProtocol(), $this->getSocketHost(), $this->getSocketPort());
+            $this->socket = @stream_socket_client($remote, $errno, $errstr, $this->getSocketTimeoutConnect());
             $this->connected = false !== $this->socket;
             if ($this->connected) {
-                stream_set_timeout($this->socket, Config::SOCKET_TIMEOUT_WRITE);
+                stream_set_timeout($this->socket, $this->getSocketTimeoutWrite());
             } else {
                 $this->logError(self::ERROR_CONNECT, $remote, $errno, $errstr);
             }
         }
     }
 
+    /**
+     * Get socket port
+     *
+     * @return mixed
+     */
+    public function getSocketPort()
+    {
+        if ($this->port == Config::SOCKET_PORT && $this->agentConfig) {
+            return $this->agentConfig->getPort();
+        }
+
+        return $this->port;
+    }
+
+    /**
+     * Get socket max connect attempts
+     *
+     * @return integer
+     */
+    public function getSocketMaxConnectAttempts()
+    {
+        if ($this->agentConfig) {
+            return $this->agentConfig->getSocketMaxConnectAttempts();
+        }
+
+        return Config::SOCKET_MAX_CONNECT_ATTEMPTS;
+    }
+
+    /**
+     * Get socket max connect attempts
+     *
+     * @return string
+     */
+    public function getSocketProtocol()
+    {
+        if ($this->agentConfig) {
+            return $this->agentConfig->getProtocol();
+        }
+
+        return Config::SOCKET_PROTOCOL;
+    }
+
+    /**
+     * Get socket host 
+     *
+     * @return integer
+     */
+    public function getSocketHost()
+    {
+        if ($this->agentConfig) {
+            return $this->agentConfig->getHost();
+        }
+
+        return Config::SOCKET_HOST;
+    }
+
+    /**
+     * Get socket timeout connect 
+     *
+     * @return integer
+     */
+    public function getSocketTimeoutConnect()
+    {
+        if ($this->agentConfig) {
+            return $this->agentConfig->getSocketTimeoutConnect();
+        }
+
+        return Config::SOCKET_TIMEOUT_CONNECT;
+    }
+
+    /**
+     * Get socket timeout write 
+     *
+     * @return integer
+     */
+    public function getSocketTimeoutWrite()
+    {
+        if ($this->agentConfig) {
+            return $this->agentConfig->getSocketTimeoutWrite();
+        }
+
+        return Config::SOCKET_TIMEOUT_WRITE;
+    }
 }

@@ -32,7 +32,7 @@ class AgentSocketTransport extends AbstractApiTransport
         try {
             if (!empty($data)) {
                 $messageFactory = new GuzzleMessageFactory();
-                $client = new Client($messageFactory, array('remote_socket' => 'unix://' . Config::DOMAIN_SOCKET_PATH));
+                $client = new Client($messageFactory, array('remote_socket' => 'unix://' . $this->getDomainSocketPath()));
 
                 $request = $messageFactory->createRequest('POST', 'http://log',
                     array('Content-Type' => 'application/json', 'Content-Length' => strlen($data)),
@@ -41,12 +41,26 @@ class AgentSocketTransport extends AbstractApiTransport
                 $response = $client->sendRequest($request);
 
                 if ($response->getStatusCode() != 200) {
-                    $this->logError(self::ERROR_WRITE, Config::DOMAIN_SOCKET_PATH);
+                    $this->logError(self::ERROR_WRITE, $this->getDomainSocketPath());
                 }
             }
 
         } catch (HttpClientException $e) {
-            $this->logError(self::ERROR_CONNECT, Config::DOMAIN_SOCKET_PATH, $e->getCode(), $e->getMessage());
+            $this->logError(self::ERROR_CONNECT, $this->getDomainSocketPath(), $e->getCode(), $e->getMessage());
         }
+    }
+
+    /**
+     * Get domain socket path
+     *
+     * @return string
+     */
+    public function getDomainSocketPath()
+    {
+        if ($this->agentConfig) {
+            return $this->agentConfig->getDomainSocketPath();
+        }
+
+        return Config::DOMAIN_SOCKET_PATH;
     }
 }

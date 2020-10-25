@@ -583,29 +583,6 @@ abstract class AbstractConfig
     }
 
     /**
-     * Singleton attributes
-     * 
-     * @return void
-     */
-    private function __clone()
-    {
-    }
-
-    /**
-     * Get singleton instance
-     *
-     * @return self
-     */
-    public static function getInstance()
-    {
-        static $instance;
-        if (null === $instance) {
-            $instance = new self();
-        }
-        return $instance;
-    }
-
-    /**
      * Log error message
      *
      * @param string $message Message
@@ -675,7 +652,7 @@ abstract class AbstractConfig
                 $method = 'set' . $key;
 
                 if (method_exists($this, $method)) {
-                    $method($value);
+                    $this->$method($value);
                     continue;
                 }
 
@@ -694,8 +671,12 @@ abstract class AbstractConfig
      */
     protected function parseStringToArray($string = null, $property = null)
     {
+        if ($string == null) {
+            return null;
+        }
+
         if (is_string($string) == false && is_array($string) == false) {
-            $this->log('['.$property.'] is not a comma-delimited string or array.');
+            $this->logError('['.$property.'] is not a comma-delimited string or array.');
             return null;;
         }
 
