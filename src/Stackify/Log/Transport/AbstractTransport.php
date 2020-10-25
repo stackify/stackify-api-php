@@ -6,6 +6,7 @@ use Stackify\Log\Builder\BuilderInterface;
 use Stackify\Log\Builder\NullBuilder;
 use Stackify\Log\Filters\ErrorGovernor;
 use Stackify\Exceptions\InitializationException;
+use Stackify\Log\Transport\Config\Agent;
 
 abstract class AbstractTransport implements TransportInterface
 {
