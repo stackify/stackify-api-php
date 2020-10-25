@@ -230,12 +230,22 @@ class WebRequestDetail
             foreach ($data as $key => $value) {
                 $maskValue = false;
 
-                if ($blacklist && isset($blacklist[$key])) {
-                    $maskValue = true;
+                if ($blacklist) {
+                    if (true == isset($blacklist[$key]) ||
+                        (true == isset($blacklist[0]) && $blacklist[0] == '*') ||
+                        true == isset($blacklist['*'])
+                    ) {
+                        $maskValue = true;
+                    }
                 }
-
-                if ($whitelist && isset($whitelist[$key]) === false) {
-                    continue;
+    
+                if ($whitelist) {
+                    if (isset($whitelist[$key]) === false ||
+                        (true == isset($whitelist[0]) && $whitelists[0] == '*') ||
+                        true == isset($whitelist['*'])
+                    ) {
+                        continue;
+                    }
                 }
 
                 $result[$key] = $maskValue
@@ -341,12 +351,22 @@ class WebRequestDetail
             $maskValue = false;
             $lowercaseKey = strtolower($key);
 
-            if ($blacklist && isset($blacklist[$key])) {
-                $maskValue = true;
+            if ($blacklist) {
+                if (true == isset($blacklist[$key]) ||
+                    (true == isset($blacklist[0]) && $blacklist[0] == '*') ||
+                    true == isset($whitelist['*'])
+                ) {
+                    $maskValue = true;
+                }
             }
 
-            if ($whitelist && isset($whitelist[$key]) === false) {
-                continue;
+            if ($whitelist) {
+                if (isset($whitelist[$key]) === false ||
+                    (true == isset($whitelist[0]) && $whitelists[0] == '*') ||
+                    true == isset($whitelist['*'])
+                ) {
+                    continue;
+                }
             }
 
             if (isset(self::$_HIDDEN_HEADERS[$lowercaseKey])) {
