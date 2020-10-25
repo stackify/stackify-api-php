@@ -128,6 +128,12 @@ abstract class AbstractConfig
      * @var string
      */
     protected $DebugLogPath;
+    /**
+     * Debug Setting
+     *
+     * @var boolean
+     */
+    protected $Debug;
 
 
     /**
@@ -163,6 +169,7 @@ abstract class AbstractConfig
 
         $ds = DIRECTORY_SEPARATOR;
         $this->DebugLogPath = realpath(dirname(__FILE__) . "$ds..$ds..") . $ds . 'debug/log.log';
+        $this->Debug = false;
     }
 
     /**
@@ -390,6 +397,17 @@ abstract class AbstractConfig
 
         $this->DebugLogPath = $path;
     }
+    /**
+     * Set Debug Settings
+     *
+     * @param boolean $enable Enable
+     *
+     * @return void
+     */
+    public function setDebug($enable = null)
+    {
+        $this->Debug = $this->getBoolean($enable, 'Debug');
+    }
 
 
     /**
@@ -554,6 +572,15 @@ abstract class AbstractConfig
     {
         return $this->DebugLogPath;
     }
+    /**
+     * Get Debug setting
+     *
+     * @return boolean
+     */
+    public function getDebug()
+    {
+        return $this->Debug;
+    }
 
     /**
      * Singleton attributes
@@ -599,7 +626,7 @@ abstract class AbstractConfig
      */
     protected function logDebug($message)
     {
-        if (!$this->debug) {
+        if (!$this->getDebug()) {
             return;
         }
         $this->log($message, func_get_args(), true);

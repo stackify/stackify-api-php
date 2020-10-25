@@ -45,6 +45,7 @@ abstract class AbstractTransport implements TransportInterface
         $this->agentConfig = Agent::getInstance();
         if ($this->agentConfig) {
             $this->debugLogPath = $this->agentConfig->getDebugLogPath();
+            $this->debug = $this->agentConfig->getDebug();
         }
 
         // add empty implementation to avoid method calls on non-object
