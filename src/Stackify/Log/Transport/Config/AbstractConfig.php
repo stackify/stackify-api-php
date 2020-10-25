@@ -429,6 +429,24 @@ abstract class AbstractConfig
         return $this->CaptureServerVariables;
     }
     /**
+     * Get capture $_SERVER whitelist
+     *
+     * @return mixed
+     */
+    public function getCaptureServerVariablesWhitelist()
+    {
+        return $this->CaptureServerVariablesWhitelist;
+    }
+    /**
+     * Get capture $_SERVER blacklist
+     *
+     * @return mixed
+     */
+    public function getCaptureServerVariablesBlacklist()
+    {
+        return $this->CaptureServerVariablesBlacklist;
+    }
+    /**
      * Get capture $_POST variable option
      *
      * @return boolean
@@ -671,7 +689,7 @@ abstract class AbstractConfig
      */
     protected function parseStringToArray($string = null, $property = null)
     {
-        if ($string == null) {
+        if (empty($string)) {
             return null;
         }
 

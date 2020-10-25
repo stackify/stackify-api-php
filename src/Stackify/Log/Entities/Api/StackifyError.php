@@ -62,7 +62,7 @@ class StackifyError
         $agentConfig = Agent::getInstance();
         if ($agentConfig) {
             return isset($_SERVER) && $agentConfig->getCaptureServerVariables() 
-                ? WebRequestDetail::getRequestMap($_SERVER, $agentConfig->getCaptureServerVariablesBlacklist(), $agentConfig->getCaptureServerVariablesBlacklist())
+                ? WebRequestDetail::getRequestMap($_SERVER, $agentConfig->getCaptureServerVariablesBlacklist(), $agentConfig->getCaptureServerVariablesWhitelist())
                 : null;
         }
         return isset($_SERVER) ? WebRequestDetail::getRequestMap($_SERVER) : null;

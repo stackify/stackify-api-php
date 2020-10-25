@@ -141,7 +141,7 @@ class WebRequestDetail
                 ? $this->getHeaders(
                     $agentConfig->getCaptureErrorHeadersBlacklist(),
                     $agentConfig->getCaptureErrorHeadersWhitelist()
-                    )
+                )
                 : null;
             $this->Cookies = isset($_COOKIE) && $agentConfig->getCaptureErrorCookies()
                 ? self::getRequestMap(
@@ -153,21 +153,21 @@ class WebRequestDetail
 
             $this->QueryString = isset($_GET) && $agentConfig->getCaptureGetVariables()
                 ? self::getRequestMap(
-                    $_COOKIE,
+                    $_GET,
                     $agentConfig->getCaptureGetVariablesBlacklist(),
                     $agentConfig->getCaptureGetVariablesWhitelist()
                 )
                 : null;
             $this->PostData = isset($_POST) && $agentConfig->getCapturePostVariables()
                 ? self::getRequestMap(
-                    $_COOKIE,
+                    $_POST,
                     $agentConfig->getCapturePostVariablesBlacklist(),
                     $agentConfig->getCapturePostVariablesWhitelist()
                 )
                 : null;
             $this->SessionData = isset($_SESSION) && $agentConfig->getCaptureSessionVariables()
                 ? self::getRequestMap(
-                    $_COOKIE,
+                    $_SESSION,
                     $agentConfig->getCaptureSessionVariablesBlacklist(),
                     $agentConfig->getCaptureSessionVariablesWhitelist()
                 )
@@ -240,11 +240,13 @@ class WebRequestDetail
                 }
     
                 if ($whitelist) {
-                    if (isset($whitelist[$key]) === false ||
-                        (true == isset($whitelist[0]) && $whitelists[0] == '*') ||
-                        true == isset($whitelist['*'])
+                    if (
+                        !(true == isset($whitelist[0]) && $whitelist[0] == '*') &&
+                        false == isset($whitelist['*'])
                     ) {
-                        continue;
+                        if (isset($whitelist[$key]) === false) {
+                            continue;
+                        }
                     }
                 }
 
@@ -346,7 +348,6 @@ class WebRequestDetail
         }
 
         $result = array();
-
         foreach ($headers as $key => $value) {
             $maskValue = false;
             $lowercaseKey = strtolower($key);
@@ -354,18 +355,20 @@ class WebRequestDetail
             if ($blacklist) {
                 if (true == isset($blacklist[$key]) ||
                     (true == isset($blacklist[0]) && $blacklist[0] == '*') ||
-                    true == isset($whitelist['*'])
+                    true == isset($blacklist['*'])
                 ) {
                     $maskValue = true;
                 }
             }
 
             if ($whitelist) {
-                if (isset($whitelist[$key]) === false ||
-                    (true == isset($whitelist[0]) && $whitelists[0] == '*') ||
-                    true == isset($whitelist['*'])
+                if (
+                    !(true == isset($whitelist[0]) && $whitelist[0] == '*') &&
+                    false == isset($whitelist['*'])
                 ) {
-                    continue;
+                    if (isset($whitelist[$key]) === false) {
+                        continue;
+                    }
                 }
             }
 
