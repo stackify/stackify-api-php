@@ -36,6 +36,9 @@ abstract class AbstractApiTransport extends AbstractTransport
             $json = $this->messageBuilder->getApiMessage($this->queue);
             // empty queue to avoid duplicates
             $this->queue = array();
+            if ($this->getDebug()) {
+                $this->logDebug('['.get_class().'] Request Body: %s', $json);
+            }
             $this->send($json);
         }
     }
