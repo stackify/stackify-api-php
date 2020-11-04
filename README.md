@@ -71,6 +71,107 @@ Note that ExecTransport does not produce any errors at all, but you can switch i
 $transport = new ExecTransport($apiKey, ['debug' => true]);
 ```
 
+### Logger Settings
+These are the available settings for the logger.
+#### Server Variables
+- `CaptureServerVariables` - `Boolean` - Capture `$_SERVER` variables
+- `CaptureServerVariablesWhitelist` - `Array` or `Comma-delimited string` - Whitelist `$_SERVER` attributes
+- `CaptureServerVariablesBlacklist` - `Array` or `Comma-delimited string` - Mask `$_SERVER` attributes (e.g. `attribute => 'X-MASKED-X'`)
+#### Get Variables
+- `CaptureGetVariables` - `Boolean` - Capture `$_GET` variables
+- `CaptureGetVariablesWhitelist` - `Array` or `Comma-delimited string` - Whitelist `$_GET` attributes
+- `CaptureGetVariablesBlacklist` - `Array` or `Comma-delimited string` - Mask `$_GET` attributes (e.g. `attribute => 'X-MASKED-X'`)
+#### Post Variables
+- `CapturePostVariables` - `Boolean` - Capture `$_POST` variables
+- `CapturePostVariablesWhitelist` - `Array` or `Comma-delimited string` - Whitelist `$_POST` attributes
+- `CapturePostVariablesBlacklist` - `Array` or `Comma-delimited string` - Mask `$_POST` attributes (e.g. `attribute => 'X-MASKED-X'`)
+#### Session Variables
+- `CaptureSessionVariables` - `Boolean` - Capture `$_SESSION` variables
+- `CaptureSessionVariablesWhitelist` - `Array` or `Comma-delimited string` - Whitelist `$_SESSION` attributes
+- `CaptureSessionVariablesBlacklist` - `Array` or `Comma-delimited string` - Mask `$_SESSION` attributes (e.g. `attribute => 'X-MASKED-X'`)
+#### Error Headers
+- `CaptureErrorHeaders` - `Boolean` - Capture `HEADER` attributes available in `$_SERVER` variable
+- `CaptureErrorHeadersWhitelist` - `Array` or `Comma-delimited string` - Whitelist `HEADER` attributes in `$_SERVER` variable
+- `CaptureErrorHeadersBlacklist` - `Array` or `Comma-delimited string` - Mask `HEADER` attributes in `$_SERVER` variable (e.g. `attribute => 'X-MASKED-X'`)
+#### Error Cookies
+- `CaptureErrorCookies` - `Boolean` - Capture `$_COOKIE` variables
+- `CaptureErrorCookiesWhitelist` - `Array` or `Comma-delimited string` - Whitelist `$_COOKIE` attributes
+- `CaptureErrorCookiesBlacklist` - `Array` or `Comma-delimited string` - Mask `$_COOKIE` attributes
+#### Capture Raw Post Data
+- `CaptureRawPostData` - `Boolean` - Capture `php://input` stream data `(e.g. file_get_contents("php://input"))`
+#### Debug Settings
+- `Debug` - `Boolean` - Enable DEBUG in the logger
+- `DebugLogPath` - `String` - A qualified path for the log file produced during debug or error
+#### Agent Transport Settings
+- `Protocol` - `String` - Protocol can be `tcp` or `udp`
+- `Host` - `String` - Server Hostname
+- `Port` - `Numeric` - Port
+- `SocketTimeoutConnect` - `Numeric` - Connection Request Timeout
+- `SocketTimeoutWrite` - `Numeric` - Connection Write Timeout
+- `SocketMaxConnectAttempts` - `Numeric` - Connection Attempts
+#### Agent Socket Transport Settings
+- `DomainSocketPath` - `String` - Stackify Agent unix socket path
+#### API or Curl Exec Socket Transport Settings
+- `ApiBaseUrl` - `String` - Stackify API base url
+- `ApiCallLogsEndpoint` - `String` - Stackify API Call Logs endpoint
+- `ApiMaxTimeout` - `Numeric` - Stackify API Call Max Timeout
+- `ApiVersionHeader` - `String` - Stackify API Version Header
+
+#### Example Configuration Setup
+```php
+$logger = new Logger(
+    'PHP-HelloWorld',
+    'Stackify-Sample-Environment',
+    $transport,
+    false,
+    [
+        // Server
+        'CaptureServerVariables' => false,
+        'CaptureServerVariablesWhitelist' => '*',
+        'CaptureServerVariablesBlacklist' => 'REMOTE_ADDR,SERVER_ADDR',
+        // Get
+        'CaptureGetVariables' => false,
+        'CaptureGetVariablesWhitelist' => 'test',
+        'CaptureGetVariablesBlacklist' =>  [
+            'test1'
+        ],
+        // Post
+        'CapturePostVariables' => true,
+        'CapturePostVariablesWhitelist' => 'password',
+        'CapturePostVariablesBlacklist' => 'username',
+        // Session
+        'CaptureSessionVariables' => true,
+        'CaptureSessionVariablesWhitelist' => 'testa',
+        'CaptureSessionVariablesBlacklist' => 'testa',
+        // Headers
+        'CaptureErrorHeaders' => true,
+        'CaptureErrorHeadersWhitelist' => 'test4',
+        'CaptureErrorHeadersBlacklist' => 'test-4',
+        // Cookies
+        'CaptureErrorCookies' => true,
+        'CaptureErrorCookiesWhitelist' => 'test5',
+        'CaptureErrorCookiesBlacklist' => 'test-5',
+        // Raw post data
+        'CaptureRawPostData' => true,
+        // Debug log path
+        'DebugLogPath' => getcwd() . DIRECTORY_SEPARATOR . 'log.log',
+        'Debug' => true,
+        // Agent Config
+        'Protocol' => 'udp',
+        'Host' => '127.0.0.2',
+        'Port' => 10602, // didnt detect
+        'SocketTimeoutConnect' => 5,
+        'SocketTimeoutWrite' => 4,
+        'SocketMaxConnectAttempts' => 3,
+        'DomainSocketPath' => '/usr/local/stackify/stackify.sock',
+        'ApiBaseUrl' => 'https://api.stackify.com',
+        'ApiCallLogsEndpoint' => '/Log/Save',
+        'ApiMaxTimeout' => 6,
+        'ApiVersionHeader' => 'V2'
+    ]
+);
+```
+
 ## License
 
 Copyright 2019 Stackify, LLC.
