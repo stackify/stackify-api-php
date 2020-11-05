@@ -64,6 +64,7 @@ $logger = new Logger('application_name', 'environment_name', $transport, true);
 
 ### **Configuration Settings**
 - This allow users to override default settings of the logger (Masking Request Variables, Session, Cookie or Updating connection properties to different Transports etc.)
+- **Note** - For the `Whitelist/Blackist` setting. Anything `falsy` (`null`, `false`, `array()` etc. - Refer to php [empty](https://www.php.net/manual/en/function.empty.php) function checking) will be considered as `Do Not Track` - No variable data will be processed.
 
 #### Logger Level
  ```php
