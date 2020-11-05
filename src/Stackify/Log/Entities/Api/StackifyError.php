@@ -65,7 +65,7 @@ class StackifyError
                 ? WebRequestDetail::getRequestMap($_SERVER, $agentConfig->getCaptureServerVariablesBlacklist(), $agentConfig->getCaptureServerVariablesWhitelist())
                 : null;
         }
-        return isset($_SERVER) ? WebRequestDetail::getRequestMap($_SERVER) : null;
+        return isset($_SERVER) ? WebRequestDetail::getRequestMap($_SERVER, null, array('*')) : null;
     }
 
 }

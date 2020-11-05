@@ -174,11 +174,11 @@ class WebRequestDetail
                 : null;
             $this->PostDataRaw = $agentConfig->getCaptureRawPostData() ? file_get_contents('php://input'): null;
         } else {
-            $this->Headers = $this->getHeaders();
-            $this->Cookies = isset($_COOKIE) ? self::getRequestMap($_COOKIE, ['*']) : null;
-            $this->QueryString = isset($_GET) ? self::getRequestMap($_GET) : null;
-            $this->PostData = isset($_POST) ? self::getRequestMap($_POST) : null;
-            $this->SessionData = isset($_SESSION) ? self::getRequestMap($_SESSION, ['*']) : null;
+            $this->Headers = $this->getHeaders(null, array('*'));
+            $this->Cookies = isset($_COOKIE) ? self::getRequestMap($_COOKIE, array('*'), array('*')) : null;
+            $this->QueryString = isset($_GET) ? self::getRequestMap($_GET, null, array('*')) : null;
+            $this->PostData = isset($_POST) ? self::getRequestMap($_POST, null, array('*')) : null;
+            $this->SessionData = isset($_SESSION) ? self::getRequestMap($_SESSION, array('*'), array('*')) : null;
             $this->PostDataRaw = file_get_contents('php://input');
         }
     }
