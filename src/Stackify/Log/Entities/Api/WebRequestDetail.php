@@ -215,14 +215,39 @@ class WebRequestDetail
      */
     public static function getRequestMap($data, $blacklist = null, $whitelist = null)
     {
-        if ($blacklist && is_array($blacklist) == false) {
-            $blacklist = null;
-            // TODO: log?
+        if (!is_array($whitelist)) {
+            $whitelist = null;
         }
 
-        if ($whitelist && is_array($whitelist) == false) {
-            $whitelist = null;
-            // TODO: log?
+        if (!is_array($blacklist)) {
+            $blacklist = null;
+        }
+
+        if (empty($whitelist)) {
+            return null;
+        }
+
+        if (empty($blacklist)) {
+            $blacklist = null;
+        }
+
+        $whitelistAll = false;
+        $blacklistAll = false;
+
+        if ($blacklist) {
+            if ((true == isset($blacklist[0]) && $blacklist[0] == '*')
+                || true == isset($blacklist['*'])
+            ) {
+                $blacklistAll = true;
+            }
+        }
+
+        if ($whitelist) {
+            if ((true == isset($whitelist[0]) && $whitelist[0] == '*')
+                || true == isset($whitelist['*'])
+            ) {
+                $whitelistAll = true;
+            }
         }
 
         $result = array();
@@ -231,23 +256,17 @@ class WebRequestDetail
                 $maskValue = false;
 
                 if ($blacklist) {
-                    if (true == isset($blacklist[$key]) ||
-                        (true == isset($blacklist[0]) && $blacklist[0] == '*') ||
-                        true == isset($blacklist['*'])
+                    if ($blacklistAll
+                        || true == isset($blacklist[$key])
                     ) {
                         $maskValue = true;
                     }
                 }
     
-                if ($whitelist) {
-                    if (
-                        !(true == isset($whitelist[0]) && $whitelist[0] == '*') &&
-                        false == isset($whitelist['*'])
-                    ) {
-                        if (isset($whitelist[$key]) === false) {
-                            continue;
-                        }
-                    }
+                if (!$whitelistAll
+                    && false == isset($whitelist[$key])
+                ) {
+                    continue;
                 }
 
                 $result[$key] = $maskValue
@@ -328,16 +347,6 @@ class WebRequestDetail
      */
     protected function getHeaders($blacklist = null, $whitelist = null)
     {
-        if ($blacklist && is_array($blacklist) == false) {
-            $blacklist = null;
-            // TODO: log?
-        }
-
-        if ($whitelist && is_array($whitelist) == false) {
-            $whitelist = null;
-            // TODO: log?
-        }
-
         $headers = array();
         if (function_exists('getallheaders')) {
             $headers = getallheaders();
@@ -347,41 +356,7 @@ class WebRequestDetail
             }
         }
 
-        $result = array();
-        foreach ($headers as $key => $value) {
-            $maskValue = false;
-            $lowercaseKey = strtolower($key);
-
-            if ($blacklist) {
-                if (true == isset($blacklist[$key]) ||
-                    (true == isset($blacklist[0]) && $blacklist[0] == '*') ||
-                    true == isset($blacklist['*'])
-                ) {
-                    $maskValue = true;
-                }
-            }
-
-            if ($whitelist) {
-                if (
-                    !(true == isset($whitelist[0]) && $whitelist[0] == '*') &&
-                    false == isset($whitelist['*'])
-                ) {
-                    if (isset($whitelist[$key]) === false) {
-                        continue;
-                    }
-                }
-            }
-
-            if (isset(self::$_HIDDEN_HEADERS[$lowercaseKey])) {
-                $maskValue = true;
-            }
-
-            $result[$key] = $maskValue
-                    ? self::HIDDEN_VALUE
-                    : TypeConverter::stringify($value);
-        }
-
-        return empty($result) ? null : $result;
+        return self::getRequestMap($headers, $blacklist, $whitelist);
     }
 
 }

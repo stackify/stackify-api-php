@@ -62,17 +62,36 @@ system environment variables; do not enable if sensitive information such as pas
 $logger = new Logger('application_name', 'environment_name', $transport, true);
 ```
 
- 
-#### Troubleshooting
+### **Configuration Settings**
+- This allow users to override default settings of the logger (Masking Request Variables, Session, Cookie or Updating connection properties to different Transports etc.)
 
-If transport does not work, try looking into ```vendor\stackify\logger\src\Stackify\debug\log.log``` file (if it is available for writing). Errors are also written to global PHP [error_log](http://php.net/manual/en/errorfunc.configuration.php#ini.error-log).
-Note that ExecTransport does not produce any errors at all, but you can switch it to debug mode:
-```php
-$transport = new ExecTransport($apiKey, ['debug' => true]);
+#### Logger Level
+ ```php
+$config = array(
+        'CaptureServerVariables' => false,
+        'CaptureServerVariablesWhitelist' => '*',
+        'CaptureServerVariablesBlacklist' => 'REMOTE_ADDR,SERVER_ADDR',
+        ...
+    );
+
+$logger = new Logger('application_name', 'environment_name', $transport, true, $config);
 ```
 
-### Logger Settings
-These are the available settings for the logger.
+#### Transport Level
+- This applies to all the transports `(ExecTransport, CurlTransport, AgentTransport, AgentSocketTransport)`
+ ```php
+$config = array(
+        'CaptureServerVariables' => false,
+        'CaptureServerVariablesWhitelist' => '*',
+        'CaptureServerVariablesBlacklist' => 'REMOTE_ADDR,SERVER_ADDR',
+        ...
+    );
+
+$transport = new ExecTransport($apiKey, [
+    'config' => $config
+]);
+```
+### Available Options:
 #### Server Variables
 - `CaptureServerVariables` - `Boolean` - Capture `$_SERVER` variables
 - `CaptureServerVariablesWhitelist` - `Array` or `Comma-delimited string` - Whitelist `$_SERVER` attributes
@@ -117,59 +136,23 @@ These are the available settings for the logger.
 - `ApiMaxTimeout` - `Numeric` - Stackify API Call Max Timeout
 - `ApiVersionHeader` - `String` - Stackify API Version Header
 
-#### Example Configuration Setup
+#### Troubleshooting
+
+If transport does not work, try looking into ```vendor\stackify\logger\src\Stackify\debug\log.log``` file (if it is available for writing). Errors are also written to global PHP [error_log](http://php.net/manual/en/errorfunc.configuration.php#ini.error-log).
+Note that ExecTransport does not produce any errors at all, but you can switch it to debug mode:
 ```php
-$logger = new Logger(
-    'PHP-HelloWorld',
-    'Stackify-Sample-Environment',
-    $transport,
-    false,
-    [
-        // Server
-        'CaptureServerVariables' => false,
-        'CaptureServerVariablesWhitelist' => '*',
-        'CaptureServerVariablesBlacklist' => 'REMOTE_ADDR,SERVER_ADDR',
-        // Get
-        'CaptureGetVariables' => false,
-        'CaptureGetVariablesWhitelist' => 'test',
-        'CaptureGetVariablesBlacklist' =>  [
-            'test1'
-        ],
-        // Post
-        'CapturePostVariables' => true,
-        'CapturePostVariablesWhitelist' => 'password',
-        'CapturePostVariablesBlacklist' => 'username',
-        // Session
-        'CaptureSessionVariables' => true,
-        'CaptureSessionVariablesWhitelist' => 'testa',
-        'CaptureSessionVariablesBlacklist' => 'testa',
-        // Headers
-        'CaptureErrorHeaders' => true,
-        'CaptureErrorHeadersWhitelist' => 'test4',
-        'CaptureErrorHeadersBlacklist' => 'test-4',
-        // Cookies
-        'CaptureErrorCookies' => true,
-        'CaptureErrorCookiesWhitelist' => 'test5',
-        'CaptureErrorCookiesBlacklist' => 'test-5',
-        // Raw post data
-        'CaptureRawPostData' => true,
-        // Debug log path
-        'DebugLogPath' => getcwd() . DIRECTORY_SEPARATOR . 'log.log',
-        'Debug' => true,
-        // Agent Config
-        'Protocol' => 'udp',
-        'Host' => '127.0.0.2',
-        'Port' => 10602, // didnt detect
-        'SocketTimeoutConnect' => 5,
-        'SocketTimeoutWrite' => 4,
-        'SocketMaxConnectAttempts' => 3,
-        'DomainSocketPath' => '/usr/local/stackify/stackify.sock',
-        'ApiBaseUrl' => 'https://api.stackify.com',
-        'ApiCallLogsEndpoint' => '/Log/Save',
-        'ApiMaxTimeout' => 6,
-        'ApiVersionHeader' => 'V2'
-    ]
-);
+$transport = new ExecTransport($apiKey, ['debug' => true]);
+```
+
+You can set it also on the `Logger` level. Setting the `Debug` and `DebugLogPath`
+
+```php
+$config = array(
+        'DebugLogPath' => '/path/to/log.log',
+        'Debug' => true
+    );
+
+$logger = new Logger('application_name', 'environment_name', $transport, true, $config);
 ```
 
 ## License

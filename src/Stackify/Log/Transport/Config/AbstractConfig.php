@@ -154,7 +154,7 @@ abstract class AbstractConfig
         $this->CaptureGetVariablesBlacklist = null;
 
         $this->CaptureSessionVariables = true;
-        $this->CaptureSessionVariablesWhitelist = null;
+        $this->CaptureSessionVariablesWhitelist = array('*');
         $this->CaptureSessionVariablesBlacklist = array('*');
 
         $this->CaptureErrorHeaders = true;
@@ -162,7 +162,7 @@ abstract class AbstractConfig
         $this->CaptureErrorHeadersBlacklist = null;
 
         $this->CaptureErrorCookies = true;
-        $this->CaptureErrorCookiesWhitelist = null;
+        $this->CaptureErrorCookiesWhitelist = array('*');
         $this->CaptureErrorCookiesBlacklist = array('*');
 
         $this->CaptureRawPostData = true;
