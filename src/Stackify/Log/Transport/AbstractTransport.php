@@ -111,6 +111,8 @@ abstract class AbstractTransport implements TransportInterface
      */
     public function getDebug()
     {
+        // If debug is not set on the transport level
+        // then Logger level Debug takes precedence
         if ($this->debug == false && $this->agentConfig) {
             return $this->agentConfig->getDebug();
         }
