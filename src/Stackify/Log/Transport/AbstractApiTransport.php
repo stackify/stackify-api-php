@@ -36,6 +36,9 @@ abstract class AbstractApiTransport extends AbstractTransport
             $json = $this->messageBuilder->getApiMessage($this->queue);
             // empty queue to avoid duplicates
             $this->queue = array();
+            if ($this->getDebug()) {
+                $this->logDebug('['.get_class().'] Request Body: %s', $json);
+            }
             $this->send($json);
         }
     }
@@ -54,7 +57,7 @@ abstract class AbstractApiTransport extends AbstractTransport
     {
         return array(
             'Content-Type' => 'application/json',
-            'X-Stackify-PV' => Api::API_VERSION_HEADER,
+            'X-Stackify-PV' => $this->agentConfig ? $this->agentConfig->getApiVersionHeader(): Api::API_VERSION_HEADER,
             'X-Stackify-Key' => $this->apiKey,
         );
     }

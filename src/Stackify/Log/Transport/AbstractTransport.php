@@ -6,6 +6,7 @@ use Stackify\Log\Builder\BuilderInterface;
 use Stackify\Log\Builder\NullBuilder;
 use Stackify\Log\Filters\ErrorGovernor;
 use Stackify\Exceptions\InitializationException;
+use Stackify\Log\Transport\Config\Agent;
 
 abstract class AbstractTransport implements TransportInterface
 {
@@ -23,11 +24,27 @@ abstract class AbstractTransport implements TransportInterface
     protected $debug = false;
     private $debugLogPath;
 
+    /**
+     * Agent config
+     *
+     * @var \Stackify\Log\Transport\Config\Agent
+     */
+    protected $agentConfig;
+    /**
+     * Agent config attribute
+     *
+     * @var string
+     */
+    protected $agentConfigAttribute = 'config';
+
     public function __construct()
     {
         $ds = DIRECTORY_SEPARATOR;
         $this->debugLogPath = realpath(dirname(__FILE__) . "$ds..$ds..") . $ds . 'debug/log.log';
         $this->errorGovernor = new ErrorGovernor();
+
+        $this->agentConfig = Agent::getInstance();
+
         // add empty implementation to avoid method calls on non-object
         $this->setMessageBuilder(new NullBuilder());
     }
@@ -53,6 +70,10 @@ abstract class AbstractTransport implements TransportInterface
                 }
             }
         }
+
+        if (isset($options[$this->agentConfigAttribute]) && $this->agentConfig) {
+            $this->agentConfig->extract($options[$this->agentConfigAttribute]);
+        }
     }
 
     protected function logError($message)
@@ -62,7 +83,7 @@ abstract class AbstractTransport implements TransportInterface
 
     protected function logDebug($message)
     {
-        if (!$this->debug) {
+        if (!$this->getDebug()) {
             return;
         }
         $this->log($message, func_get_args(), true);
@@ -76,11 +97,40 @@ abstract class AbstractTransport implements TransportInterface
         $formatted = preg_replace('/\r\n/', '', vsprintf($template, $replacements));
         // first option - write to local file if possible
         // this can be not available because of file permissions
-        @file_put_contents($this->debugLogPath, "$formatted\n", FILE_APPEND);
+        @file_put_contents($this->getDebugLogPath(), "$formatted\n", FILE_APPEND);
         if (!$success) {
             // second option - send to default PHP error log
             error_log($formatted);
         }
     }
 
+    /**
+     * Get debug setting
+     *
+     * @return boolean
+     */
+    public function getDebug()
+    {
+        // If debug is not set on the transport level
+        // then Logger level Debug takes precedence
+        if ($this->debug == false && $this->agentConfig) {
+            return $this->agentConfig->getDebug();
+        }
+
+        return $this->debug;
+    }
+
+    /**
+     * Get debug log path
+     *
+     * @return string
+     */
+    public function getDebugLogPath()
+    {
+        if ($this->agentConfig) {
+            return $this->agentConfig->getDebugLogPath();
+        }
+
+        return $this->debugLogPath;
+    }
 }

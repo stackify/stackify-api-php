@@ -5,6 +5,7 @@ namespace Stackify\Log\Standalone;
 use Stackify\Log\Builder\MessageBuilder;
 use Stackify\Log\Transport\TransportInterface;
 use Stackify\Log\Transport\AgentSocketTransport;
+use Stackify\Log\Transport\Config\Agent;
 
 use Psr\Log\AbstractLogger;
 
@@ -16,11 +17,14 @@ class Logger extends AbstractLogger
      */
     private $transport;
 
-    public function __construct($appName, $environmentName = null, TransportInterface $transport = null, $logServerVariables = false)
+    public function __construct($appName, $environmentName = null, TransportInterface $transport = null, $logServerVariables = false, $config = null)
     {
         $messageBuilder = new MessageBuilder('Stackify PHP Logger v.1.0', $appName, $environmentName, $logServerVariables);
         if (null === $transport) {
             $transport = new AgentSocketTransport();
+        }
+        if (null !== $config) {
+            Agent::getInstance()->extract($config);
         }
         $transport->setMessageBuilder($messageBuilder);
         $this->transport = $transport;
