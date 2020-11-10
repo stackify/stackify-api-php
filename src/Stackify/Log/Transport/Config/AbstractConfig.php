@@ -145,7 +145,7 @@ abstract class AbstractConfig
         $this->CaptureServerVariablesWhitelist = array('*');
         $this->CaptureServerVariablesBlacklist = null;
 
-        $this->CapturePostVariables = true;
+        $this->CapturePostVariables = false;
         $this->CapturePostVariablesWhitelist = array('*');
         $this->CapturePostVariablesBlacklist = null;
 
@@ -165,7 +165,7 @@ abstract class AbstractConfig
         $this->CaptureErrorCookiesWhitelist = array('*');
         $this->CaptureErrorCookiesBlacklist = array('*');
 
-        $this->CaptureRawPostData = true;
+        $this->CaptureRawPostData = false;
 
         $ds = DIRECTORY_SEPARATOR;
         $this->DebugLogPath = realpath(dirname(__FILE__) . "$ds..$ds..") . $ds . 'debug/log.log';
