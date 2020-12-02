@@ -408,7 +408,7 @@ class Agent extends AbstractConfig
      *
      * @return void
      */
-    protected function log($message, $args, $success = true)
+    protected function log($message, $args = null, $success = true)
     {
         return parent::log('['.get_class().']'.$message, $args, $success);
     }

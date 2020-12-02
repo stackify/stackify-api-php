@@ -94,13 +94,18 @@ class MessageBuilder implements BuilderInterface
         $errorItem->ErrorType = $errorWrapper->getType();
         $errorItem->ErrorTypeCode = $errorWrapper->getCode();
         $errorItem->SourceMethod = $errorWrapper->getSourceMethod();
-        foreach ($errorWrapper->getTrace() as $index => $trace) {
-            $errorItem->StackTrace[] = new TraceFrame(
-                $trace['file'],
-                $trace['line'],
-                $trace['function']
-            );
+
+        $errorWrapperTrace = $errorWrapper->getTrace();
+        if ($errorWrapperTrace && is_array($errorWrapperTrace)) {
+            foreach ($errorWrapper->getTrace() as $index => $trace) {
+                $errorItem->StackTrace[] = new TraceFrame(
+                    $trace['file'],
+                    $trace['line'],
+                    $trace['function']
+                );
+            }
         }
+
         $previous = $errorWrapper->getInnerError();
         if ($previous) {
             $errorItem->InnerError = $this->getErrorItem($previous);

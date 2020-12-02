@@ -391,7 +391,7 @@ abstract class AbstractConfig
     public function setDebugLogPath($path)
     {
         if ($path == null) {
-            $this->log('[DebugLogPath] is not valid.');
+            $this->logError('[DebugLogPath] is not valid.');
             return;
         }
 
@@ -636,8 +636,12 @@ abstract class AbstractConfig
      *
      * @return void
      */
-    protected function log($message, $args, $success = true)
+    protected function log($message, $args = null, $success = true)
     {
+        if ($args == null) {
+            $args = array();
+        }
+
         $replacements = array_slice($args, 1);
         $prefix = $success ? 'Stackify Log' : 'Stackify Error';
         $template = "[$prefix][Config] $message";
@@ -661,7 +665,7 @@ abstract class AbstractConfig
     public function extract($config = null)
     {
         if (is_array($config) == false) {
-            $this->log('['. __CLASS__ .']['. __FUNCTION__ .'] $config is not an array.');
+            $this->logDebug('['. __CLASS__ .']['. __FUNCTION__ .'] $config is not an array.');
             return;
         }
 
@@ -674,7 +678,7 @@ abstract class AbstractConfig
                     continue;
                 }
 
-                $this->log('['. __CLASS__ .']['. __FUNCTION__ .']' . $method .' does not exists.');
+                $this->logDebug('['. __CLASS__ .']['. __FUNCTION__ .']' . $method .' does not exists.');
             }
         }
     }
@@ -716,7 +720,7 @@ abstract class AbstractConfig
     protected function getBoolean($enable = null,  $property = null)
     {
         if (is_bool($enable) == false) {
-            $this->log('['.$property.'] is not a boolean.');
+            $this->logError('['.$property.'] is not a boolean.');
             return null;
         }
 
