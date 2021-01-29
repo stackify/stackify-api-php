@@ -170,6 +170,8 @@ abstract class AbstractConfig
         $ds = DIRECTORY_SEPARATOR;
         $this->DebugLogPath = realpath(dirname(__FILE__) . "$ds..$ds..") . $ds . 'debug/log.log';
         $this->Debug = false;
+
+        $this->ParseRawPostDataToJson = false;
     }
 
     /**
@@ -409,6 +411,27 @@ abstract class AbstractConfig
         $this->Debug = $this->getBoolean($enable, 'Debug');
     }
 
+    /**
+     * Set capture $_POST variable option
+     *
+     * @param boolean $enable Enable
+     *
+     * @return void
+     */
+    public function setParseRawPostDataToJson($enable = null)
+    {
+        $this->ParseRawPostDataToJson = $this->getBoolean($enable, 'ParseRawPostDataToJson');
+    }
+
+    /**
+     * Get Parse Raw POST data to JSON option
+     *
+     * @return boolean
+     */
+    public function getParseRawPostDataToJson()
+    {
+        return $this->ParseRawPostDataToJson;
+    }
 
     /**
      * Get capture raw POST data option
@@ -607,7 +630,7 @@ abstract class AbstractConfig
      *
      * @return void
      */
-    protected function logError($message)
+    public function logError($message)
     {
         $this->log($message, func_get_args(), false);
     }
@@ -619,7 +642,7 @@ abstract class AbstractConfig
      *
      * @return void
      */
-    protected function logDebug($message)
+    public function logDebug($message)
     {
         if (!$this->getDebug()) {
             return;
