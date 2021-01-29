@@ -121,6 +121,8 @@ class WebRequestDetail
 
     /**
      * Constructor
+     * 
+     * @return void
      */
     private function __construct()
     {
@@ -143,6 +145,7 @@ class WebRequestDetail
                     $agentConfig->getCaptureErrorHeadersWhitelist()
                 )
                 : null;
+
             $this->Cookies = isset($_COOKIE) && $agentConfig->getCaptureErrorCookies()
                 ? self::getRequestMap(
                     $_COOKIE,
@@ -158,6 +161,7 @@ class WebRequestDetail
                     $agentConfig->getCaptureGetVariablesWhitelist()
                 )
                 : null;
+
             $this->PostData = isset($_POST) && $agentConfig->getCapturePostVariables()
                 ? self::getRequestMap(
                     $_POST,
@@ -181,6 +185,8 @@ class WebRequestDetail
             $this->SessionData = isset($_SESSION) ? self::getRequestMap($_SESSION, array('*'), array('*')) : null;
             $this->PostDataRaw = file_get_contents('php://input');
         }
+
+        $this->checkParseRawPostDataToJson();
     }
 
     /**
@@ -359,4 +365,58 @@ class WebRequestDetail
         return self::getRequestMap($headers, $blacklist, $whitelist);
     }
 
+    /**
+     * Check ParseRawPostDataToJson setting
+     *
+     * @return void
+     */
+    protected function checkParseRawPostDataToJson()
+    {
+        $agentConfig = Agent::getInstance();
+
+        if (!$agentConfig->getParseRawPostDataToJson()) {
+            return;
+        }
+
+        // Ignore Setting if Post Data is not empty, already parsed the form
+        if (!empty($this->PostData)) {
+            return;
+        }
+
+        // FIXME: Check Request Content-Type?
+        $jsonDecodedPostData = json_decode($this->PostDataRaw, true);
+        if (empty($jsonDecodedPostData)) {
+            $message = json_last_error_msg();
+            // Avoid spamming error log in case of malformed/invalid raw post data
+            $agentConfig->logDebug("[". __CLASS__ ."][". __FUNCTION__ ."] Failed to parse JSON. Url: $this->RequestUrl - Method:  $this->HttpMethod - Message: $message");
+            return;
+        }
+
+        $this->PostData = $jsonDecodedPostData && $agentConfig->getCapturePostVariables()
+            ? self::getRequestMap(
+                $jsonDecodedPostData,
+                $agentConfig->getCapturePostVariablesBlacklist(),
+                $agentConfig->getCapturePostVariablesWhitelist()
+            )
+            : null;
+
+        if (empty($this->PostData)) {
+            return;
+        }
+
+        if (!$agentConfig->getCaptureRawPostData()) {
+            return;
+        }
+
+        // TODO: Re-encode the data?
+        // It will change the masked/blacklisted values to masked
+        $reencodedJsonRawPostData = json_encode($this->PostData);
+        if (empty($reencodedJsonRawPostData)) {
+            // Avoid spamming error log in case of malformed/invalid post data array, depth or flag setting
+            $agentConfig->logError("[". __CLASS__ ."][". __FUNCTION__ ."] Failed to encode Post Data. Url: $this->RequestUrl - Method:  $this->HttpMethod - Message: $message");
+            return;
+        }
+
+        $this->PostDataRaw = $reencodedJsonRawPostData;
+    }
 }
