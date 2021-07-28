@@ -17,5 +17,14 @@
         "psr-4": {
             "Stackify\\": "src/Stackify"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Stackify\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5",
+        "phpunit/php-timer": "^1.0.6"
     }
 }
