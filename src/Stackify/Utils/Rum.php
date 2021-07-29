@@ -63,11 +63,20 @@ class Rum
      */
     public function setupConfiguration($appName, $environment, $rumKey = null, $rumScriptUrl = null, $config = null)
     {
-        $this->appName = $this->validateAppName($appName);
-        $this->environment = $this->validateEnvironment($environment);
-        $this->rumScriptUrl = $this->checkRumScriptUrl($rumScriptUrl);
-        $this->rumKey = $this->checkRumKey($rumKey);
-        $this->hasSetup = true;
+        try {
+            $this->appName = $this->validateAppName($appName);
+            $this->environment = $this->validateEnvironment($environment);
+            $this->rumScriptUrl = $this->checkRumScriptUrl($rumScriptUrl);
+            $this->rumKey = $this->checkRumKey($rumKey);
+            $this->hasSetup = true;
+        } catch (\Exception $e) {
+            $this->logError('Unable to setup RUM Configuration. Something went wrong. Message: %s', $e->getMessage());
+            // Reset state
+            $this->appName = null;
+            $this->environment = null;
+            $this->rumScriptUrl = self::DEFAULT_RUM_SCRIPT_URL;
+            $this->rumKey = null;
+        }
 
         return $this;
     }

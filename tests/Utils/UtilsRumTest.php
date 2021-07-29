@@ -448,23 +448,74 @@ class UtilsRumTest extends \PHPUnit_Framework_TestCase
 
     public function testRumSetupConfigurationWithEmptyAppName()
     {
-        $this->expectException(RumValidationException::class);
-        $this->expectExceptionMessage('Application Name is empty.');
-
-        $ds = DIRECTORY_SEPARATOR;
         $appName = '';
         $environment = 'test environment';
         $rumKey = '`invalid-rum-key';
-        $mockRumObject = $this->givenARumObjectWithDefaultSetting();
+        $mockRumObject = $this->getMockBuilder(Rum::class)
+            ->setMethods(['logError'])
+            ->getMock();
+
+        $mockRumObject->expects($this->once())
+            ->method('logError')
+            ->with(
+                'Unable to setup RUM Configuration. Something went wrong. Message: %s',
+                'Application Name is empty.'
+            );
 
         $mockRumObject->setupConfiguration(
             $appName,
             $environment,
             $rumKey
         );
+
+        $this->assertNull($mockRumObject->getApplicationName());
+        $this->assertNull($mockRumObject->getEnvironment());
+        $this->assertSame($mockRumObject->getRumScriptUrl(), self::DEFAULT_RUM_SCRIPT_URL);
+        $this->assertNull($mockRumObject->getRumKey());
+    }
+
+    public function testRumValidateAppNameWithEmptyAppName()
+    {
+        $this->expectException(RumValidationException::class);
+        $this->expectExceptionMessage('Application Name is empty.');
+
+        $ds = DIRECTORY_SEPARATOR;
+        $appName = '';
+        $mockRumObject = $this->givenARumObjectWithDefaultSetting();
+        $mockRumObject->validateAppName(
+            $appName
+        );
     }
 
     public function testRumSetupConfigurationWithEmptyEnvironment()
+    {
+        $appName = 'test app name';
+        $environment = '';
+        $rumKey = '`invalid-rum-key';
+        $mockRumObject = $this->getMockBuilder(Rum::class)
+            ->setMethods(['logError'])
+            ->getMock();
+
+        $mockRumObject->expects($this->once())
+            ->method('logError')
+            ->with(
+                'Unable to setup RUM Configuration. Something went wrong. Message: %s',
+                'Environment is empty.'
+            );
+
+        $mockRumObject->setupConfiguration(
+            $appName,
+            $environment,
+            $rumKey
+        );
+
+        $this->assertNull($mockRumObject->getApplicationName());
+        $this->assertNull($mockRumObject->getEnvironment());
+        $this->assertSame($mockRumObject->getRumScriptUrl(), self::DEFAULT_RUM_SCRIPT_URL);
+        $this->assertNull($mockRumObject->getRumKey());
+    }
+
+    public function testRumValidateEnvironmentWithEmptyEnvironment()
     {
         $this->expectException(RumValidationException::class);
         $this->expectExceptionMessage('Environment is empty.');
@@ -475,14 +526,68 @@ class UtilsRumTest extends \PHPUnit_Framework_TestCase
         $rumKey = '`invalid-rum-key';
         $mockRumObject = $this->givenARumObjectWithDefaultSetting();
 
+        $mockRumObject->validateEnvironment(
+            $environment
+        );
+    }
+
+    public function testRumSetupConfigurationWithEmptyRumKey()
+    {
+        $appName = 'test app name';
+        $environment = 'test';
+        $rumKey = '';
+        $mockRumObject = $this->getMockBuilder(Rum::class)
+            ->setMethods(['logError'])
+            ->getMock();
+
+        $mockRumObject->expects($this->once())
+            ->method('logError')
+            ->with(
+                'Unable to setup RUM Configuration. Something went wrong. Message: %s',
+                'RUM Key is empty.'
+            );
+
         $mockRumObject->setupConfiguration(
             $appName,
             $environment,
             $rumKey
         );
+
+        $this->assertNull($mockRumObject->getApplicationName());
+        $this->assertNull($mockRumObject->getEnvironment());
+        $this->assertSame($mockRumObject->getRumScriptUrl(), self::DEFAULT_RUM_SCRIPT_URL);
+        $this->assertNull($mockRumObject->getRumKey());
     }
 
     public function testRumSetupConfigurationWithInvalidRumKey()
+    {
+        $appName = 'test app name';
+        $environment = 'test';
+        $rumKey = '`123';
+        $mockRumObject = $this->getMockBuilder(Rum::class)
+            ->setMethods(['logError'])
+            ->getMock();
+
+        $mockRumObject->expects($this->once())
+            ->method('logError')
+            ->with(
+                'Unable to setup RUM Configuration. Something went wrong. Message: %s',
+                'RUM Key is in invalid format.'
+            );
+
+        $mockRumObject->setupConfiguration(
+            $appName,
+            $environment,
+            $rumKey
+        );
+
+        $this->assertNull($mockRumObject->getApplicationName());
+        $this->assertNull($mockRumObject->getEnvironment());
+        $this->assertSame($mockRumObject->getRumScriptUrl(), self::DEFAULT_RUM_SCRIPT_URL);
+        $this->assertNull($mockRumObject->getRumKey());
+    }
+
+    public function testRumCheckRumKeyWithInvalidRumKey()
     {
         $this->expectException(RumValidationException::class);
         $this->expectExceptionMessage('RUM Key is in invalid format.');
@@ -493,14 +598,12 @@ class UtilsRumTest extends \PHPUnit_Framework_TestCase
         $rumKey = '`invalid-rum-key';
         $mockRumObject = $this->givenARumObjectWithDefaultSetting();
 
-        $mockRumObject->setupConfiguration(
-            $appName,
-            $environment,
+        $mockRumObject->checkRumKey(
             $rumKey
         );
     }
 
-    public function testRumSetupConfigurationWithEmptyRumKey()
+    public function testRumCheckRumKeyWithEmptyRumKey()
     {
         $this->expectException(RumValidationException::class);
         $this->expectExceptionMessage('RUM Key is empty.');
@@ -511,29 +614,51 @@ class UtilsRumTest extends \PHPUnit_Framework_TestCase
         $rumKey = '';
         $mockRumObject = $this->givenARumObjectWithDefaultSetting();
 
-        $mockRumObject->setupConfiguration(
-            $appName,
-            $environment,
+        $mockRumObject->checkRumKey(
             $rumKey
         );
     }
 
     public function testRumSetupConfigurationWithInvalidRumScriptUrl()
     {
-        $this->expectException(RumValidationException::class);
-        $this->expectExceptionMessage('RUM Script URL is in invalid format.');
-
-        $ds = DIRECTORY_SEPARATOR;
         $appName = 'test app name';
-        $environment = 'test environment';
-        $rumKey = 'valid-rum-key';
+        $environment = 'test';
+        $rumKey = '123';
         $rumScriptUrl = 'invalid-rum-script-url';
-        $mockRumObject = $this->givenARumObjectWithDefaultSetting();
+        $mockRumObject = $this->getMockBuilder(Rum::class)
+            ->setMethods(['logError'])
+            ->getMock();
+
+        $mockRumObject->expects($this->once())
+            ->method('logError')
+            ->with(
+                'Unable to setup RUM Configuration. Something went wrong. Message: %s',
+                'RUM Script URL is in invalid format.'
+            );
 
         $mockRumObject->setupConfiguration(
             $appName,
             $environment,
             $rumKey,
+            $rumScriptUrl
+        );
+
+        $this->assertNull($mockRumObject->getApplicationName());
+        $this->assertNull($mockRumObject->getEnvironment());
+        $this->assertSame($mockRumObject->getRumScriptUrl(), self::DEFAULT_RUM_SCRIPT_URL);
+        $this->assertNull($mockRumObject->getRumKey());
+    }
+
+    public function testRumCheckRumScriptUrlWithInvalidRumScriptUrl()
+    {
+        $this->expectException(RumValidationException::class);
+        $this->expectExceptionMessage('RUM Script URL is in invalid format.');
+
+        $ds = DIRECTORY_SEPARATOR;
+        $rumScriptUrl = 'invalid-rum-script-url';
+        $mockRumObject = $this->givenARumObjectWithDefaultSetting();
+
+        $mockRumObject->checkRumScriptUrl(
             $rumScriptUrl
         );
     }
@@ -576,39 +701,85 @@ class UtilsRumTest extends \PHPUnit_Framework_TestCase
 
     public function testRumSetupConfigurationWithInvalidRumKeyFromEnv()
     {
-        $this->expectException(RumValidationException::class);
-        $this->expectExceptionMessage('RUM Key is in invalid format.');
-
-        $ds = DIRECTORY_SEPARATOR;
         $appName = 'test app name';
-        $environment = 'test environment';
+        $environment = 'test';
         $_SERVER['RETRACE_RUM_KEY'] = '`invalid-rum-key';
-        $mockRumObject = $this->givenARumObjectWithDefaultSetting();
+        $mockRumObject = $this->getMockBuilder(Rum::class)
+            ->setMethods(['logError'])
+            ->getMock();
+
+        $mockRumObject->expects($this->once())
+            ->method('logError')
+            ->with(
+                'Unable to setup RUM Configuration. Something went wrong. Message: %s',
+                'RUM Key is in invalid format.'
+            );
 
         $mockRumObject->setupConfiguration(
             $appName,
             $environment
         );
+
+        $this->assertNull($mockRumObject->getApplicationName());
+        $this->assertNull($mockRumObject->getEnvironment());
+        $this->assertSame($mockRumObject->getRumScriptUrl(), self::DEFAULT_RUM_SCRIPT_URL);
+        $this->assertNull($mockRumObject->getRumKey());
+
+        unset($_SERVER['RETRACE_RUM_KEY']);
+    }
+
+    public function testRumCheckRumKeyWithInvalidRumKeyFromEnv()
+    {
+        $this->expectException(RumValidationException::class);
+        $this->expectExceptionMessage('RUM Key is in invalid format.');
+
+        $ds = DIRECTORY_SEPARATOR;
+        $_SERVER['RETRACE_RUM_KEY'] = '`invalid-rum-key';
+        $mockRumObject = $this->givenARumObjectWithDefaultSetting();
+
+        $mockRumObject->checkRumKey(null);
 
         unset($_SERVER['RETRACE_RUM_KEY']);
     }
 
     public function testRumSetupConfigurationWithEmptyRumKeyFromEnv()
     {
-        $this->expectException(RumValidationException::class);
-        $this->expectExceptionMessage('RUM Key is empty.');
-
-        $ds = DIRECTORY_SEPARATOR;
         $appName = 'test app name';
-        $environment = 'test environment';
+        $environment = 'test';
         $_SERVER['RETRACE_RUM_KEY'] = '';
-        $mockRumObject = $this->givenARumObjectWithDefaultSetting();
+        $mockRumObject = $this->getMockBuilder(Rum::class)
+            ->setMethods(['logError'])
+            ->getMock();
+
+        $mockRumObject->expects($this->once())
+            ->method('logError')
+            ->with(
+                'Unable to setup RUM Configuration. Something went wrong. Message: %s',
+                'RUM Key is empty.'
+            );
 
         $mockRumObject->setupConfiguration(
             $appName,
             $environment
         );
 
+        $this->assertNull($mockRumObject->getApplicationName());
+        $this->assertNull($mockRumObject->getEnvironment());
+        $this->assertSame($mockRumObject->getRumScriptUrl(), self::DEFAULT_RUM_SCRIPT_URL);
+        $this->assertNull($mockRumObject->getRumKey());
+
+        unset($_SERVER['RETRACE_RUM_KEY']);
+    }
+
+    public function testRumCheckRumKeyWithEmptyRumKeyFromEnv()
+    {
+        $this->expectException(RumValidationException::class);
+        $this->expectExceptionMessage('RUM Key is empty.');
+
+        $_SERVER['RETRACE_RUM_KEY'] = '';
+        $mockRumObject = $this->givenARumObjectWithDefaultSetting();
+
+        $mockRumObject->checkRumKey(null);
         unset($_SERVER['RETRACE_RUM_KEY']);
     }
 
@@ -632,7 +803,7 @@ class UtilsRumTest extends \PHPUnit_Framework_TestCase
         unset($_SERVER['RETRACE_RUM_SCRIPT_URL']);
     }
 
-    public function testRumSetupConfigurationWithInvalidRumScriptUrlFromEnv()
+    public function testRumCheckRumScriptUrlWithInvalidRumScriptUrlFromEnv()
     {
         $this->expectException(RumValidationException::class);
         $this->expectExceptionMessage('RUM Script URL is in invalid format.');
@@ -644,11 +815,36 @@ class UtilsRumTest extends \PHPUnit_Framework_TestCase
         $_SERVER['RETRACE_RUM_SCRIPT_URL'] = 'invalid-rum-script-url';
         $mockRumObject = $this->givenARumObjectWithDefaultSetting();
 
+        $mockRumObject->checkRumScriptUrl(null);
+
+        unset($_SERVER['RETRACE_RUM_SCRIPT_URL']);
+    }
+
+    public function testRumSetupConfigurationWithInvalidRumScriptUrlFromEnv()
+    {
+        $appName = 'test app name';
+        $environment = 'test';
+        $_SERVER['RETRACE_RUM_SCRIPT_URL'] = 'invalid-rum-script-url';
+        $mockRumObject = $this->getMockBuilder(Rum::class)
+            ->setMethods(['logError'])
+            ->getMock();
+
+        $mockRumObject->expects($this->once())
+            ->method('logError')
+            ->with(
+                'Unable to setup RUM Configuration. Something went wrong. Message: %s',
+                'RUM Script URL is in invalid format.'
+            );
+
         $mockRumObject->setupConfiguration(
             $appName,
-            $environment,
-            $rumKey
+            $environment
         );
+
+        $this->assertNull($mockRumObject->getApplicationName());
+        $this->assertNull($mockRumObject->getEnvironment());
+        $this->assertSame($mockRumObject->getRumScriptUrl(), self::DEFAULT_RUM_SCRIPT_URL);
+        $this->assertNull($mockRumObject->getRumKey());
 
         unset($_SERVER['RETRACE_RUM_SCRIPT_URL']);
     }
