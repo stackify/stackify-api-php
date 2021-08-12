@@ -279,7 +279,7 @@ class Rum
      */
     protected function isProfilerActive()
     {
-        return function_exists('stackify_transaction_id') && class_exists('\Stackify\Profiler');
+        return function_exists('stackify_transaction_id') && class_exists($this->getProfilerClass());
     }
 
     /**
@@ -289,11 +289,22 @@ class Rum
      */
     public function getProfilerInsertRumScript()
     {
-        if ($this->isProfilerActive()) {
-            return \Stackify\Profiler::insertRumScript();
+        if ($this->isProfilerActive() && method_exists($this->getProfilerClass(), 'insertRumScript')) {
+            $profilerClass = $this->getProfilerClass();
+            return $profilerClass::insertRumScript();
         }
         
         return null;
+    }
+
+    /**
+     * Get profiler class
+     *
+     * @return string
+     */
+    public function getProfilerClass()
+    {
+        return 'Stackify\Profiler';
     }
 
     /**

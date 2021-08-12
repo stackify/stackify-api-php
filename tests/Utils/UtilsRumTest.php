@@ -920,6 +920,61 @@ class UtilsRumTest extends \PHPUnit_Framework_TestCase
         unset($_SERVER['REQUEST_METHOD']);
     }
 
+    public function testRumInsertScriptWithProfilerActiveMock()
+    {
+        $class = 'Stackify\Tests\Utils\Fixtures\ProfilerWithInsert';
+        $this->assertSame($class::insertRumScript(), 'mock script');
+
+        $mockRumObject = $this->getMockBuilder(Rum::class)
+            ->setMethods(['getProfilerClass'])
+            ->getMock();
+
+        $mockRumObject->method('getProfilerClass')
+            ->willReturn($class);
+
+        $this->assertSame($mockRumObject->getProfilerClass(), $class);
+        $this->assertSame($mockRumObject->insertRumScript(), 'mock script');
+    }
+
+    public function testRumInsertScriptWithProfilerActiveMockNoMethod()
+    {
+        $class = 'Stackify\Tests\Utils\Fixtures\ProfilerNoInsert';
+        $this->assertFalse(method_exists($class, 'insertRumScript'));
+
+        $mockRumObject = $this->getMockBuilder(Rum::class)
+            ->setMethods(['getTransactionId', 'getReportingUrl'])
+            ->getMock();
+
+        $appName = 'test app name';
+        $environment = 'test environment';
+        $reportingUrl = 'test-1234';
+        $transactionId = 'trans-1234';
+        $rumKey = 'valid-rum-key';
+        $rumScriptUrl = self::DEFAULT_RUM_SCRIPT_URL;
+
+        $mockRumObject->setupConfiguration(
+            $appName,
+            $environment,
+            $rumKey
+        );
+
+        $mockRumObject->method('getTransactionId')
+            ->willReturn($transactionId);
+
+        $mockRumObject->method('getReportingUrl')
+            ->willReturn($reportingUrl);
+
+        $rumSettings = array(
+            'ID' => $transactionId,
+            'Name' => base64_encode(utf8_encode($appName)),
+            'Env' => base64_encode(utf8_encode($environment)),
+            'Trans' => base64_encode(utf8_encode($reportingUrl))
+        );
+
+        $rumScript = '<script type="text/javascript">(window.StackifySettings || (window.StackifySettings = '.json_encode($rumSettings).'))</script><script src="'.$rumScriptUrl.'" data-key="'.$rumKey.'" async></script>';
+        $this->assertSame($mockRumObject->insertRumScript(), $rumScript);
+    }
+
     private function givenARumObjectWithDefaultSetting()
     {
         return new Rum;
