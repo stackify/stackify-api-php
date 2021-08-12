@@ -167,6 +167,38 @@ $config = array(
 $logger = new Logger('application_name', 'environment_name', $transport, true, $config);
 ```
 
+### **Real User Monitoring (RUM)**
+
+Real user monitoring injects a script tag containing the [RUM JS](https://stackify.com/retrace-real-user-monitoring/) that is responsible for capturing information about the http requests on the browser. This approach is manual and needs to be configured.
+
+#### RUM - Setup
+
+```php
+/** Requires composer **/
+$applicationName = 'Your Application Name';
+$environment = 'YourEnvironment';
+$rumKey = 'YourRumKey';
+ 
+\Stackify\Utils\Rum::getInstance()->setupConfiguration(
+	$applicationName,
+	$environment,
+	$rumKey
+);
+```
+
+#### RUM - Application
+```php
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<?php echo \Stackify\Utils\Rum::getInstance()->insertRumScript(); ?>
+	<title>Title</title>
+</head>
+...
+```
+
 ## License
 
 Copyright 2019 Stackify, LLC.
