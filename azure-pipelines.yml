@@ -40,7 +40,7 @@ steps:
   inputs:
     ConnectionDetailsSelection: 'Endpoint'
     AnalysisService: 'Veracode'
-    veracodeAppProfile: 'Retrace PHP Library'
+    veracodeAppProfile: 'Retrace PHP library'
     version: 'AZ-Devops-Build-$(build.buildNumber)'
     filepath: 'stackify-api-php.zip'
     maximumWaitTime: '360'
