@@ -50,7 +50,14 @@ class AgentSocketTransport extends AbstractApiTransport
         try {
             if (!empty($data)) {
                 $messageFactory = new GuzzleMessageFactory();
-                $client = new Client($messageFactory, null, array('remote_socket' => 'unix://' . $this->getDomainSocketPath()));
+                $client = null;
+                $config = array('remote_socket' => 'unix://' . $this->getDomainSocketPath());
+
+                if (version_compare(phpversion(), '7.1', '>=')) {
+                    $client = new Client($config);
+                } else {
+                    $client = new Client($messageFactory, $config);
+                }
 
                 $request = $messageFactory->createRequest(
                     'POST',
