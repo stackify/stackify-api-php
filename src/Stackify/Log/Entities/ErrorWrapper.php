@@ -2,6 +2,9 @@
 
 namespace Stackify\Log\Entities;
 
+use Stackify\Log\Transport\Config\AbstractConfig;
+use Stackify\Log\Transport\Config\Agent;
+
 class ErrorWrapper
 {
 
@@ -10,6 +13,12 @@ class ErrorWrapper
     private $code;
     private $trace;
     private $sourceMethod;
+    /**
+     * Agent config
+     *
+     * @var AbstractConfig
+     */
+    private $_config;
 
     const TYPE_STRING_EXCEPTION = 'StringException';
     const TRACE_UNKNOWN_ITEM = '{unknown}';
@@ -19,8 +28,10 @@ class ErrorWrapper
      */
     private $innerError;
 
-    public function __construct($object, $nestingLevel = 1)
+    public function __construct($object, $nestingLevel = 1, $config = null)
     {
+        $this->_config = !empty($config) ? $config: Agent::getInstance();
+
         if ($object instanceof \Exception) {
             $this->message = $object->getMessage();
             $this->type = get_class($object);
@@ -49,6 +60,13 @@ class ErrorWrapper
             $this->code = null;
             $this->setTrace(debug_backtrace());
             $this->innerError = null;
+        }
+
+        if ($this->_config) {
+            $classBlacklist = $this->_config->getCaptureExceptionClassBlacklist();
+            if (!empty($classBlacklist) && isset($classBlacklist[$this->type])) {
+                $this->type = $this->message;
+            }
         }
     }
 

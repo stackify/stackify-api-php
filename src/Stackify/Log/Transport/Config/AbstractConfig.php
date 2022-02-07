@@ -134,6 +134,12 @@ abstract class AbstractConfig
      * @var boolean
      */
     protected $Debug;
+    /**
+     * Exception Class Blacklist
+     *
+     * @var array
+     */
+    protected $CaptureExceptionClassBlacklist;
 
 
     /**
@@ -170,6 +176,7 @@ abstract class AbstractConfig
         $ds = DIRECTORY_SEPARATOR;
         $this->DebugLogPath = realpath(dirname(__FILE__) . "$ds..$ds..") . $ds . 'debug/log.log';
         $this->Debug = false;
+        $this->CaptureExceptionClassBlacklist = null;
     }
 
     /**
@@ -408,6 +415,17 @@ abstract class AbstractConfig
     {
         $this->Debug = $this->getBoolean($enable, 'Debug');
     }
+    /**
+     * Set capture Exception Class blacklist for ErrorType
+     *
+     * @param array $rawConfig From config
+     *
+     * @return void
+     */
+    public function setCaptureExceptionClassBlacklist($rawConfig = null)
+    {
+        $this->CaptureExceptionClassBlacklist = $this->parseStringToArray($rawConfig, 'CaptureExceptionClassBlacklist');
+    }
 
 
     /**
@@ -598,6 +616,15 @@ abstract class AbstractConfig
     public function getDebug()
     {
         return $this->Debug;
+    }
+    /**
+     * Get capture exception class for error type blacklist
+     *
+     * @return mixed
+     */
+    public function getCaptureExceptionClassBlacklist()
+    {
+        return $this->CaptureExceptionClassBlacklist;
     }
 
     /**
