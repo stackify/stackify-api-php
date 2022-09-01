@@ -10,7 +10,7 @@ class ExampleLogMsgFilterWithStackTrace implements LogMsgFilterable
     public function filter(LogMsg $logMsg)
     {
         $logMsg->setMessage(
-            'Stack trace:\\n : SomeExampleFunction'.$logMsg->getMessage().'(\''.$logMsg->getMessage().'\')'
+            "Stack trace:\n : SomeExampleFunction".$logMsg->getMessage()."(\'".$logMsg->getMessage()."\')"
         );
         return $logMsg;
     }

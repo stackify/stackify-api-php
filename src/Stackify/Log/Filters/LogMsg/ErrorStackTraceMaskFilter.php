@@ -23,7 +23,7 @@ class ErrorStackTraceMaskFilter implements LogMsgFilterable
             return $logMsg;
         }
 
-        if (stripos($logMsg->getMessage(), 'stack trace:\\n') === false) {
+        if (stripos($logMsg->getMessage(), "stack trace:\n") === false) {
             return $logMsg;
         }
 
@@ -48,7 +48,7 @@ class ErrorStackTraceMaskFilter implements LogMsgFilterable
         }
 
         try {
-            $delimeter = '\\n';
+            $delimeter = "\n";
             $hasObject = strpos($message, 'Object(') !== false; // Checks if we can detect an object(
             $messageParts = explode($delimeter, $message);
             

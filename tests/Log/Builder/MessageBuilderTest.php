@@ -95,7 +95,7 @@ class MessageBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(count($messageBuilder->getLogMessageFilters()), 1);
         $logEntry = $this->createLogEntry(
             'error',
-            'Stack trace:\\n : SomeFunction(\'test\')',
+            "Stack trace:\n : SomeFunction(\'test\')",
             array(
                 'error' => new \Exception('test')
             )
@@ -105,7 +105,7 @@ class MessageBuilderTest extends \PHPUnit_Framework_TestCase
             $logEntry
         );
 
-        $this->assertSame($logMsg->getMessage(), 'Stack trace:\n : SomeFunction()');
+        $this->assertSame($logMsg->getMessage(), "Stack trace:\n : SomeFunction()");
     }
 
     public function testMaskErrorStackTraceArgumentsWithFiltersCreateLogMsg()
@@ -141,7 +141,7 @@ class MessageBuilderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame(
             $logMsg->getMessage(),
-            'Stack trace:\\n : SomeExampleFunctionTest1()' // Test1 just to confirm we filter the first message on the pipeline
+            "Stack trace:\n : SomeExampleFunctionTest1()" // Test1 just to confirm we filter the first message on the pipeline
         );
     }
 
