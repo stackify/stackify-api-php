@@ -926,11 +926,14 @@ class UtilsRumTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($class::insertRumScript(), 'mock script');
 
         $mockRumObject = $this->getMockBuilder(Rum::class)
-            ->setMethods(['getProfilerClass'])
+            ->setMethods(['getProfilerClass', 'isProfilerActive'])
             ->getMock();
 
         $mockRumObject->method('getProfilerClass')
             ->willReturn($class);
+
+        $mockRumObject->method('isProfilerActive')
+            ->willReturn(true);
 
         $this->assertSame($mockRumObject->getProfilerClass(), $class);
         $this->assertSame($mockRumObject->insertRumScript(), 'mock script');

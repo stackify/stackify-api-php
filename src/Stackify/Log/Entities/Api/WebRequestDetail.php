@@ -330,10 +330,8 @@ class WebRequestDetail
         $ssl = null !== $https && 'off' !== $https;
         $protocol = $ssl ? 'https' : 'http';
         $inputServerValue = filter_input(INPUT_SERVER, 'REQUEST_URI');
-        if (is_null($inputServerValue)) {
-            $url = '';
-        }
-        else {
+        $url = '';
+        if (is_string($inputServerValue)) {
             list($url,) = explode('?', $inputServerValue);
         }
 

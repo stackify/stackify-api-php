@@ -80,8 +80,24 @@ class Agent extends AbstractConfig
      * @var string
      */
     protected $ApiVersionHeader;
-
+    /**
+     * Valid protocols
+     *
+     * @var array
+     */
     protected $ValidProtocols = array('tcp', 'udp');
+    /**
+     * Log message filters
+     *
+     * @var string
+     */
+    protected $LogMessageFilters;
+    /**
+     * Mask error stack trace arguments
+     *
+     * @var boolean
+     */
+    protected $MaskErrorStackTraceArguments;
 
     /**
      * Constructor
@@ -435,5 +451,58 @@ class Agent extends AbstractConfig
             $instance = new self();
         }
         return $instance;
+    }
+
+    /**
+     * Set log message filtering
+     *
+     * @param array $filters Log message filters (custom filtering)
+     *
+     * @return void
+     */
+    public function setLogMessageFilters($filters = null)
+    {
+        if (empty($filters)) {
+            return;
+        }
+
+        if (!is_array($filters)) {
+            $this->logError('[LogMessageFilters] is not an array.');
+            return;
+        }
+
+        $this->LogMessageFilters = $filters;
+    }
+
+    /**
+     * Get log message filters
+     *
+     * @return array
+     */
+    public function getLogMessageFilters()
+    {
+        return $this->LogMessageFilters;
+    }
+
+    /**
+     * Set mask error stack trace arguments
+     *
+     * @param boolean $maskArguments Enable or disable masking
+     *
+     * @return void
+     */
+    public function setMaskErrorStackTraceArguments($maskArguments)
+    {
+        $this->MaskErrorStackTraceArguments = $maskArguments;
+    }
+
+    /**
+     * Get mask error stack trace arguments
+     *
+     * @return boolean
+     */
+    public function isMaskErrorStackTraceArguments()
+    {
+        return $this->MaskErrorStackTraceArguments;
     }
 }
