@@ -168,4 +168,16 @@ class ErrorWrapper
         return $result;
     }
 
+    /**
+     * Set error message
+     *
+     * @param string $message New error message
+     *
+     * @return void
+     */
+    public function setMessage($message)
+    {
+        $this->message = $message;
+    }
+
 }

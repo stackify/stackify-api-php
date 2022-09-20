@@ -329,7 +329,12 @@ class WebRequestDetail
         $https = filter_input(INPUT_SERVER, 'HTTPS');
         $ssl = null !== $https && 'off' !== $https;
         $protocol = $ssl ? 'https' : 'http';
-        list($url,) = explode('?', filter_input(INPUT_SERVER, 'REQUEST_URI'));
+        $inputServerValue = filter_input(INPUT_SERVER, 'REQUEST_URI');
+        $url = '';
+        if (is_string($inputServerValue)) {
+            list($url,) = explode('?', $inputServerValue);
+        }
+
         $serverName = filter_input(INPUT_SERVER, 'SERVER_NAME');
         if ($serverName && $url) {
             return "$protocol://$serverName" . $url;

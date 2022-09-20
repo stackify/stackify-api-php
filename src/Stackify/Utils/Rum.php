@@ -254,7 +254,7 @@ class Rum
         $requestUri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI']: null;
         $reportingUrl = '/';
 
-        if ($requestUri) {
+        if ($requestUri && is_string($requestUri)) {
             $reportingUrl = array_filter(explode('?', $requestUri))[0];
             $reportingUrl = rtrim($reportingUrl, '/');
         }

@@ -73,5 +73,40 @@ class LogMsg
             }
         }
     }
-    
+
+    /**
+     * Get log message
+     *
+     * @return string
+     */
+    public function getMessage()
+    {
+        return $this->Msg;
+    }
+
+    /**
+     * Set log message
+     *
+     * @param string $message New log message
+     *
+     * @return void
+     */
+    public function setMessage($message)
+    {
+        if (!is_string($message)) {
+            return;
+        }
+
+        $this->Msg = $message;
+    }
+
+    /**
+     * Check if log message has error
+     *
+     * @return boolean
+     */
+    public function hasError()
+    {
+        return $this->Ex && !empty($this->Ex);
+    }
 }
