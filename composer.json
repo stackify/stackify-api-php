@@ -6,7 +6,7 @@
     "type": "library",
     "license": "Apache-2.0",
     "require": {
-        "php": ">= 7.0.0",
+        "php": ">= 7.1.0",
         "psr/log": "^1.0 | ^2.0 | ^3.0",
         "guzzlehttp/psr7": "^1.9.1 || ^2.4.5",
         "php-http/socket-client": "^1.4 | ^2.0",
