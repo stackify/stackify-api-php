@@ -1,4 +1,7 @@
 <?php
+// Copyright (c) 2024 BMC Software, Inc.
+// Copyright (c) 2021-2024 Netreo
+// Copyright (c) 2019 Stackify
 
 namespace Stackify\Log\Standalone;
 
