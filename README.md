@@ -17,6 +17,10 @@ Standalone Stackify PHP [PSR-3](https://github.com/php-fig/fig-standards/blob/ma
 
 Install the latest version with `composer require stackify/logger`
 
+### Requirements
+* Stackify PHP Logger ^2.0 works with PHP 7.1 or above.
+* Stackify PHP Logger ^1.0 works with PHP 5.3 or above.
+
 ### Installation with Linux Agent 
 
 This is the suggested installation option, offering the best 
