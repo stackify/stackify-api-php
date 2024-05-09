@@ -1,4 +1,7 @@
 <?php
+// Copyright (c) 2024 BMC Software, Inc.
+// Copyright (c) 2021-2024 Netreo
+// Copyright (c) 2019 Stackify
 
 namespace Stackify\Log\Standalone;
 
@@ -35,7 +38,7 @@ class Logger extends AbstractLogger
         $this->transport->finish();
     }
 
-    public function log($level, $message, array $context = array())
+    public function log($level, $message, array $context = array()): void
     {
         $logEvent = array(
             'message' => (string) $message,
